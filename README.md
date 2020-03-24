@@ -1,7 +1,6 @@
-<<<<<<< HEAD
+# cs330
+=======
 Brand new pintos for Operating Systems and Lab (CS330), KAIST, by Youngjin Kwon.
 
 The manual is available at https://casys-kaist.github.io/pintos-kaist/.
-=======
-# cs330
->>>>>>> d141913d7c80304849fe041c0c15215b77623981
+>>>>>>> 0fbc8842344f40eb0b55f9ec507a5877145adeb5
