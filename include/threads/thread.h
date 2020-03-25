@@ -90,7 +90,14 @@ struct thread {
 
 	/* Shared between thread.c and synch.c. */
 	struct list_elem elem;              /* List element. */
-
+	
+	/* added by me! */
+	int64_t wakeup_ticks;
+	int ori_pri;								/* original priority */
+	struct lock *waiting_for;					/* lock thread is waiting for */
+	struct list don_list;						/* donating threads */
+	struct list_elem don_elem;					/* elem for list donaters */
+	
 #ifdef USERPROG
 	/* Owned by userprog/process.c. */
 	uint64_t *pml4;                     /* Page map level 4 */
@@ -134,5 +141,14 @@ int thread_get_recent_cpu (void);
 int thread_get_load_avg (void);
 
 void do_iret (struct intr_frame *tf);
+
+/* Added funcs by me */
+void thread_sleep(int64_t);
+void wakeup_thread(int64_t);
+int64_t get_alarm(void);
+bool higher_pri(const struct list_elem*, const struct list_elem*, void *aux UNUSED);
+void yield_by_pri(void);
+void donate_pri(struct thread *holdee);
+void update_pri(struct thread *holdee);
 
 #endif /* threads/thread.h */

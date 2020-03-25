@@ -1,0 +1,25 @@
+Kernel command line: -q run priority-sema
+Pintos booting with: 
+	base_mem: 0x0 ~ 0x100000 (Usable: 704 kB)
+	ext_mem: 0x100000 ~ 0x100000000 (Usable: 261,376 kB)
+Calibrating timer...  209,510,400 loops/s.
+Boot complete.
+Executing 'priority-sema':
+(priority-sema) begin
+(priority-sema) Back in main thread.
+(priority-sema) Back in main thread.
+(priority-sema) Back in main thread.
+(priority-sema) Back in main thread.
+(priority-sema) Back in main thread.
+(priority-sema) Back in main thread.
+(priority-sema) Back in main thread.
+(priority-sema) Back in main thread.
+(priority-sema) Back in main thread.
+(priority-sema) Back in main thread.
+(priority-sema) end
+Execution of 'priority-sema' complete.
+Timer: 41 ticks
+Thread: 0 idle ticks, 41 kernel ticks, 0 user ticks
+Console: 765 characters output
+Keyboard: 0 keys pressed
+Powering off...
