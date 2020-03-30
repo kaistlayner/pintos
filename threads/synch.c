@@ -255,7 +255,7 @@ lock_release (struct lock *lock) {
 		list_remove(&holdee->don_elem);
 		update_pri(holdee);
   }
-  
+
   lock->holder = NULL;
   sema_up (&lock->semaphore);
 }

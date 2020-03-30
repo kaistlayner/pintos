@@ -122,6 +122,7 @@ void thread_sleep(int64_t t){
   intr_set_level(old_level);
 }
 
+
 void wakeup_threads(int64_t time){
   if (!list_empty (&sleep_list)){
     alarm = INT64_MAX;
@@ -130,7 +131,7 @@ void wakeup_threads(int64_t time){
     while(e != list_end(&sleep_list)){
       struct thread *th = list_entry(e, struct thread, elem);
       if((th->wakeup_ticks) <= time) {
-	e = list_remove(e);
+		e = list_remove(e);
         thread_unblock(th);        
       }
       else{
@@ -185,7 +186,6 @@ void update_pri(struct thread *holdee){
 				if(th->priority > holder->priority) holder->priority = th->priority;
 			}
 		}
-		
 		if(holder->priority != temp) update_pri(holder);
 	}
 }
