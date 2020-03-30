@@ -125,7 +125,7 @@ sema_up (struct semaphore *sema) {
 	ASSERT (sema != NULL);
 
 	old_level = intr_disable ();
-	if (!list_empty (&sema->waiters)){ 
+	if (!list_empty (&sema->waiters)){
   		list_sort(&sema->waiters, higher_pri, 0);
     	thread_unblock (list_entry (list_pop_front (&sema->waiters), struct thread, elem));
 	}
@@ -210,12 +210,12 @@ lock_acquire (struct lock *lock) {
 
 	struct thread *cur = thread_current();
 	cur->waiting_for = lock;
-	
+
 	if(lock->holder != NULL){
 		list_push_back(&lock->holder->don_list, &cur->don_elem);
 		donate_pri(cur);
 	}
-	
+
 	sema_down (&lock->semaphore);
 	lock->holder = cur;
 	cur->waiting_for = NULL;
@@ -258,14 +258,14 @@ lock_release (struct lock *lock) {
 
 	ASSERT (lock != NULL);
 	ASSERT (lock_held_by_current_thread (lock));
-  
+
 	struct list_elem *e;
 	for(e = list_begin(&lock->semaphore.waiters); e != list_end(&lock->semaphore.waiters); e = e->next){
 		struct thread *holdee = list_entry(e, struct thread, elem);
 		list_remove(&holdee->don_elem);
 		update_pri(holdee);
 	}
-  
+
 	lock->holder = NULL;
 	sema_up (&lock->semaphore);
 	intr_set_level(old_level);
