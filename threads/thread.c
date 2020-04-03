@@ -154,7 +154,6 @@ bool higher_pri(const struct list_elem *a, const struct list_elem *b, void *aux 
 
 void yield_by_pri(void){
 	if(!list_empty(&ready_list)){
-		printf("yield_by_pri function called \n");
 		struct thread *cur = running_thread();
 		struct thread *front = list_entry(list_front(&ready_list), struct thread, elem);
 		if(front->priority > cur->priority) thread_yield();
@@ -402,7 +401,6 @@ thread_exit (void) {
    may be scheduled again immediately at the scheduler's whim. */
 void
 thread_yield (void) {
-	printf("thread_yield function called\n");
 	struct thread *curr = thread_current ();
 	enum intr_level old_level;
 
@@ -652,10 +650,9 @@ thread_launch (struct thread *th) {
  * It's not safe to call printf() in the schedule(). */
 static void
 do_schedule(int status) {
-	//printf("do_schdule function called");
 	ASSERT (intr_get_level () == INTR_OFF);
 	ASSERT (thread_current() ->status == THREAD_RUNNING);
-	while (!list_empty (&destruction_req)) {
+	while (!list_empty (&destructison_req)) {
 		struct thread *victim =
 			list_entry (list_pop_front (&destruction_req), struct thread, elem);
 		palloc_free_page(victim);
@@ -666,7 +663,6 @@ do_schedule(int status) {
 
 static void
 schedule (void) {
-	//printf("schedule function called");
 	struct thread *curr = running_thread ();
 	struct thread *next = next_thread_to_run ();
 
