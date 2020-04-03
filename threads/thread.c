@@ -154,7 +154,7 @@ bool higher_pri(const struct list_elem *a, const struct list_elem *b, void *aux 
 
 void yield_by_pri(void){
 	if(!list_empty(&ready_list)){
-		//printf("yield_by_pri function called");
+		printf("yield_by_pri function called \n");
 		struct thread *cur = running_thread();
 		struct thread *front = list_entry(list_front(&ready_list), struct thread, elem);
 		if(front->priority > cur->priority) thread_yield();
@@ -402,7 +402,7 @@ thread_exit (void) {
    may be scheduled again immediately at the scheduler's whim. */
 void
 thread_yield (void) {
-	//printf("thread_yield function called");
+	printf("thread_yield function called\n");
 	struct thread *curr = thread_current ();
 	enum intr_level old_level;
 
