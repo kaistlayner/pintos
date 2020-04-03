@@ -11,6 +11,7 @@
 #include "threads/synch.h"
 #include "threads/vaddr.h"
 #include "intrinsic.h"
+#include "threads/fixed_point.h"
 #ifdef USERPROG
 #include "userprog/process.h"
 #endif
@@ -57,6 +58,7 @@ static unsigned thread_ticks;   /* # of timer ticks since last yield. */
    If true, use multi-level feedback queue scheduler.
    Controlled by kernel command-line option "-o mlfqs". */
 bool thread_mlfqs;
+int load_avg;
 
 static void kernel_thread (thread_func *, void *aux);
 
@@ -106,8 +108,56 @@ bool higher_pri(const struct list_elem*, const struct list_elem*, void *aux UNUS
 void yield_by_pri(void);
 void donate_pri(struct thread *holdee);
 void update_pri(struct thread *holdee);  
+void mlfq_pri(struct thread *th);
+void mlfq_cpu(struct thread *th);
+void mlfq_avg(void);
+void mlfq_update(void);
+void mlfq_inc(void);
+
    
 /* defined funcs by me */
+void mlfq_pri(struct thread *th){
+	if(th == idle_thread) return;
+	int pri_max = to_f(PRI_MAX);
+	int a2 = div_fn(th->recent_cpu, 4);
+	int a3 = mul_fn(to_f(th->nice), 2);
+	th->priority = sub_ff(sub_ff(pri_max, a2), a3);
+}
+
+
+void mlfq_cpu(struct thread *th){
+	int a1 = mul_fn(load_avg, 2);
+	int a2 = add_fn(a1, 1);
+	th->recent_cpu = add_ff(mul_ff(div_ff(a1, a2), th->recent_cpu), to_f(th->nice));
+}
+
+
+void mlfq_avg(void){
+	int a1 = div_fn(to_f(59), 60);
+	int a3 = div_fn(to_f(1), 60);
+	int temp = list_size(&ready_list);
+	int a4 = thread_current() == idle_thread ? temp : temp + 1;
+	load_avg = add_ff(mul_ff(a1, load_avg), mul_ff(a3, to_f(a4)));
+}
+
+
+void mlfq_update(void){
+	mlfq_avg();
+	struct list_elem *e;
+	for (e = list_begin (&ready_list); e != list_end (&ready_list); e = list_next (e)){
+    	struct thread *th = list_entry (e, struct thread, elem);
+    	mlfq_cpu(th);
+    	mlfq_pri(th);
+    }
+}
+
+
+void mlfq_inc(void){
+	if (thread_current () == idle_thread) return;
+ 	thread_current()->recent_cpu = add_fn(thread_current()->recent_cpu, 1);
+}
+
+
 void thread_sleep(int64_t t){
   enum intr_level old_level;
   old_level = intr_disable();
@@ -229,6 +279,7 @@ thread_start (void) {
 	struct semaphore idle_started;
 	sema_init (&idle_started, 0);
 	thread_create ("idle", PRI_MIN, idle, &idle_started);
+	load_avg = 0;
 
 	/* Start preemptive thread scheduling. */
 	intr_enable ();
@@ -416,6 +467,7 @@ thread_yield (void) {
 /* Sets the current thread's priority to NEW_PRIORITY. */
 void
 thread_set_priority (int new_priority) {
+	if (thread_mlfqs) return;
 	struct thread *cur = thread_current();
 	int temp = cur->priority;
 	cur->ori_pri = cur->priority = new_priority;
@@ -441,7 +493,9 @@ thread_get_priority (void) {
 
 /* Sets the current thread's nice value to NICE. */
 void
-thread_set_nice (int nice UNUSED) {
+thread_set_nice (int nice) {
+	struct thread *cur = thread_current();
+	cur->nice = nice;
 	/* TODO: Your implementation goes here */
 }
 
@@ -449,21 +503,22 @@ thread_set_nice (int nice UNUSED) {
 int
 thread_get_nice (void) {
 	/* TODO: Your implementation goes here */
-	return 0;
+	
+	return thread_current()->nice;
 }
 
 /* Returns 100 times the system load average. */
 int
 thread_get_load_avg (void) {
 	/* TODO: Your implementation goes here */
-	return 0;
+	return to_nr(mul_fn(load_avg, 100));
 }
 
 /* Returns 100 times the current thread's recent_cpu value. */
 int
 thread_get_recent_cpu (void) {
 	/* TODO: Your implementation goes here */
-	return 0;
+	return to_nr(mul_fn(thread_current()->recent_cpu, 100));
 }
 
 /* Idle thread.  Executes when no other thread is ready to run.
@@ -528,6 +583,8 @@ init_thread (struct thread *t, const char *name, int priority) {
 	t->tf.rsp = (uint64_t) t + PGSIZE - sizeof (void *);
 	t->priority = priority;
 	t->ori_pri = priority;
+	t->nice = 0;
+ 	t->recent_cpu = 0;
 	t->magic = THREAD_MAGIC;
 	
 	list_init (&t->don_list);

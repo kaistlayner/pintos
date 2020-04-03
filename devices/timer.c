@@ -126,6 +126,16 @@ timer_interrupt (struct intr_frame *args UNUSED) {
 	ticks++;
 	thread_tick ();
 	
+	if (thread_mlfqs){
+		mlfq_inc();
+		if (ticks % 4 == 0){
+			mlfq_pri(thread_current());
+		}
+		if (ticks % 100 == 0){
+			mlfq_update();
+		}
+	}
+	
 	if(get_alarm() <= ticks) wakeup_threads(ticks);
 }
 

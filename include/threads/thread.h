@@ -101,6 +101,8 @@ struct thread {
 	struct lock *waiting_for;					/* lock thread is waiting for */
 	struct list don_list;						/* donating threads */
 	struct list_elem don_elem;					/* elem for list donaters */
+	int nice;
+	int recent_cpu;
 	
 #ifdef USERPROG
 	/* Owned by userprog/process.c. */
@@ -158,5 +160,10 @@ bool higher_pri(const struct list_elem*, const struct list_elem*, void *aux UNUS
 void yield_by_pri(void);
 void donate_pri(struct thread *holdee);
 void update_pri(struct thread *holdee);
+void mlfq_pri(struct thread *th);
+void mlfq_cpu(struct thread *th);
+void mlfq_avg(void);
+void mlfq_update(void);
+void mlfq_inc(void);
 
 #endif /* threads/thread.h */
