@@ -1,7 +1,9 @@
 Kernel command line: -q run alarm-simultaneous
+0 ~ 9fc00 1
+100000 ~ ffe0000 1
 Pintos booting with: 
-	base_mem: 0x0 ~ 0x100000 (Usable: 704 kB)
-	ext_mem: 0x100000 ~ 0x100000000 (Usable: 261,376 kB)
+	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
+	ext_mem: 0x100000 ~ 0xffe0000 (Usable: 260,992 kB)
 Calibrating timer...  209,510,400 loops/s.
 Boot complete.
 Executing 'alarm-simultaneous':
@@ -26,8 +28,8 @@ Executing 'alarm-simultaneous':
 (alarm-simultaneous) iteration 4, thread 2: woke up 0 ticks later
 (alarm-simultaneous) end
 Execution of 'alarm-simultaneous' complete.
-Timer: 291 ticks
-Thread: 0 idle ticks, 291 kernel ticks, 0 user ticks
-Console: 1627 characters output
+Timer: 292 ticks
+Thread: 250 idle ticks, 42 kernel ticks, 0 user ticks
+Console: 1656 characters output
 Keyboard: 0 keys pressed
 Powering off...
