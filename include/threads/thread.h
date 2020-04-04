@@ -94,7 +94,9 @@ struct thread {
 
 	/* Shared between thread.c and synch.c. */
 	struct list_elem elem;              /* List element. */
-	
+
+	struct list_elm all_elem;
+
 	/* added by me! */
 	int64_t wakeup_ticks;
 	int ori_pri;								/* original priority */
@@ -103,7 +105,7 @@ struct thread {
 	struct list_elem don_elem;					/* elem for list donaters */
 	int nice;
 	int recent_cpu;
-	
+
 #ifdef USERPROG
 	/* Owned by userprog/process.c. */
 	uint64_t *pml4;                     /* Page map level 4 */

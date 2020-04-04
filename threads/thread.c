@@ -43,6 +43,7 @@ static struct list destruction_req;
 
 /* defined variables by me */
 static struct list sleep_list;
+static struct list all_list;
 static int64_t alarm = INT64_MAX;
 
 /* Statistics. */
@@ -98,8 +99,8 @@ static uint64_t gdt[3] = { 0, 0x00af9a000000ffff, 0x00cf92000000ffff };
 
    It is not safe to call thread_current() until this function
    finishes. */
-   
-   
+
+
 /* added by me */
 void thread_sleep(int64_t);
 void wakeup_threads(int64_t);
@@ -107,14 +108,14 @@ int64_t get_alarm(void);
 bool higher_pri(const struct list_elem*, const struct list_elem*, void *aux UNUSED);
 void yield_by_pri(void);
 void donate_pri(struct thread *holdee);
-void update_pri(struct thread *holdee);  
+void update_pri(struct thread *holdee);
 void mlfq_pri(struct thread *th);
 void mlfq_cpu(struct thread *th);
 void mlfq_avg(void);
 void mlfq_update(void);
 void mlfq_inc(void);
 
-   
+
 /* defined funcs by me */
 void mlfq_pri(struct thread *th){
 	if(th == idle_thread) return;
@@ -144,7 +145,7 @@ void mlfq_avg(void){
 void mlfq_update(void){
 	mlfq_avg();
 	struct list_elem *e;
-	for (e = list_begin (&ready_list); e != list_end (&ready_list); e = list_next (e)){
+	for (e = list_begin (&all_list); e != list_end (&all_list); e = list_next (e)){
     	struct thread *th = list_entry (e, struct thread, elem);
     	mlfq_cpu(th);
     	mlfq_pri(th);
@@ -161,7 +162,7 @@ void mlfq_inc(void){
 void thread_sleep(int64_t t){
   enum intr_level old_level;
   old_level = intr_disable();
-  
+
   struct thread *cur = running_thread();
   ASSERT(cur != idle_thread);
   cur->wakeup_ticks = t;
@@ -182,7 +183,7 @@ void wakeup_threads(int64_t time){
       struct thread *th = list_entry(e, struct thread, elem);
       if((th->wakeup_ticks) <= time) {
 		e = list_remove(e);
-        thread_unblock(th);        
+        thread_unblock(th);
       }
       else{
         alarm = alarm < th->wakeup_ticks ? alarm : th->wakeup_ticks;
@@ -227,7 +228,7 @@ void update_pri(struct thread *holdee){
 	if(holder != NULL){
 		int temp = holder->priority;
 		holder->priority = holder->ori_pri;
-		
+
 		if(!list_empty(&holder->don_list)){
 			struct list_elem *e;
 			struct thread *th;
@@ -239,12 +240,12 @@ void update_pri(struct thread *holdee){
 		if(holder->priority != temp) update_pri(holder);
 	}
 }
-   
-   
-   
-   
+
+
+
+
 /* already defined funcs */
-   
+
 void
 thread_init (void) {
 	ASSERT (intr_get_level () == INTR_OFF);
@@ -262,6 +263,7 @@ thread_init (void) {
 	lock_init (&tid_lock);
 	list_init (&ready_list);
 	list_init(&sleep_list);
+  list_init(&all_list);
 	list_init (&destruction_req);
 
 	/* Set up a thread structure for the running thread. */
@@ -471,7 +473,7 @@ thread_set_priority (int new_priority) {
 	struct thread *cur = thread_current();
 	int temp = cur->priority;
 	cur->ori_pri = cur->priority = new_priority;
-	
+
 	if(!list_empty(&cur->don_list)){
 			struct list_elem *e;
 			struct thread *th;
@@ -503,7 +505,7 @@ thread_set_nice (int nice) {
 int
 thread_get_nice (void) {
 	/* TODO: Your implementation goes here */
-	
+
 	return thread_current()->nice;
 }
 
@@ -586,8 +588,9 @@ init_thread (struct thread *t, const char *name, int priority) {
 	t->nice = 0;
  	t->recent_cpu = 0;
 	t->magic = THREAD_MAGIC;
-	
+
 	list_init (&t->don_list);
+  list_push_back(&all_list, &t->all_elem);
 	t->waiting_for = NULL;
 }
 
