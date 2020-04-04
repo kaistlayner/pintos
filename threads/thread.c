@@ -146,7 +146,7 @@ void mlfq_update(void){
 	mlfq_avg();
 	struct list_elem *e;
 	for (e = list_begin (&all_list); e != list_end (&all_list); e = list_next (e)){
-    	struct thread *th = list_entry (e, struct thread, elem);
+    	struct thread *th = list_entry (e, struct thread, all_elem);
     	mlfq_cpu(th);
     	mlfq_pri(th);
     }
@@ -446,6 +446,7 @@ thread_exit (void) {
 	/* Just set our status to dying and schedule another process.
 	   We will be destroyed during the call to schedule_tail(). */
 	intr_disable ();
+	list_remove(&thread_current()->all_elem);
 	do_schedule (THREAD_DYING);
 	NOT_REACHED ();
 }
