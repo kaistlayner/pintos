@@ -27,6 +27,70 @@ static bool load (const char *file_name, struct intr_frame *if_);
 static void initd (void *f_name);
 static void __do_fork (void *);
 
+static void arg_to_stack(const char *file_name, struct intr_frame *if_){
+	/*char* fn_copy;
+	fn_copy = palloc_get_page (0);
+	ASSERT(fn_copy == NULL);
+	strlcpy(fn_copy, file_name, PGSIZE);*/
+	
+	uintptr_t esp = if_->rsp;
+	
+	char *ptr1, *ptr2;
+	int l, argc;
+	l = argc = 0;
+	ptr1 = strtok_r(file_name, " ", &ptr2);
+	while(ptr1){
+		l += strlen(ptr1)+1;
+		argc++;
+		ptr1 = strtok_r(NULL, " ", &ptr2);
+	}
+	
+	int i, temp;
+	int word_align = l%8? 8-(l%8) : 0;
+	int delta = l + word_align + 8;				// 8 bytes for &argv[argc]
+	int saved_length = 0;
+	int delta2;
+	
+	esp -= l;
+	for(i=0; i<argc; i++){
+		temp = strlen(file_name)+1;
+		delta2 = delta + 8 * (argc - i) - (l - saved_length);
+		
+		strlcpy(esp, file_name, temp);					// saving argvs
+		
+		esp -= delta2;
+		*(uint64_t *)esp = (uint64_t)esp + delta2;	// saving argvs addr
+		esp += delta2;
+		
+		file_name += temp;
+		esp += temp;
+		
+		saved_length += temp;
+	}
+	
+	// move esp to push argvs' addr
+	esp -= delta;
+	*(uint64_t *)esp = 0;			// &argv[argc] = NULL
+	
+	esp -= 8 * (argc + 1);
+	//
+	/*
+	*(uint64_t *)esp = (uint64_t)esp + 4; // &argv
+	
+	esp -= 8;
+	*(uint64_t *)esp = argc;
+	
+	esp -= 8;*/
+	
+	if_->R.rsi = esp + 8;
+	if_->R.rdi = argc;
+	
+	*(uint64_t *)esp = 0; // return addr
+	
+	if_->rsp = esp;
+	
+}
+
 /* General process initializer for initd and other process. */
 static void
 process_init (void) {
@@ -204,6 +268,9 @@ process_wait (tid_t child_tid UNUSED) {
 	/* XXX: Hint) The pintos exit if process_wait (initd), we recommend you
 	 * XXX:       to add infinite loop here before
 	 * XXX:       implementing the process_wait. */
+	while(1){
+		
+	}
 	return -1;
 }
 
@@ -413,9 +480,11 @@ load (const char *file_name, struct intr_frame *if_) {
 
 	/* Start address. */
 	if_->rip = ehdr.e_entry;
-
+	
 	/* TODO: Your code goes here.
 	 * TODO: Implement argument passing (see project2/argument_passing.html). */
+
+	arg_to_stack(file_name, &if_);
 
 	success = true;
 
