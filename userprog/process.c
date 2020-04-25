@@ -31,9 +31,6 @@ static void __do_fork (void *);
 static void
 process_init (void) {
 	struct thread *current = thread_current ();
-#ifdef VM
-	frame_table_init (&current->frame_table);
-#endif
 }
 
 /* Starts the first userland program, called "initd", loaded from FILE_NAME.
@@ -63,7 +60,12 @@ process_create_initd (const char *file_name) {
 /* A thread function that launches first user process. */
 static void
 initd (void *f_name) {
+#ifdef VM
+	supplemental_page_table_init (&thread_current ()->spt);
+#endif
+
 	process_init ();
+
 	if (process_exec (f_name) < 0)
 		PANIC("Fail to launch initd\n");
 	NOT_REACHED ();
@@ -78,8 +80,9 @@ process_fork (const char *name, struct intr_frame *if_ UNUSED) {
 			PRI_DEFAULT, __do_fork, thread_current ());
 }
 
+#ifndef VM
 /* Duplicate the parent's address space by passing this function to the
- * pml4_for_each. */
+ * pml4_for_each. This is only for the project 2. */
 static bool
 duplicate_pte (uint64_t *pte, void *va, void *aux) {
 	struct thread *current = thread_current ();
@@ -107,6 +110,7 @@ duplicate_pte (uint64_t *pte, void *va, void *aux) {
 	}
 	return true;
 }
+#endif
 
 /* A thread function that copies parent's execution context.
  * Hint) parent->tf does not hold the userland context of the process.
@@ -130,8 +134,14 @@ __do_fork (void *aux) {
 		goto error;
 
 	process_activate (current);
+#ifdef VM
+	supplemental_page_table_init (&current->spt);
+	if (!supplemental_page_table_copy (&current->spt, &parent->spt))
+		goto error;
+#else
 	if (!pml4_for_each (parent->pml4, duplicate_pte, parent))
 		goto error;
+#endif
 
 	/* TODO: Your code goes here.
 	 * TODO: Hint) To duplicate the file object, use `file_duplicate`
@@ -214,7 +224,10 @@ static void
 process_cleanup (void) {
 	struct thread *curr = thread_current ();
 
-#ifndef VM
+#ifdef VM
+	supplemental_page_table_kill (&curr->spt);
+#endif
+
 	uint64_t *pml4;
 	/* Destroy the current process's page directory and switch back
 	 * to the kernel-only page directory. */
@@ -231,9 +244,6 @@ process_cleanup (void) {
 		pml4_activate (NULL);
 		pml4_destroy (pml4);
 	}
-#else
-	vm_kill (curr);
-#endif
 }
 
 /* Sets up the CPU for running user code in the nest thread.
@@ -562,11 +572,14 @@ install_page (void *upage, void *kpage, bool writable) {
 /* From here, codes will be used after project 3.
  * If you want to implement the function for only project 2, implement it on the
  * upper block. */
+
 static bool
-lazy_load_segment (void *va, void *aux) {
+lazy_load_segment (struct page *page, void *aux) {
 	/* TODO: Load the segment from the file */
-	/* TODO: This called when the first page fault occurs on address KVA. */
+	/* TODO: This called when the first page fault occurs on address VA. */
+	/* TODO: VA is available when calling this function. */
 }
+
 /* Loads a segment starting at offset OFS in FILE at address
  * UPAGE.  In total, READ_BYTES + ZERO_BYTES bytes of virtual
  * memory are initialized, as follows:
@@ -588,7 +601,6 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
 	ASSERT (pg_ofs (upage) == 0);
 	ASSERT (ofs % PGSIZE == 0);
 
-	file_seek (file, ofs);
 	while (read_bytes > 0 || zero_bytes > 0) {
 		/* Do calculate how to fill this page.
 		 * We will read PAGE_READ_BYTES bytes from FILE
@@ -598,8 +610,8 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
 
 		/* TODO: Set up aux to pass information to the lazy_load_segment. */
 		void *aux = NULL;
-		if (!vm_alloc_page_with_initializer (
-					PAL_USER, VM_ANON, upage, writable, lazy_load_segment, aux))
+		if (!vm_alloc_page_with_initializer (VM_ANON, upage,
+					writable, lazy_load_segment, aux))
 			return false;
 
 		/* Advance. */
@@ -613,7 +625,6 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
 /* Create a PAGE of stack at the USER_STACK. Return true on success. */
 static bool
 setup_stack (struct intr_frame *if_) {
-	uint8_t *kpage;
 	bool success = false;
 	void *stack_bottom = (void *) (((uint8_t *) USER_STACK) - PGSIZE);
 
