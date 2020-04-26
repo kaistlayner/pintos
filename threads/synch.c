@@ -130,7 +130,9 @@ sema_up (struct semaphore *sema) {
     	thread_unblock (list_entry (list_pop_front (&sema->waiters), struct thread, elem));
 	}
 	sema->value++;
-	yield_by_pri();
+	if(!intr_context()) {
+		yield_by_pri();
+	}
 
 	intr_set_level (old_level);
 }
