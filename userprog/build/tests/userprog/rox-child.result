@@ -1,0 +1,40 @@
+FAIL
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (rox-child) begin
+  (rox-child) open "child-rox"
+  (rox-child) read "child-rox"
+  (rox-child) write "child-rox"
+  (rox-child) exec "child-rox 1"
+  (child-rox) begin
+  (child-rox) try to write "child-rox"
+  (child-rox) try to write "child-rox"
+  (child-rox) end
+  child-rox: exit(12)
+  (rox-child) write "child-rox"
+  (rox-child) end
+  rox-child: exit(0)
+Differences in `diff -u' format:
+- (rox-child) begin
+- (rox-child) open "child-rox"
+- (rox-child) read "child-rox"
+- (rox-child) write "child-rox"
+- (rox-child) exec "child-rox 1"
+- (child-rox) begin
+- (child-rox) try to write "child-rox"
+- (child-rox) try to write "child-rox"
+- (child-rox) end
+- child-rox: exit(12)
+- (rox-child) write "child-rox"
+- (rox-child) end
+- rox-child: exit(0)
++ original stack pointer : 47480000
++ changed stack pointer : 4747ffd8
++ saving argc : 1
++ saving argv : 4747ffe0
++ system call!
++ saved stack pointer : 4747fe90
++ saved argc : 1
++ saved argv : 604d60
++ rox-child: exit(-1)

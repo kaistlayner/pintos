@@ -1,0 +1,26 @@
+FAIL
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (args) begin
+  (args) argc = 1
+  (args) argv[0] = 'args-none'
+  (args) argv[1] = null
+  (args) end
+  args-none: exit(0)
+Differences in `diff -u' format:
+- (args) begin
+- (args) argc = 1
+- (args) argv[0] = 'args-none'
+- (args) argv[1] = null
+- (args) end
+- args-none: exit(0)
++ original stack pointer : 47480000
++ changed stack pointer : 4747ffd8
++ saving argc : 1
++ saving argv : 4747ffe0
++ system call!
++ saved stack pointer : 4747fe80
++ saved argc : 1
++ saved argv : 604ba0
++ args-none: exit(-1)

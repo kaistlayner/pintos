@@ -8,7 +8,7 @@
 #ifdef VM
 #include "vm/vm.h"
 #endif
-
+#include "threads/synch.h"
 
 /* States in a thread's life cycle. */
 enum thread_status {
@@ -105,6 +105,11 @@ struct thread {
 	struct list_elem don_elem;					/* elem for list donaters */
 	int nice;
 	int recent_cpu;
+	int exit_status;
+	struct semaphore parent_wait;
+	struct semaphore child_wait;
+	struct list child_list;
+	struct list_elem child_elem;
 
 #ifdef USERPROG
 	/* Owned by userprog/process.c. */
@@ -167,5 +172,6 @@ void mlfq_cpu(struct thread *th);
 void mlfq_avg(void);
 void mlfq_update(void);
 void mlfq_inc(void);
+struct thread* child_thread(tid_t tid);
 
 #endif /* threads/thread.h */

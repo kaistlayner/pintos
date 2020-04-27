@@ -22,23 +22,21 @@
 #include "vm/vm.h"
 #endif
 
+char *fn_copy;
+
 static void process_cleanup (void);
 static bool load (const char *file_name, struct intr_frame *if_);
 static void initd (void *f_name);
 static void __do_fork (void *);
 
-static void arg_to_stack(const char *file_name, struct intr_frame *if_){
-	/*char* fn_copy;
-	fn_copy = palloc_get_page (0);
-	ASSERT(fn_copy == NULL);
-	strlcpy(fn_copy, file_name, PGSIZE);*/
+static void arg_to_stack(struct intr_frame *if_){
 	
 	uintptr_t esp = if_->rsp;
-	
+	printf("original stack pointer : %x\n", esp);
 	char *ptr1, *ptr2;
 	int l, argc;
 	l = argc = 0;
-	ptr1 = strtok_r(file_name, " ", &ptr2);
+	ptr1 = strtok_r(fn_copy, " ", &ptr2);
 	while(ptr1){
 		l += strlen(ptr1)+1;
 		argc++;
@@ -53,16 +51,16 @@ static void arg_to_stack(const char *file_name, struct intr_frame *if_){
 	
 	esp -= l;
 	for(i=0; i<argc; i++){
-		temp = strlen(file_name)+1;
+		temp = strlen(fn_copy)+1;
 		delta2 = delta + 8 * (argc - i) - (l - saved_length);
 		
-		strlcpy(esp, file_name, temp);					// saving argvs
+		strlcpy((char *)esp, fn_copy, temp);					// saving argvs
 		
 		esp -= delta2;
 		*(uint64_t *)esp = (uint64_t)esp + delta2;	// saving argvs addr
 		esp += delta2;
 		
-		file_name += temp;
+		fn_copy += temp;
 		esp += temp;
 		
 		saved_length += temp;
@@ -88,7 +86,9 @@ static void arg_to_stack(const char *file_name, struct intr_frame *if_){
 	*(uint64_t *)esp = 0; // return addr
 	
 	if_->rsp = esp;
-	
+	printf("changed stack pointer : %x\n", esp);
+	printf("saving argc : %d\n",if_->R.rdi);
+	printf("saving argv : %x\n",if_->R.rsi);
 }
 
 /* General process initializer for initd and other process. */
@@ -104,7 +104,6 @@ process_init (void) {
  * Notice that THIS SHOULD BE CALLED ONCE. */
 tid_t
 process_create_initd (const char *file_name) {
-	char *fn_copy;
 	tid_t tid;
 
 	/* Make a copy of FILE_NAME.
@@ -264,14 +263,25 @@ process_exec (void *f_name) {
  * This function will be implemented in problem 2-2.  For now, it
  * does nothing. */
 int
-process_wait (tid_t child_tid UNUSED) {
+process_wait (tid_t child_tid) {
 	/* XXX: Hint) The pintos exit if process_wait (initd), we recommend you
 	 * XXX:       to add infinite loop here before
 	 * XXX:       implementing the process_wait. */
-	while(1){
-		
+	/*int temp;
+	struct thread *ch;
+	ch = child_thread(child_tid);
+	if(ch == thread_current()) return -1;
+	
+	sema_down(&ch->parent_wait);
+	list_remove(&ch->child_elem);
+	temp = ch->exit_status;
+	sema_up(&ch->child_wait);
+	
+	return temp;*/
+	int i;
+	for(i=0;i<10000000;i++){
 	}
-	return -1;
+	return 0;
 }
 
 /* Exit the process. This function is called by thread_exit (). */
@@ -484,7 +494,7 @@ load (const char *file_name, struct intr_frame *if_) {
 	/* TODO: Your code goes here.
 	 * TODO: Implement argument passing (see project2/argument_passing.html). */
 
-	arg_to_stack(file_name, &if_);
+	arg_to_stack(if_);
 
 	success = true;
 

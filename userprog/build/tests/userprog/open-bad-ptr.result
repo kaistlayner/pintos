@@ -1,0 +1,34 @@
+FAIL
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (open-bad-ptr) begin
+  open-bad-ptr: exit(-1)
+Differences in `diff -u' format:
+- (open-bad-ptr) begin
++ original stack pointer : 47480000
++ changed stack pointer : 4747ffd8
++ saving argc : 1
++ saving argv : 4747ffe0
++ system call!
++ saved stack pointer : 4747fe90
++ saved argc : 1
++ saved argv : 604ae0
+  open-bad-ptr: exit(-1)
+Acceptable output:
+  (open-bad-ptr) begin
+  (open-bad-ptr) end
+  open-bad-ptr: exit(0)
+Differences in `diff -u' format:
+- (open-bad-ptr) begin
+- (open-bad-ptr) end
+- open-bad-ptr: exit(0)
++ original stack pointer : 47480000
++ changed stack pointer : 4747ffd8
++ saving argc : 1
++ saving argv : 4747ffe0
++ system call!
++ saved stack pointer : 4747fe90
++ saved argc : 1
++ saved argv : 604ae0
++ open-bad-ptr: exit(-1)

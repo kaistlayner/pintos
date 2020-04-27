@@ -7,9 +7,15 @@
 #include "userprog/gdt.h"
 #include "threads/flags.h"
 #include "intrinsic.h"
+#include "userprog/process.h"
+#include "threads/init.h"
 
 void syscall_entry (void);
 void syscall_handler (struct intr_frame *);
+static void halt (void);
+
+static void exit(int n);
+static int wait(tid_t tid);
 
 /* System call.
  *
@@ -36,20 +42,84 @@ syscall_init (void) {
 	write_msr(MSR_SYSCALL_MASK,
 			FLAG_IF | FLAG_TF | FLAG_DF | FLAG_IOPL | FLAG_AC | FLAG_NT);
 }
+//uintptr_t esp
+static void pick_argu(int64_t *args, struct intr_frame *f){
+	int i;
+	int argc = (int) f->R.rdi;
+	uint64_t argv = f->R.rsi;
+	/*printf("saved argc : %d\n",argc);
+	printf("saved argv : %x\n",argv);*/
+	ASSERT (1 <= argc && argc <= 3);
+	for (i=0; i<argc; i++){
+		*(args++) = (argv++);
+	}
+}
 
 /* The main system call interface */
 void
-syscall_handler (struct intr_frame *f UNUSED) {
+syscall_handler (struct intr_frame *f) {
 	// TODO: Your implementation goes here.
 	printf ("system call!\n");
-	/*switch (){
+	int argc = (int) f->R.rdi;
+	uint64_t argv = f->R.rsi;
+	printf("saved stack pointer : %x\n", f->rsp);
+	printf("saved argc : %d\n",argc);
+	printf("saved argv : %x\n",argv);
 	
-	}*/
+	int64_t args[3];
 	
-	thread_exit ();
+	switch (*(int *) f->rsp){
+		case SYS_HALT:                   /* Halt the operating system. */
+			halt();
+			break;
+		case SYS_EXIT:                   /* Terminate this process. */
+			pick_argu(args, f);
+			exit(args[0]);
+			break;
+		case SYS_FORK:                   /* Clone current process. */
+			break;
+		case SYS_EXEC:                   /* Switch current process. */
+			break;
+	 	case SYS_WAIT:                 	  /* Wait for a child process to die. */
+	 		pick_argu(args, f);
+	 		wait((tid_t) args[0]);
+			break;
+		case SYS_CREATE:                 /* Create a file. */
+			break;
+		case SYS_REMOVE:                 /* Delete a file. */
+			break;
+		case SYS_OPEN:                   /* Open a file. */
+			break;
+		case SYS_FILESIZE:              /* Obtain a file's size. */
+			break;
+		case SYS_READ:                   /* Read from a file. */
+			break;
+		case SYS_WRITE:                  /* Write to a file. */
+			pick_argu(args, f);
+			
+			break;
+		case SYS_TELL:                   /* Report current position in a file. */
+			break;
+		case SYS_CLOSE:
+			break;
+		default:
+			exit(-1);
+	}
 }
-/*
-void exit(int n){
+
+static void halt (void) {
+	power_off();
+}
+
+static void exit(int n){
+	struct thread *cur = thread_current();
+	cur->exit_status = n;
 	printf("%s: exit(%d)\n", thread_current()->name, n);
 	thread_exit ();
-}*/
+}
+
+static int
+wait(tid_t tid)
+{
+  return process_wait(tid);
+}

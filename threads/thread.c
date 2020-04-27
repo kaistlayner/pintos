@@ -114,9 +114,21 @@ void mlfq_cpu(struct thread *th);
 void mlfq_avg(void);
 void mlfq_update(void);
 void mlfq_inc(void);
+struct thread* child_thread(tid_t tid);
 
 
 /* defined funcs by me */
+struct thread* child_thread(tid_t tid){
+	struct list_elem *e;
+	struct thread *cur = thread_current();
+	for(e = list_begin(&cur->child_list); e != list_end(&cur->child_list); e = e->next){
+		struct thread *t = list_entry(e, struct thread, child_elem);
+		if (t->tid == tid)
+        return t;
+	}
+	return cur;
+}
+
 void mlfq_pri(struct thread *th){
 	if(th == idle_thread) return;
 	int pri_max = to_f(PRI_MAX);
@@ -591,7 +603,11 @@ init_thread (struct thread *t, const char *name, int priority) {
 	t->magic = THREAD_MAGIC;
 
 	list_init (&t->don_list);
-  list_push_back(&all_list, &t->all_elem);
+	list_init (&t->child_list);
+	sema_init (&t->parent_wait, 0);
+	sema_init (&t->child_wait, 0);
+	
+ 	list_push_back(&all_list, &t->all_elem);
 	t->waiting_for = NULL;
 }
 

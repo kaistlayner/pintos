@@ -1,0 +1,18 @@
+FAIL
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (exit) begin
+  exit: exit(57)
+Differences in `diff -u' format:
+- (exit) begin
+- exit: exit(57)
++ original stack pointer : 47480000
++ changed stack pointer : 4747ffe0
++ saving argc : 1
++ saving argv : 4747ffe8
++ system call!
++ saved stack pointer : 4747fe98
++ saved argc : 1
++ saved argv : 604a80
++ exit: exit(-1)

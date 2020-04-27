@@ -1,0 +1,33 @@
+FAIL
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (syn-remove) begin
+  (syn-remove) create "deleteme"
+  (syn-remove) open "deleteme"
+  (syn-remove) remove "deleteme"
+  (syn-remove) write "deleteme"
+  (syn-remove) seek "deleteme" to 0
+  (syn-remove) read "deleteme"
+  (syn-remove) close "deleteme"
+  (syn-remove) end
+Differences in `diff -u' format:
+- (syn-remove) begin
+- (syn-remove) create "deleteme"
+- (syn-remove) open "deleteme"
+- (syn-remove) remove "deleteme"
+- (syn-remove) write "deleteme"
+- (syn-remove) seek "deleteme" to 0
+- (syn-remove) read "deleteme"
+- (syn-remove) close "deleteme"
+- (syn-remove) end
++ original stack pointer : 47480000
++ changed stack pointer : 4747ffd8
++ saving argc : 1
++ saving argv : 4747ffe0
++ system call!
++ saved stack pointer : 4747fe90
++ saved argc : 1
++ saved argv : 605020
+
+(Process exit codes are excluded for matching purposes.)

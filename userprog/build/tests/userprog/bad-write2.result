@@ -1,0 +1,19 @@
+FAIL
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (bad-write2) begin
+  bad-write2: exit(-1)
+Differences in `diff -u' format:
+- (bad-write2) begin
++ original stack pointer : 47480000
++ changed stack pointer : 4747ffd8
++ saving argc : 1
++ saving argv : 4747ffe0
++ system call!
++ saved stack pointer : 4747fe90
++ saved argc : 1
++ saved argv : 604ac0
+  bad-write2: exit(-1)
+
+(User fault messages are excluded for matching purposes.)

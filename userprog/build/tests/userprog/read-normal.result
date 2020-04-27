@@ -1,0 +1,26 @@
+FAIL
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (read-normal) begin
+  (read-normal) open "sample.txt" for verification
+  (read-normal) verified contents of "sample.txt"
+  (read-normal) close "sample.txt"
+  (read-normal) end
+  read-normal: exit(0)
+Differences in `diff -u' format:
+- (read-normal) begin
+- (read-normal) open "sample.txt" for verification
+- (read-normal) verified contents of "sample.txt"
+- (read-normal) close "sample.txt"
+- (read-normal) end
+- read-normal: exit(0)
++ original stack pointer : 47480000
++ changed stack pointer : 4747ffd8
++ saving argc : 1
++ saving argv : 4747ffe0
++ system call!
++ saved stack pointer : 4747fe90
++ saved argc : 1
++ saved argv : 604c20
++ read-normal: exit(-1)
