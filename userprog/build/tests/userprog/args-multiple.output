@@ -12,17 +12,14 @@ Formatting file system...done.
 Boot complete.
 Putting 'args-multiple' into the file system...
 Executing 'args-multiple some arguments for you!':
-load: args-multiple some arguments for you!: open failed
-Kernel PANIC at ../../userprog/process.c:133 in initd(): Fail to launch initd
-
-Call stack: 0x80042184b9 0x800421be1c 0x8004207ede.
-The `backtrace' program can make call stacks useful.
-Read "Backtraces" in the "Debugging Tools" chapter
-of the Pintos documentation for more information.
-Timer: 74 ticks
-Thread: 30 idle ticks, 44 kernel ticks, 0 user ticks
+args-multiple: exit(0)
+Execution of 'args-multiple some arguments for you!' complete.
+Timer: 78 ticks
+Thread: 30 idle ticks, 48 kernel ticks, 0 user ticks
 hd0:0: 0 reads, 0 writes
-hd0:1: 51 reads, 226 writes
+hd0:1: 79 reads, 226 writes
 hd1:0: 99 reads, 0 writes
-Console: 1159 characters output
-Key
+Console: 903 characters output
+Keyboard: 0 keys pressed
+Exception: 0 page faults
+Powering off...

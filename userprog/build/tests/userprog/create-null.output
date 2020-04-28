@@ -12,22 +12,12 @@ Formatting file system...done.
 Boot complete.
 Putting 'create-null' into the file system...
 Executing 'create-null':
-original stack pointer : 47480000
-changed stack pointer : 4747ffd8
-saving argc : 1
-saving argv : 4747ffe0
-system call!
-saved stack pointer : 4747fe90
-saved argc : 1
-saved argv : 604ac0
-create-null: exit(-1)
-Execution of 'create-null' complete.
-Timer: 78 ticks
-Thread: 30 idle ticks, 47 kernel ticks, 1 user ticks
+Timer: 74 ticks
+Thread: 30 idle ticks, 44 kernel ticks, 0 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 79 reads, 228 writes
 hd1:0: 100 reads, 0 writes
-Console: 1005 characters output
+Console: 761 characters output
 Keyboard: 0 keys pressed
 Exception: 0 page faults
 Powering off...

@@ -12,22 +12,12 @@ Formatting file system...done.
 Boot complete.
 Putting 'exit' into the file system...
 Executing 'exit':
-original stack pointer : 47480000
-changed stack pointer : 4747ffe0
-saving argc : 1
-saving argv : 4747ffe8
-system call!
-saved stack pointer : 4747fe98
-saved argc : 1
-saved argv : 604a80
-exit: exit(-1)
-Execution of 'exit' complete.
-Timer: 79 ticks
-Thread: 30 idle ticks, 48 kernel ticks, 1 user ticks
+Timer: 74 ticks
+Thread: 30 idle ticks, 44 kernel ticks, 0 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 79 reads, 228 writes
 hd1:0: 100 reads, 0 writes
-Console: 963 characters output
+Console: 733 characters output
 Keyboard: 0 keys pressed
 Exception: 0 page faults
 Powering off...

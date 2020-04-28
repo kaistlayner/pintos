@@ -13,22 +13,14 @@ Boot complete.
 Putting 'open-normal' into the file system...
 Putting 'sample.txt' into the file system...
 Executing 'open-normal':
-original stack pointer : 47480000
-changed stack pointer : 4747ffd8
-saving argc : 1
-saving argv : 4747ffe0
-system call!
-saved stack pointer : 4747fe90
-saved argc : 1
-saved argv : 604ae0
-open-normal: exit(-1)
+open-normal: exit(0)
 Execution of 'open-normal' complete.
-Timer: 80 ticks
-Thread: 30 idle ticks, 49 kernel ticks, 1 user ticks
+Timer: 78 ticks
+Thread: 30 idle ticks, 48 kernel ticks, 0 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 106 reads, 242 writes
 hd1:0: 102 reads, 0 writes
-Console: 1066 characters output
+Console: 880 characters output
 Keyboard: 0 keys pressed
 Exception: 0 page faults
 Powering off...

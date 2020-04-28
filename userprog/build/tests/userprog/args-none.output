@@ -12,22 +12,14 @@ Formatting file system...done.
 Boot complete.
 Putting 'args-none' into the file system...
 Executing 'args-none':
-original stack pointer : 47480000
-changed stack pointer : 4747ffd8
-saving argc : 1
-saving argv : 4747ffe0
-system call!
-saved stack pointer : 4747fe80
-saved argc : 1
-saved argv : 604ba0
-args-none: exit(-1)
+args-none: exit(0)
 Execution of 'args-none' complete.
-Timer: 79 ticks
-Thread: 30 idle ticks, 48 kernel ticks, 1 user ticks
+Timer: 78 ticks
+Thread: 30 idle ticks, 48 kernel ticks, 0 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 79 reads, 226 writes
 hd1:0: 99 reads, 0 writes
-Console: 991 characters output
+Console: 805 characters output
 Keyboard: 0 keys pressed
 Exception: 0 page faults
 Powering off...

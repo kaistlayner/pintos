@@ -161,7 +161,7 @@ void do_iret (struct intr_frame *tf);
 
 /* Added funcs by me */
 void thread_sleep(int64_t);
-void wakeup_thread(int64_t);
+void wakeup_threads(int64_t);
 int64_t get_alarm(void);
 bool higher_pri(const struct list_elem*, const struct list_elem*, void *aux UNUSED);
 void yield_by_pri(void);

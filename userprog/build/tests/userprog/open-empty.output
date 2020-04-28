@@ -12,22 +12,14 @@ Formatting file system...done.
 Boot complete.
 Putting 'open-empty' into the file system...
 Executing 'open-empty':
-original stack pointer : 47480000
-changed stack pointer : 4747ffd8
-saving argc : 1
-saving argv : 4747ffe0
-system call!
-saved stack pointer : 4747fe90
-saved argc : 1
-saved argv : 604ae0
-open-empty: exit(-1)
+open-empty: exit(0)
 Execution of 'open-empty' complete.
-Timer: 80 ticks
-Thread: 30 idle ticks, 49 kernel ticks, 1 user ticks
+Timer: 78 ticks
+Thread: 30 idle ticks, 48 kernel ticks, 0 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 79 reads, 228 writes
 hd1:0: 100 reads, 0 writes
-Console: 999 characters output
+Console: 813 characters output
 Keyboard: 0 keys pressed
 Exception: 0 page faults
 Powering off...

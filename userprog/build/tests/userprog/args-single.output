@@ -4,7 +4,7 @@ Kernel command line: -q -f put args-single run 'args-single onearg'
 Pintos booting with: 
 	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
 	ext_mem: 0x100000 ~ 0xffe0000 (Usable: 260,992 kB)
-Calibrating timer...  157,081,600 loops/s.
+Calibrating timer...  209,510,400 loops/s.
 hd0:0: detected 313 sector (156 kB) disk, model "QEMU HARDDISK", serial "QM00001"
 hd0:1: detected 20,160 sector (9 MB) disk, model "QEMU HARDDISK", serial "QM00002"
 hd1:0: detected 99 sector (49 kB) disk, model "QEMU HARDDISK", serial "QM00003"
@@ -12,17 +12,14 @@ Formatting file system...done.
 Boot complete.
 Putting 'args-single' into the file system...
 Executing 'args-single onearg':
-load: args-single onearg: open failed
-Kernel PANIC at ../../userprog/process.c:133 in initd(): Fail to launch initd
-
-Call stack: 0x80042184b9 0x800421be1c 0x8004207ede.
-The `backtrace' program can make call stacks useful.
-Read "Backtraces" in the "Debugging Tools" chapter
-of the Pintos documentation for more information.
-Timer: 76 ticks
-Thread: 30 idle ticks, 46 kernel ticks, 0 user ticks
+args-single: exit(0)
+Execution of 'args-single onearg' complete.
+Timer: 78 ticks
+Thread: 30 idle ticks, 48 kernel ticks, 0 user ticks
 hd0:0: 0 reads, 0 writes
-hd0:1: 51 reads, 226 writes
+hd0:1: 79 reads, 226 writes
 hd1:0: 99 reads, 0 writes
-Console: 1098 characters output
-Key
+Console: 840 characters output
+Keyboard: 0 keys pressed
+Exception: 0 page faults
+Powering off...

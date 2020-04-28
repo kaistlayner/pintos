@@ -23,25 +23,18 @@
 #endif
 
 char *fn_copy;
+int l, argc;
 
 static void process_cleanup (void);
 static bool load (const char *file_name, struct intr_frame *if_);
 static void initd (void *f_name);
 static void __do_fork (void *);
 
+
 static void arg_to_stack(struct intr_frame *if_){
 	
 	uintptr_t esp = if_->rsp;
-	printf("original stack pointer : %x\n", esp);
-	char *ptr1, *ptr2;
-	int l, argc;
-	l = argc = 0;
-	ptr1 = strtok_r(fn_copy, " ", &ptr2);
-	while(ptr1){
-		l += strlen(ptr1)+1;
-		argc++;
-		ptr1 = strtok_r(NULL, " ", &ptr2);
-	}
+	//printf("original stack pointer : %x\n", esp);
 	
 	int i, temp;
 	int word_align = l%8? 8-(l%8) : 0;
@@ -53,10 +46,11 @@ static void arg_to_stack(struct intr_frame *if_){
 	for(i=0; i<argc; i++){
 		temp = strlen(fn_copy)+1;
 		delta2 = delta + 8 * (argc - i) - (l - saved_length);
-		
+		//printf("# argv %d : %x\n",i, esp);
 		strlcpy((char *)esp, fn_copy, temp);					// saving argvs
 		
 		esp -= delta2;
+		//printf("# &argv %d : %x\n",i, esp);
 		*(uint64_t *)esp = (uint64_t)esp + delta2;	// saving argvs addr
 		esp += delta2;
 		
@@ -65,12 +59,14 @@ static void arg_to_stack(struct intr_frame *if_){
 		
 		saved_length += temp;
 	}
-	
+	//printf("%d == %d \n",saved_length,l);
+	//printf("after saving arguments, stack pointer : %x\n", esp);
 	// move esp to push argvs' addr
 	esp -= delta;
 	*(uint64_t *)esp = 0;			// &argv[argc] = NULL
-	
+	//printf("delta minus, stack pointer : %x\n", esp);
 	esp -= 8 * (argc + 1);
+	//printf("return address position, stack pointer : %x\n", esp);
 	//
 	/*
 	*(uint64_t *)esp = (uint64_t)esp + 4; // &argv
@@ -86,9 +82,9 @@ static void arg_to_stack(struct intr_frame *if_){
 	*(uint64_t *)esp = 0; // return addr
 	
 	if_->rsp = esp;
-	printf("changed stack pointer : %x\n", esp);
-	printf("saving argc : %d\n",if_->R.rdi);
-	printf("saving argv : %x\n",if_->R.rsi);
+	//printf("changed stack pointer : %x\n", esp);
+	//printf("saving argc : %d\n",if_->R.rdi);
+	//printf("saving argv : %x\n",if_->R.rsi);
 }
 
 /* General process initializer for initd and other process. */
@@ -405,7 +401,16 @@ load (const char *file_name, struct intr_frame *if_) {
 	off_t file_ofs;
 	bool success = false;
 	int i;
-
+	
+	char *ptr1, *ptr2;
+	l = argc = 0;
+	ptr1 = strtok_r(fn_copy, " ", &ptr2);
+	while(ptr1){
+		l += strlen(ptr1)+1;
+		argc++;
+		ptr1 = strtok_r(NULL, " ", &ptr2);
+	}
+	
 	/* Allocate and activate page directory. */
 	t->pml4 = pml4_create ();
 	if (t->pml4 == NULL)
@@ -413,7 +418,7 @@ load (const char *file_name, struct intr_frame *if_) {
 	process_activate (thread_current ());
 
 	/* Open executable file. */
-	file = filesys_open (file_name);
+	file = filesys_open (fn_copy);
 	if (file == NULL) {
 		printf ("load: %s: open failed\n", file_name);
 		goto done;

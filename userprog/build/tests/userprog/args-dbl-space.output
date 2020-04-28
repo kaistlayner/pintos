@@ -12,17 +12,24 @@ Formatting file system...done.
 Boot complete.
 Putting 'args-dbl-space' into the file system...
 Executing 'args-dbl-space two  spaces!':
-load: args-dbl-space two  spaces!: open failed
-Kernel PANIC at ../../userprog/process.c:133 in initd(): Fail to launch initd
-
-Call stack: 0x80042184b9 0x800421be1c 0x8004207ede.
+Page fault at 0x47480000: not present error writing page in kernel context.
+Interrupt 0x0e (#PF Page-Fault Exception) at rip=8004217ef2
+ cr2=0000000047480000 error=               2
+rax 0000000047480000 rbx 0000000000000000 rcx 0000000047480000 rdx 000000004747fff8
+rsp 00000080042b7d60 rbp 00000080042b7d90 rsi 00000080042b6013 rdi 000000004747fff8
+rip 0000008004217ef2 r8 0000000000002000  r9 0000000000000001 r10 0000000000004000
+r11 0000000000000000 r12 0000000000000000 r13 0000000000000000 r14 0000000000000000
+r15 0000000000000000 rflags 00000216
+es: 0010 ds: 0010 cs: 0008 ss: 0010
+Kernel PANIC at ../../userprog/exception.c:97 in kill(): Kernel bug - unexpected interrupt in kernel
+Call stack: 0x80042184b4 0x800421cd9c 0x800421cf1b 0x8004209532 0x8004209950 0x800421bb1e 0x800421c567 0x800421bfa3 0x800421bd11 0x8004207ede.
 The `backtrace' program can make call stacks useful.
 Read "Backtraces" in the "Debugging Tools" chapter
 of the Pintos documentation for more information.
-Timer: 75 ticks
-Thread: 30 idle ticks, 45 kernel ticks, 0 user ticks
+Timer: 76 ticks
+Thread: 30 idle ticks, 45 kernel ticks, 1 user ticks
 hd0:0: 0 reads, 0 writes
-hd0:1: 51 reads, 226 writes
+hd0:1: 79 reads, 226 writes
 hd1:0: 99 reads, 0 writes
-Console: 1131 characters output
+Console: 1786 characters output
 Key
