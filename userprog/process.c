@@ -43,6 +43,9 @@ static void arg_to_stack(struct intr_frame *if_){
 
 	esp -= l;
 	for(i=0; i<argc; i++){
+		while(fn_copy[0]==' '){
+			fn_copy++;
+		}
 		temp = strlen(fn_copy)+1;
 		delta2 = delta + 8 * (argc - i) - (l - saved_length);
 		//printf("# argv %d : %x\n",i, esp);
