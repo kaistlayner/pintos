@@ -1,14 +1,14 @@
 FAIL
 Kernel panic in run: PANIC at ../../userprog/exception.c:97 in kill(): Kernel bug - unexpected interrupt in kernel
-Call stack: 0x80042184b4 0x800421cd9c 0x800421cf1b 0x8004209532 0x8004209950 0x800421bb1e 0x800421c567 0x800421bfa3 0x800421bd11 0x8004207ede
+Call stack: 0x800421852f 0x800421ce85 0x800421d004 0x80042095ad 0x80042099cb 0x800421bb99 0x800421c650 0x800421c01e 0x800421bd8c 0x8004207f59
 Translation of call stack:
-0x00000080042184b4: debug_panic (lib/kernel/debug.c:32)
-0x000000800421cd9c: kill (userprog/exception.c:103)
-0x000000800421cf1b: page_fault (userprog/exception.c:159 (discriminator 12))
-0x0000008004209532: intr_handler (threads/interrupt.c:352)
-0x0000008004209950: intr_entry (threads/intr-stubs.o:?)
-0x000000800421bb1e: arg_to_stack (userprog/process.c:52 (discriminator 3))
-0x000000800421c567: load (userprog/process.c:504)
-0x000000800421bfa3: process_exec (userprog/process.c:239)
-0x000000800421bd11: initd (userprog/process.c:128)
-0x0000008004207ede: kernel_thread (threads/thread.c:583)
+0x000000800421852f: debug_panic (lib/kernel/debug.c:32)
+0x000000800421ce85: kill (userprog/exception.c:103)
+0x000000800421d004: page_fault (userprog/exception.c:159 (discriminator 12))
+0x00000080042095ad: intr_handler (threads/interrupt.c:352)
+0x00000080042099cb: intr_entry (threads/intr-stubs.o:?)
+0x000000800421bb99: arg_to_stack (userprog/process.c:52 (discriminator 3))
+0x000000800421c650: load (userprog/process.c:507)
+0x000000800421c01e: process_exec (userprog/process.c:239)
+0x000000800421bd8c: initd (userprog/process.c:128)
+0x0000008004207f59: kernel_thread (threads/thread.c:592)

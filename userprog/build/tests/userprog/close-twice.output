@@ -13,14 +13,19 @@ Boot complete.
 Putting 'close-twice' into the file system...
 Putting 'sample.txt' into the file system...
 Executing 'close-twice':
+(close-twice) begin
+(close-twice) open "sample.txt"
+(close-twice) close "sample.txt"
+(close-twice) close "sample.txt" again
+(close-twice) end
 close-twice: exit(0)
 Execution of 'close-twice' complete.
-Timer: 78 ticks
-Thread: 30 idle ticks, 48 kernel ticks, 0 user ticks
+Timer: 75 ticks
+Thread: 30 idle ticks, 44 kernel ticks, 1 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 106 reads, 242 writes
 hd1:0: 102 reads, 0 writes
-Console: 880 characters output
+Console: 1022 characters output
 Keyboard: 0 keys pressed
 Exception: 0 page faults
 Powering off...

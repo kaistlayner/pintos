@@ -374,6 +374,7 @@ thread_create (const char *name, int priority,
 	t->tf.eflags = FLAG_IF;
 
 	/* Add to run queue. */
+	list_push_back (&thread_current ()->child_list, &t->child_elem);
 	thread_unblock (t);
 	yield_by_pri();
 
@@ -454,11 +455,19 @@ thread_exit (void) {
 #ifdef USERPROG
 	process_exit ();
 #endif
-
+	
+	struct list_elem *e;
+	struct thread *cur = thread_current();
+	
+	//printf("parent go on\n");
+	sema_up(&cur->parent_wait);
+	//printf("wait for parent...\n");
+	sema_down(&cur->child_wait);
 	/* Just set our status to dying and schedule another process.
 	   We will be destroyed during the call to schedule_tail(). */
 	intr_disable ();
 	list_remove(&thread_current()->all_elem);
+	//printf("wait for parent done!\n");
 	do_schedule (THREAD_DYING);
 	NOT_REACHED ();
 }

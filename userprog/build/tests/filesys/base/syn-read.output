@@ -1,0 +1,32 @@
+Kernel command line: -q -f put syn-read put child-syn-read run syn-read
+0 ~ 9fc00 1
+100000 ~ ffe0000 1
+Pintos booting with: 
+	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
+	ext_mem: 0x100000 ~ 0xffe0000 (Usable: 260,992 kB)
+Calibrating timer...  209,510,400 loops/s.
+hd0:0: detected 313 sector (156 kB) disk, model "QEMU HARDDISK", serial "QM00001"
+hd0:1: detected 20,160 sector (9 MB) disk, model "QEMU HARDDISK", serial "QM00002"
+hd1:0: detected 221 sector (110 kB) disk, model "QEMU HARDDISK", serial "QM00003"
+Formatting file system...done.
+Boot complete.
+Putting 'syn-read' into the file system...
+Putting 'child-syn-read' into the file system...
+Executing 'syn-read':
+(syn-read) begin
+(syn-read) create "data"
+(syn-read) open "data"
+(syn-read) write "data"
+fd = 7
+Kernel PANIC at ../../threads/synch.c:213 in lock_acquire(): assertion `!lock_held_by_current_thread (lock)' failed.
+Call stack: 0x800421852f 0x800420ab1c 0x800421d30f 0x800421d20e 0x800421d079 0x40040a 0x40047e 0x400273 0x400fa7 0x400ff0.
+The `backtrace' program can make call stacks useful.
+Read "Backtraces" in the "Debugging Tools" chapter
+of the Pintos documentation for more information.
+Timer: 77 ticks
+Thread: 30 idle ticks, 46 kernel ticks, 1 user ticks
+hd0:0: 0 reads, 0 writes
+hd0:1: 108 reads, 480 writes
+hd1:0: 221 reads, 0 writes
+Console: 1309 characters output
+Key

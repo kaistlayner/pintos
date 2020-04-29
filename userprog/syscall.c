@@ -18,6 +18,8 @@ static void halt (void);
 
 static void exit(int n);
 static int wait(tid_t tid);
+static int write (int fd, const void * buffer, unsigned size);
+struct lock file_lock;
 
 /* System call.
  *
@@ -43,50 +45,76 @@ syscall_init (void) {
 	 * mode stack. Therefore, we masked the FLAG_FL. */
 	write_msr(MSR_SYSCALL_MASK,
 			FLAG_IF | FLAG_TF | FLAG_DF | FLAG_IOPL | FLAG_AC | FLAG_NT);
-			
+	lock_init (&file_lock);
 }
 //uintptr_t esp
-static void pick_argu(int64_t *args, struct intr_frame *f){
+/*static void pick_argu(int64_t *args, struct intr_frame *f, int n){
 	int i;
+	
 	int argc = (int) f->R.rdi;
 	uint64_t argv = f->R.rsi;
-	/*printf("saved argc : %d\n",argc);
-	printf("saved argv : %x\n",argv);*/
-	ASSERT (1 <= argc && argc <= 3);
-	for (i=0; i<argc; i++){
-		*(args++) = (argv++);
+	printf("saved argc : %d\n",argc);
+	printf("saved argv : %x\n",argv);
+	ASSERT (1 <= n && n <= 4);
+	uintptr_t esp = f->rsp;
+	for (i=0; i<n; i++){
+		*(args+i) = (int64_t)(esp++);
 	}
-}
+	printf("recall esp : %x\n", f->rsp);
+	for (i=0; i<n; i++){
+		
+		if(i==1){
+			*(args+i) = f->R.rdi;
+		}
+		else if(i==2){
+			*(args+i) = f->R.rsi;
+		}
+		else if(i==3){
+			*(args+i) = f->R.rdx;
+		}
+		else if(i==4){
+			*(args+i) = f->R.r10;
+		}
+		printf("%dth arg : %s\n",i,(char *)(args+i));
+	}
+}*/
 
 /* The main system call interface */
 void
 syscall_handler (struct intr_frame *f) {
 	// TODO: Your implementation goes here.
 	//printf ("system call!\n");
-	int argc = (int) f->R.rdi;
-	uint64_t argv = f->R.rsi;
+	//int argc = (int) f->R.rdi;
+	//uint64_t argv = f->R.rsi;
 	/*printf("saved stack pointer : %x\n", f->rsp);
 	printf("saved argc : %d\n",argc);
 	printf("saved argv : %x\n",argv);*/
-	
-	int64_t args[3];
-	
-	switch (*(int *) f->rsp){
+	uint64_t one = f->R.rdi;
+	uint64_t two = f->R.rsi;
+	uint64_t three = f->R.rdx;
+	uint64_t four = f->R.r10;
+	//int64_t args[4];
+	//printf("syscall num : %d\n",(int)f->R.rax);
+	switch ((int)f->R.rax){
 		case SYS_HALT:                   /* Halt the operating system. */
 			halt();
 			break;
 		case SYS_EXIT:                   /* Terminate this process. */
 			//printf("exit entered\n");
-			pick_argu(args, f);
-			exit(args[0]);
+			//printf("exit entered\n");
+			//pick_argu(args, f, 1);
+			//printf("return args0 : %s == exit\n",(char *)args[0]);
+			exit(one);
 			break;
 		case SYS_FORK:                   /* Clone current process. */
 			break;
 		case SYS_EXEC:                   /* Switch current process. */
 			break;
 	 	case SYS_WAIT:                 	  /* Wait for a child process to die. */
-	 		pick_argu(args, f);
-	 		wait((tid_t) args[0]);
+	 		//printf("wait entered\n");
+	 		//pick_argu(args, f, 1);
+	 		//printf("return args0 : %s == wait\n",(char *)args[0]);
+	 		wait((tid_t) one);
 			break;
 		case SYS_CREATE:                 /* Create a file. */
 			break;
@@ -99,15 +127,18 @@ syscall_handler (struct intr_frame *f) {
 		case SYS_READ:                   /* Read from a file. */
 			break;
 		case SYS_WRITE:                  /* Write to a file. */
-			pick_argu(args, f);
+			//printf("write entered\n");
+			write((int)one,(const void *)two,(unsigned)three);
+			//pick_argu(args, f, 3);
+			//printf("return args0 : %s == wait\n",(char *)args[0]);
 			break;
 		case SYS_TELL:                   /* Report current position in a file. */
 			break;
 		case SYS_CLOSE:
 			break;
-		/*default:
-			printf("default entered\n");
-			exit(-1);*/
+		default:
+			//printf("default entered\n");
+			exit(-1);
 	}
 }
 
@@ -130,4 +161,27 @@ static int
 wait(tid_t tid)
 {
   return process_wait(tid);
+}
+
+static int
+write (int fd, const void * buffer, unsigned size)
+{
+  //struct file *f;
+  lock_acquire (&file_lock);
+  if (fd == STDOUT_FILENO)
+    {
+      putbuf (buffer, size);
+      lock_release (&file_lock);
+      return size;  
+    }
+   else printf("fd = %d\n",fd);
+   return 0;
+  /*if ((f = process_get_file (fd)) == NULL)
+    {
+      lock_release (&file_lock);
+      return 0;
+    }
+  size = file_write (f, buffer, size);
+  lock_release (&file_lock);
+  return size;*/
 }

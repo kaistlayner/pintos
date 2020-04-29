@@ -13,14 +13,18 @@ Boot complete.
 Putting 'open-twice' into the file system...
 Putting 'sample.txt' into the file system...
 Executing 'open-twice':
-open-twice: exit(0)
+(open-twice) begin
+(open-twice) open "sample.txt" once
+(open-twice) open "sample.txt" again
+(open-twice) open() returned 7 both times: FAILED
+open-twice: exit(1)
 Execution of 'open-twice' complete.
-Timer: 79 ticks
-Thread: 30 idle ticks, 49 kernel ticks, 0 user ticks
+Timer: 76 ticks
+Thread: 30 idle ticks, 45 kernel ticks, 1 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 106 reads, 244 writes
 hd1:0: 103 reads, 0 writes
-Console: 874 characters output
+Console: 1016 characters output
 Keyboard: 0 keys pressed
 Exception: 0 page faults
 Powering off...

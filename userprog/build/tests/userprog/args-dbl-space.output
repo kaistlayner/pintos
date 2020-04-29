@@ -4,7 +4,7 @@ Kernel command line: -q -f put args-dbl-space run 'args-dbl-space two  spaces!'
 Pintos booting with: 
 	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
 	ext_mem: 0x100000 ~ 0xffe0000 (Usable: 260,992 kB)
-Calibrating timer...  209,510,400 loops/s.
+Calibrating timer...  207,872,000 loops/s.
 hd0:0: detected 313 sector (156 kB) disk, model "QEMU HARDDISK", serial "QM00001"
 hd0:1: detected 20,160 sector (9 MB) disk, model "QEMU HARDDISK", serial "QM00002"
 hd1:0: detected 99 sector (49 kB) disk, model "QEMU HARDDISK", serial "QM00003"
@@ -13,21 +13,21 @@ Boot complete.
 Putting 'args-dbl-space' into the file system...
 Executing 'args-dbl-space two  spaces!':
 Page fault at 0x47480000: not present error writing page in kernel context.
-Interrupt 0x0e (#PF Page-Fault Exception) at rip=8004217ef2
+Interrupt 0x0e (#PF Page-Fault Exception) at rip=8004217f6d
  cr2=0000000047480000 error=               2
 rax 0000000047480000 rbx 0000000000000000 rcx 0000000047480000 rdx 000000004747fff8
 rsp 00000080042b7d60 rbp 00000080042b7d90 rsi 00000080042b6013 rdi 000000004747fff8
-rip 0000008004217ef2 r8 0000000000002000  r9 0000000000000001 r10 0000000000004000
+rip 0000008004217f6d r8 0000000000002000  r9 0000000000000001 r10 0000000000004000
 r11 0000000000000000 r12 0000000000000000 r13 0000000000000000 r14 0000000000000000
 r15 0000000000000000 rflags 00000216
 es: 0010 ds: 0010 cs: 0008 ss: 0010
 Kernel PANIC at ../../userprog/exception.c:97 in kill(): Kernel bug - unexpected interrupt in kernel
-Call stack: 0x80042184b4 0x800421cd9c 0x800421cf1b 0x8004209532 0x8004209950 0x800421bb1e 0x800421c567 0x800421bfa3 0x800421bd11 0x8004207ede.
+Call stack: 0x800421852f 0x800421ce85 0x800421d004 0x80042095ad 0x80042099cb 0x800421bb99 0x800421c650 0x800421c01e 0x800421bd8c 0x8004207f59.
 The `backtrace' program can make call stacks useful.
 Read "Backtraces" in the "Debugging Tools" chapter
 of the Pintos documentation for more information.
 Timer: 76 ticks
-Thread: 30 idle ticks, 45 kernel ticks, 1 user ticks
+Thread: 30 idle ticks, 43 kernel ticks, 3 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 79 reads, 226 writes
 hd1:0: 99 reads, 0 writes

@@ -34,7 +34,7 @@ static void __do_fork (void *);
 static void arg_to_stack(struct intr_frame *if_){
 	
 	uintptr_t esp = if_->rsp;
-	//printf("original stack pointer : %x\n", esp);
+	//printf("original esp : %x\n", esp);
 	
 	int i, temp;
 	int word_align = l%8? 8-(l%8) : 0;
@@ -82,7 +82,7 @@ static void arg_to_stack(struct intr_frame *if_){
 	*(uint64_t *)esp = 0; // return addr
 	
 	if_->rsp = esp;
-	//printf("changed stack pointer : %x\n", esp);
+	//printf("changed esp : %x\n", esp);
 	//printf("saving argc : %d\n",if_->R.rdi);
 	//printf("saving argv : %x\n",if_->R.rsi);
 }
@@ -263,21 +263,24 @@ process_wait (tid_t child_tid) {
 	/* XXX: Hint) The pintos exit if process_wait (initd), we recommend you
 	 * XXX:       to add infinite loop here before
 	 * XXX:       implementing the process_wait. */
-	/*int temp;
+	int temp;
 	struct thread *ch;
 	ch = child_thread(child_tid);
-	if(ch == thread_current()) return -1;
 	
+	if(ch == thread_current()) return -1;
+	//printf("wait for child...\n");
 	sema_down(&ch->parent_wait);
+	//printf("wait for child done\n");
 	list_remove(&ch->child_elem);
 	temp = ch->exit_status;
+	//printf("child go on\n");
 	sema_up(&ch->child_wait);
 	
-	return temp;*/
-	int i;
+	return temp;
+	/*int i;
 	for(i=0;i<10000000;i++){
 	}
-	return 0;
+	return 0;*/
 }
 
 /* Exit the process. This function is called by thread_exit (). */
