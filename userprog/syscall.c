@@ -1,6 +1,6 @@
 #include "userprog/syscall.h"
 #include <stdio.h>
-#include <string.h> 
+#include <string.h>
 #include <stdlib.h>
 #include <syscall-nr.h>
 #include "threads/interrupt.h"
@@ -45,7 +45,11 @@ syscall_init (void) {
 	 * mode stack. Therefore, we masked the FLAG_FL. */
 	write_msr(MSR_SYSCALL_MASK,
 			FLAG_IF | FLAG_TF | FLAG_DF | FLAG_IOPL | FLAG_AC | FLAG_NT);
+
 	lock_init (&file_lock);
+
+
+
 }
 //uintptr_t esp
 /*static void pick_argu(int64_t *args, struct intr_frame *f, int n){
@@ -83,27 +87,17 @@ syscall_init (void) {
 void
 syscall_handler (struct intr_frame *f) {
 	// TODO: Your implementation goes here.
-	//printf ("system call!\n");
-	//int argc = (int) f->R.rdi;
-	//uint64_t argv = f->R.rsi;
-	/*printf("saved stack pointer : %x\n", f->rsp);
-	printf("saved argc : %d\n",argc);
-	printf("saved argv : %x\n",argv);*/
+
 	uint64_t one = f->R.rdi;
 	uint64_t two = f->R.rsi;
 	uint64_t three = f->R.rdx;
 	uint64_t four = f->R.r10;
-	//int64_t args[4];
-	//printf("syscall num : %d\n",(int)f->R.rax);
+
 	switch ((int)f->R.rax){
 		case SYS_HALT:                   /* Halt the operating system. */
 			halt();
 			break;
 		case SYS_EXIT:                   /* Terminate this process. */
-			//printf("exit entered\n");
-			//printf("exit entered\n");
-			//pick_argu(args, f, 1);
-			//printf("return args0 : %s == exit\n",(char *)args[0]);
 			exit(one);
 			break;
 		case SYS_FORK:                   /* Clone current process. */
@@ -111,9 +105,6 @@ syscall_handler (struct intr_frame *f) {
 		case SYS_EXEC:                   /* Switch current process. */
 			break;
 	 	case SYS_WAIT:                 	  /* Wait for a child process to die. */
-	 		//printf("wait entered\n");
-	 		//pick_argu(args, f, 1);
-	 		//printf("return args0 : %s == wait\n",(char *)args[0]);
 	 		wait((tid_t) one);
 			break;
 		case SYS_CREATE:                 /* Create a file. */
@@ -127,17 +118,13 @@ syscall_handler (struct intr_frame *f) {
 		case SYS_READ:                   /* Read from a file. */
 			break;
 		case SYS_WRITE:                  /* Write to a file. */
-			//printf("write entered\n");
 			write((int)one,(const void *)two,(unsigned)three);
-			//pick_argu(args, f, 3);
-			//printf("return args0 : %s == wait\n",(char *)args[0]);
 			break;
 		case SYS_TELL:                   /* Report current position in a file. */
 			break;
 		case SYS_CLOSE:
 			break;
 		default:
-			//printf("default entered\n");
 			exit(-1);
 	}
 }
