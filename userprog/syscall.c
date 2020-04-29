@@ -1,6 +1,6 @@
 #include "userprog/syscall.h"
 #include <stdio.h>
-#include <string.h> 
+#include <string.h>
 #include <stdlib.h>
 #include <syscall-nr.h>
 #include "threads/interrupt.h"
@@ -43,7 +43,7 @@ syscall_init (void) {
 	 * mode stack. Therefore, we masked the FLAG_FL. */
 	write_msr(MSR_SYSCALL_MASK,
 			FLAG_IF | FLAG_TF | FLAG_DF | FLAG_IOPL | FLAG_AC | FLAG_NT);
-			
+
 }
 //uintptr_t esp
 static void pick_argu(int64_t *args, struct intr_frame *f){
@@ -62,21 +62,20 @@ static void pick_argu(int64_t *args, struct intr_frame *f){
 void
 syscall_handler (struct intr_frame *f) {
 	// TODO: Your implementation goes here.
-	//printf ("system call!\n");
+	printf ("system call!\n");
 	int argc = (int) f->R.rdi;
 	uint64_t argv = f->R.rsi;
-	/*printf("saved stack pointer : %x\n", f->rsp);
 	printf("saved argc : %d\n",argc);
-	printf("saved argv : %x\n",argv);*/
-	
+	printf("saved argv : %x\n",argv);
+
 	int64_t args[3];
-	
+
 	switch (*(int *) f->rsp){
 		case SYS_HALT:                   /* Halt the operating system. */
 			halt();
 			break;
 		case SYS_EXIT:                   /* Terminate this process. */
-			//printf("exit entered\n");
+			printf("exit entered\n");
 			pick_argu(args, f);
 			exit(args[0]);
 			break;
@@ -105,9 +104,9 @@ syscall_handler (struct intr_frame *f) {
 			break;
 		case SYS_CLOSE:
 			break;
-		/*default:
+		default:
 			printf("default entered\n");
-			exit(-1);*/
+			exit(-1);
 	}
 }
 

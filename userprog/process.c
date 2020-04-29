@@ -32,31 +32,31 @@ static void __do_fork (void *);
 
 
 static void arg_to_stack(struct intr_frame *if_){
-	
+
 	uintptr_t esp = if_->rsp;
 	//printf("original stack pointer : %x\n", esp);
-	
+
 	int i, temp;
 	int word_align = l%8? 8-(l%8) : 0;
 	int delta = l + word_align + 8;				// 8 bytes for &argv[argc]
 	int saved_length = 0;
 	int delta2;
-	
+
 	esp -= l;
 	for(i=0; i<argc; i++){
 		temp = strlen(fn_copy)+1;
 		delta2 = delta + 8 * (argc - i) - (l - saved_length);
 		//printf("# argv %d : %x\n",i, esp);
 		strlcpy((char *)esp, fn_copy, temp);					// saving argvs
-		
+
 		esp -= delta2;
 		//printf("# &argv %d : %x\n",i, esp);
 		*(uint64_t *)esp = (uint64_t)esp + delta2;	// saving argvs addr
 		esp += delta2;
-		
+
 		fn_copy += temp;
 		esp += temp;
-		
+
 		saved_length += temp;
 	}
 	//printf("%d == %d \n",saved_length,l);
@@ -70,21 +70,21 @@ static void arg_to_stack(struct intr_frame *if_){
 	//
 	/*
 	*(uint64_t *)esp = (uint64_t)esp + 4; // &argv
-	
+
 	esp -= 8;
 	*(uint64_t *)esp = argc;
-	
+
 	esp -= 8;*/
-	
+
 	if_->R.rsi = esp + 8;
 	if_->R.rdi = argc;
-	
+
 	*(uint64_t *)esp = 0; // return addr
-	
+
 	if_->rsp = esp;
 	//printf("changed stack pointer : %x\n", esp);
-	//printf("saving argc : %d\n",if_->R.rdi);
-	//printf("saving argv : %x\n",if_->R.rsi);
+	printf("saving argc : %d\n",if_->R.rdi);
+	printf("saving argv : %x\n",if_->R.rsi);
 }
 
 /* General process initializer for initd and other process. */
@@ -267,12 +267,12 @@ process_wait (tid_t child_tid) {
 	struct thread *ch;
 	ch = child_thread(child_tid);
 	if(ch == thread_current()) return -1;
-	
+
 	sema_down(&ch->parent_wait);
 	list_remove(&ch->child_elem);
 	temp = ch->exit_status;
 	sema_up(&ch->child_wait);
-	
+
 	return temp;*/
 	int i;
 	for(i=0;i<10000000;i++){
@@ -401,7 +401,7 @@ load (const char *file_name, struct intr_frame *if_) {
 	off_t file_ofs;
 	bool success = false;
 	int i;
-	
+
 	char *ptr1, *ptr2;
 	l = argc = 0;
 	ptr1 = strtok_r(fn_copy, " ", &ptr2);
@@ -410,7 +410,7 @@ load (const char *file_name, struct intr_frame *if_) {
 		argc++;
 		ptr1 = strtok_r(NULL, " ", &ptr2);
 	}
-	
+
 	/* Allocate and activate page directory. */
 	t->pml4 = pml4_create ();
 	if (t->pml4 == NULL)
@@ -495,7 +495,7 @@ load (const char *file_name, struct intr_frame *if_) {
 
 	/* Start address. */
 	if_->rip = ehdr.e_entry;
-	
+
 	/* TODO: Your code goes here.
 	 * TODO: Implement argument passing (see project2/argument_passing.html). */
 
