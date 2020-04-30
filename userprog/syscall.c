@@ -14,11 +14,21 @@
 
 void syscall_entry (void);
 void syscall_handler (struct intr_frame *);
-static void halt (void);
 
+static void halt (void);
 static void exit(int n);
+static tid_t fork2(const char *thread_name);
+static int exec (const char *cmd_line);
 static int wait(tid_t tid);
+static bool create (const char *file, unsigned initial_size);
+static bool remove (const char *file);
+static int open (const char *file);
+static int filesize (int fd);
+static int read (int fd, void *buffer, unsigned size);
 static int write (int fd, const void * buffer, unsigned size);
+static void seek (int fd, unsigned position);
+static unsigned tell (int fd);
+static void close (int fd);
 struct lock file_lock;
 
 /* System call.
@@ -91,8 +101,8 @@ syscall_handler (struct intr_frame *f) {
 	uint64_t one = f->R.rdi;
 	uint64_t two = f->R.rsi;
 	uint64_t three = f->R.rdx;
-	uint64_t four = f->R.r10;
-
+	//uint64_t four = f->R.r10;
+	
 	switch ((int)f->R.rax){
 		case SYS_HALT:                   /* Halt the operating system. */
 			halt();
@@ -101,28 +111,40 @@ syscall_handler (struct intr_frame *f) {
 			exit(one);
 			break;
 		case SYS_FORK:                   /* Clone current process. */
+			fork2((const char *)one);
 			break;
 		case SYS_EXEC:                   /* Switch current process. */
+			exec ((const char *)one);
 			break;
 	 	case SYS_WAIT:                 	  /* Wait for a child process to die. */
 	 		wait((tid_t) one);
 			break;
 		case SYS_CREATE:                 /* Create a file. */
+			create ((const char *)one, (unsigned) two);
 			break;
 		case SYS_REMOVE:                 /* Delete a file. */
+			remove ((const char *)one);
 			break;
 		case SYS_OPEN:                   /* Open a file. */
+			open ((const char *)one);
 			break;
 		case SYS_FILESIZE:              /* Obtain a file's size. */
+			filesize ((int) one);
 			break;
 		case SYS_READ:                   /* Read from a file. */
+			read ((int) one, (void *)two, (unsigned) three);
 			break;
 		case SYS_WRITE:                  /* Write to a file. */
 			write((int)one,(const void *)two,(unsigned)three);
 			break;
+		case SYS_SEEK:
+			seek ((int) one, (unsigned) two);
+			break;
 		case SYS_TELL:                   /* Report current position in a file. */
+			tell((int)one);
 			break;
 		case SYS_CLOSE:
+			close((int)one);
 			break;
 		default:
 			exit(-1);
@@ -161,7 +183,7 @@ write (int fd, const void * buffer, unsigned size)
       lock_release (&file_lock);
       return size;  
     }
-   else printf("fd = %d\n",fd);
+   //else printf("fd = %d\n",fd);
    return 0;
   /*if ((f = process_get_file (fd)) == NULL)
     {
@@ -172,3 +194,58 @@ write (int fd, const void * buffer, unsigned size)
   lock_release (&file_lock);
   return size;*/
 }
+
+static tid_t fork2(const char *thread_name){}
+static int exec (const char *cmd_line){
+	tid_t tid = process_exec(cmd_line);
+	struct thread *ch = child_thread(tid);
+	
+	sema_down(&ch->exec_wait);
+	
+	return tid;
+}
+static bool create (const char *file, unsigned initial_size){
+	if(file==NULL){
+		exit(-1);
+	}
+	else if(initial_size == 0) return 0;
+	else {
+		return filesys_create(file, initial_size);
+	}
+}
+static bool remove (const char *file){
+	return filesys_remove(file);
+}
+
+//아래는 다 다시짜야함
+static int open (const char *file){
+	int result = -1;
+  lock_acquire (&file_lock);
+  // process_add_file는 NULL에서 -1 반환하므로 안전합니다.
+  result = process_add_file (filesys_open (file));
+  lock_release (&file_lock);
+  return result;
+}
+static int filesize (int fd){
+	struct file *f = process_get_file (fd);
+  if (f == NULL)
+    return -1;
+	return file_length (f);
+}
+static int read (int fd, void *buffer, unsigned size){}
+static void seek (int fd, unsigned position){
+	struct file *f = process_get_file (fd);
+	if (f == NULL)
+		return;
+	file_seek (f, position);  
+}
+static unsigned tell (int fd){
+	struct file *f = process_get_file (fd);
+	if (f == NULL)
+		exit (-1);
+	return file_tell (f);
+}
+static void close (int fd){
+	process_close_file (fd);
+}
+

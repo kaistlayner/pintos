@@ -19,10 +19,10 @@ Executing 'rox-child':
 (rox-child) read "child-rox": FAILED
 rox-child: exit(1)
 Execution of 'rox-child' complete.
-Timer: 75 ticks
-Thread: 30 idle ticks, 44 kernel ticks, 1 user ticks
+Timer: 76 ticks
+Thread: 30 idle ticks, 44 kernel ticks, 2 user ticks
 hd0:0: 0 reads, 0 writes
-hd0:1: 107 reads, 466 writes
+hd0:1: 111 reads, 466 writes
 hd1:0: 214 reads, 0 writes
 Console: 980 characters output
 Keyboard: 0 keys pressed

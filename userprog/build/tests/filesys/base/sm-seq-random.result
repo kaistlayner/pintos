@@ -1,12 +1,12 @@
 FAIL
 Kernel panic in run: PANIC at ../../threads/synch.c:213 in lock_acquire(): assertion `!lock_held_by_current_thread (lock)' failed.
-Call stack: 0x800421852f 0x800420ab1c 0x800421d341 0x800421d240 0x800421d0ab 0x4002c0 0x400394 0x400d7f 0x400174 0x400e5d 0x400ea6
+Call stack: 0x80042185c6 0x800420abb3 0x800421d6b3 0x800421d571 0x800421d31f 0x4002c0 0x400394 0x400d7f 0x400174 0x400e5d 0x400ea6
 Translation of call stack:
-0x000000800421852f: debug_panic (lib/kernel/debug.c:32)
-0x000000800420ab1c: lock_acquire (threads/synch.c:215)
-0x000000800421d341: write (userprog/syscall.c:158)
-0x000000800421d240: syscall_handler (userprog/syscall.c:122)
-0x000000800421d0ab: no_sti (userprog/syscall-entry.o:?)
+0x00000080042185c6: debug_panic (lib/kernel/debug.c:32)
+0x000000800420abb3: lock_acquire (threads/synch.c:215)
+0x000000800421d6b3: write (userprog/syscall.c:180)
+0x000000800421d571: syscall_handler (userprog/syscall.c:139)
+0x000000800421d31f: no_sti (userprog/syscall-entry.o:?)
 0x00000000004002c0: (unknown)
 0x0000000000400394: (unknown)
 0x0000000000400d7f: (unknown)

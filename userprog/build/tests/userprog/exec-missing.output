@@ -13,16 +13,30 @@ Boot complete.
 Putting 'exec-missing' into the file system...
 Executing 'exec-missing':
 (exec-missing) begin
-(exec-missing) exec("no-such-file"): 3
-(exec-missing) end
-exec-missing: exit(0)
-Execution of 'exec-missing' complete.
-Timer: 74 ticks
-Thread: 30 idle ticks, 44 kernel ticks, 0 user ticks
+load: Page fault at 0x404160: not present error reading page in kernel context.
+Interrupt 0x0e (#PF Page-Fault Exception) at rip=8004217ee8
+ cr2=0000000000404160 error=               0
+rax 0000000000404160 rbx 0000000000000000 rcx 0000000000000010 rdx 0000000000404160
+rsp 00000080042b9bb0 rbp 00000080042b9bd0 rsi ffffffffffffffff rdi 0000000000404160
+rip 0000008004217ee8 r8 0000000000000000  r9 0000000000000000 r10 0000000000000000
+r11 0000000000000212 r12 000000800421d3f6 r13 0000000000000000 r14 0000000000000000
+r15 0000000000000000 rflags 00000206
+es: 001b ds: 001b cs: 0008 ss: 0010
+Kernel PANIC at ../../userprog/exception.c:97 in kill(): Kernel bug - unexpected interrupt in kernel
+Call stack: 0x80042185c6 0x800421d12b 0x800421d2aa 0x8004209644 0x8004209a62 0x80042161d7 0x800421b92b 0x8004215ac9 0x800421c602 0x800421c221 0x800421d722 0x800421d4a6 0x800421d31fPage fault at 0x4747ff80: not present error reading page in kernel context.
+Interrupt 0x0e (#PF Page-Fault Exception) at rip=8004215600
+ cr2=000000004747ff80 error=               0
+rax 000000004747ff80 rbx 0000000000000000 rcx 00000080040b8000 rdx 00000000000003d4
+rsp 00000080042b99b0 rbp 00000080042b99c0 rsi 000000000000940f rdi 0000000000000000
+rip 0000008004215600 r8 00000080042b98c8  r9 000000800421ba3f r10 0000000000000000
+r11 0000000000000212 r12 000000800421d3f6 r13 0000000000000000 r14 0000000000000000
+r15 0000000000000000 rflags 00000002
+es: 0010 ds: 0010 cs: 0008 ss: 0010
+Kernel PANIC recursion at ../../userprog/exception.c:97 in kill().
+Timer: 78 ticks
+Thread: 30 idle ticks, 43 kernel ticks, 5 user ticks
 hd0:0: 0 reads, 0 writes
-hd0:1: 79 reads, 228 writes
+hd0:1: 96 reads, 228 writes
 hd1:0: 100 reads, 0 writes
-Console: 904 characters output
-Keyboard: 0 keys pressed
-Exception: 0 page faults
-Powering off...
+Console: 2316 characters output
+Key

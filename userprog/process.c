@@ -24,12 +24,39 @@
 
 char *fn_copy;
 int l, argc;
+extern struct lock file_lock;
 
 static void process_cleanup (void);
 static bool load (const char *file_name, struct intr_frame *if_);
 static void initd (void *f_name);
 static void __do_fork (void *);
 
+
+int process_add_file (struct file *f){
+  struct thread *t;
+  int fd;
+  if (f == NULL)
+    return -1;
+  t = thread_current ();
+  fd = t->next_fd++;
+  t->fds[fd] = f;
+  return fd;
+}
+
+struct file * process_get_file (int fd){
+  struct thread *t = thread_current ();
+  if (fd <= 1 || t->next_fd <= fd)
+    return NULL;
+  return t->fds[fd];
+}
+
+void process_close_file (int fd){
+  struct thread *t = thread_current ();
+  if (fd <= 1 || t->next_fd <= fd)
+    return;
+  file_close (t->fds[fd]);
+  t->fds[fd] = NULL;
+}
 
 static void arg_to_stack(struct intr_frame *if_){
 
@@ -237,6 +264,8 @@ process_exec (void *f_name) {
 	/* And then load the binary */
 	success = load (file_name, &_if);
 
+	sema_up(&thread_current()->exec_wait);
+
 	/* If load failed, quit. */
 	palloc_free_page (file_name);
 	if (!success)
@@ -285,12 +314,20 @@ process_wait (tid_t child_tid) {
 /* Exit the process. This function is called by thread_exit (). */
 void
 process_exit (void) {
-	struct thread *curr = thread_current ();
+	struct thread *cur = thread_current();
 	/* TODO: Your code goes here.
 	 * TODO: Implement process termination message (see
 	 * TODO: project2/process_termination.html).
 	 * TODO: We recommend you to implement process resource cleanup here. */
-
+	int i;
+	/*
+	for (i = cur->next_fd-1; i >= 2; i--){
+		file_close (cur->fds[i]);
+	}*/
+	cur->fds += 2;
+	palloc_free_page (cur->fds);
+	//file_close (cur->running_file);
+	
 	process_cleanup ();
 }
 
@@ -418,14 +455,19 @@ load (const char *file_name, struct intr_frame *if_) {
 	if (t->pml4 == NULL)
 		goto done;
 	process_activate (thread_current ());
-
+	
+	lock_acquire(&file_lock);
+	
 	/* Open executable file. */
 	file = filesys_open (fn_copy);
 	if (file == NULL) {
 		printf ("load: %s: open failed\n", file_name);
 		goto done;
 	}
-
+	t->running_file = file;
+	file_deny_write (file);
+	lock_release (&file_lock);
+	
 	/* Read and verify executable header. */
 	if (file_read (file, &ehdr, sizeof ehdr) != sizeof ehdr
 			|| memcmp (ehdr.e_ident, "\177ELF\2\1\1", 7)

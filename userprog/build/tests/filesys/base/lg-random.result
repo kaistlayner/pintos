@@ -1,21 +1,14 @@
 FAIL
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (lg-random) begin
-  (lg-random) create "bazzle"
-  (lg-random) open "bazzle"
-  (lg-random) write "bazzle" in random order
-  (lg-random) read "bazzle" in random order
-  (lg-random) close "bazzle"
-  (lg-random) end
-Differences in `diff -u' format:
-  (lg-random) begin
-  (lg-random) create "bazzle"
-  (lg-random) open "bazzle"
-  (lg-random) write "bazzle" in random order
-- (lg-random) read "bazzle" in random order
-- (lg-random) close "bazzle"
-- (lg-random) end
-
-(Process exit codes are excluded for matching purposes.)
+Kernel panic in run: PANIC at ../../threads/synch.c:213 in lock_acquire(): assertion `!lock_held_by_current_thread (lock)' failed.
+Call stack: 0x80042185c6 0x800420abb3 0x800421d6b3 0x800421d571 0x800421d31f 0x4005ab 0x40067f 0x4002fb 0x401148 0x401191
+Translation of call stack:
+0x00000080042185c6: debug_panic (lib/kernel/debug.c:32)
+0x000000800420abb3: lock_acquire (threads/synch.c:215)
+0x000000800421d6b3: write (userprog/syscall.c:180)
+0x000000800421d571: syscall_handler (userprog/syscall.c:139)
+0x000000800421d31f: no_sti (userprog/syscall-entry.o:?)
+0x00000000004005ab: (unknown)
+0x000000000040067f: (unknown)
+0x00000000004002fb: (unknown)
+0x0000000000401148: (unknown)
+0x0000000000401191: (unknown)

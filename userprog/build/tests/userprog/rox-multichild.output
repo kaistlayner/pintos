@@ -22,7 +22,7 @@ Execution of 'rox-multichild' complete.
 Timer: 76 ticks
 Thread: 30 idle ticks, 45 kernel ticks, 1 user ticks
 hd0:0: 0 reads, 0 writes
-hd0:1: 107 reads, 466 writes
+hd0:1: 111 reads, 466 writes
 hd1:0: 214 reads, 0 writes
 Console: 1030 characters output
 Keyboard: 0 keys pressed

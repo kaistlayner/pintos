@@ -1,2 +1,18 @@
 FAIL
-run: should have called exit(-1): FAILED
+Kernel panic in run: PANIC at ../../userprog/exception.c:97 in kill(): Kernel bug - unexpected interrupt in kernel
+Call stack: 0x80042185c6 0x800421d12b 0x800421d2aa 0x8004209644 0x8004209a62 0x800421eb1d 0x800421ec57 0x800421ddee 0x800421d81e 0x800421d50d 0x800421d31f 0x4000fd 0x400190 0x400c31
+Translation of call stack:
+0x00000080042185c6: debug_panic (lib/kernel/debug.c:32)
+0x000000800421d12b: kill (userprog/exception.c:103)
+0x000000800421d2aa: page_fault (userprog/exception.c:159 (discriminator 12))
+0x0000008004209644: intr_handler (threads/interrupt.c:352)
+0x0000008004209a62: intr_entry (threads/intr-stubs.o:?)
+0x000000800421eb1d: lookup (filesys/directory.c:90 (discriminator 1))
+0x000000800421ec57: dir_lookup (filesys/directory.c:112)
+0x000000800421ddee: filesys_open (filesys/filesys.c:71)
+0x000000800421d81e: open (userprog/syscall.c:225)
+0x000000800421d50d: syscall_handler (userprog/syscall.c:130)
+0x000000800421d31f: no_sti (userprog/syscall-entry.o:?)
+0x00000000004000fd: (unknown)
+0x0000000000400190: (unknown)
+0x0000000000400c31: (unknown)

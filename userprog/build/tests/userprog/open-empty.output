@@ -16,10 +16,10 @@ Executing 'open-empty':
 (open-empty) open() returned 7 instead of -1: FAILED
 open-empty: exit(1)
 Execution of 'open-empty' complete.
-Timer: 73 ticks
-Thread: 30 idle ticks, 42 kernel ticks, 1 user ticks
+Timer: 74 ticks
+Thread: 30 idle ticks, 42 kernel ticks, 2 user ticks
 hd0:0: 0 reads, 0 writes
-hd0:1: 79 reads, 228 writes
+hd0:1: 96 reads, 228 writes
 hd1:0: 100 reads, 0 writes
 Console: 885 characters output
 Keyboard: 0 keys pressed

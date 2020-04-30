@@ -7,7 +7,7 @@ pass tests/userprog/halt
 pass tests/userprog/exit
 pass tests/userprog/create-normal
 FAIL tests/userprog/create-empty
-FAIL tests/userprog/create-null
+pass tests/userprog/create-null
 FAIL tests/userprog/create-bad-ptr
 FAIL tests/userprog/create-long
 FAIL tests/userprog/create-exists
@@ -16,7 +16,7 @@ pass tests/userprog/open-normal
 FAIL tests/userprog/open-missing
 pass tests/userprog/open-boundary
 FAIL tests/userprog/open-empty
-pass tests/userprog/open-null
+FAIL tests/userprog/open-null
 FAIL tests/userprog/open-bad-ptr
 FAIL tests/userprog/open-twice
 pass tests/userprog/close-normal
@@ -44,7 +44,7 @@ FAIL tests/userprog/exec-once
 FAIL tests/userprog/exec-arg
 FAIL tests/userprog/exec-boundary
 FAIL tests/userprog/exec-missing
-pass tests/userprog/exec-bad-ptr
+FAIL tests/userprog/exec-bad-ptr
 FAIL tests/userprog/exec-read
 FAIL tests/userprog/wait-simple
 FAIL tests/userprog/wait-twice

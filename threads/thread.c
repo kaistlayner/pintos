@@ -361,7 +361,15 @@ thread_create (const char *name, int priority,
 	/* Initialize thread. */
 	init_thread (t, name, priority);
 	tid = t->tid = allocate_tid ();
-
+	
+	t->fds = palloc_get_multiple (PAL_ZERO, 2);
+	if (t->fds == NULL){
+      palloc_free_page (t);
+      return TID_ERROR;
+    }
+    t->next_fd = 2;
+    t->fds -= 2;
+    
 	/* Call the kernel_thread if it scheduled.
 	 * Note) rdi is 1st argument, and rsi is 2nd argument. */
 	t->tf.rip = (uintptr_t) kernel_thread;
@@ -615,6 +623,7 @@ init_thread (struct thread *t, const char *name, int priority) {
 	list_init (&t->child_list);
 	sema_init (&t->parent_wait, 0);
 	sema_init (&t->child_wait, 0);
+	sema_init (&t->exec_wait, 0);
 	
  	list_push_back(&all_list, &t->all_elem);
 	t->waiting_for = NULL;

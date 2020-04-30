@@ -108,8 +108,12 @@ struct thread {
 	int exit_status;
 	struct semaphore parent_wait;
 	struct semaphore child_wait;
+	struct semaphore exec_wait;
 	struct list child_list;
 	struct list_elem child_elem;
+	struct file **fds;
+	struct file *running_file;
+	int next_fd;
 
 #ifdef USERPROG
 	/* Owned by userprog/process.c. */

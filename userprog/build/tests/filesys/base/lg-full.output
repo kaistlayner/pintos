@@ -16,16 +16,15 @@ Executing 'lg-full':
 (lg-full) create "quux"
 (lg-full) open "quux"
 (lg-full) writing "quux"
-fd = 7
 Kernel PANIC at ../../threads/synch.c:213 in lock_acquire(): assertion `!lock_held_by_current_thread (lock)' failed.
-Call stack: 0x800421852f 0x800420ab1c 0x800421d341 0x800421d240 0x800421d0ab 0x40027d 0x400351 0x400d3c 0x400131 0x400e1a 0x400e63.
+Call stack: 0x80042185c6 0x800420abb3 0x800421d6b3 0x800421d571 0x800421d31f 0x40027d 0x400351 0x400d3c 0x400131 0x400e1a 0x400e63.
 The `backtrace' program can make call stacks useful.
 Read "Backtraces" in the "Debugging Tools" chapter
 of the Pintos documentation for more information.
-Timer: 74 ticks
-Thread: 30 idle ticks, 43 kernel ticks, 1 user ticks
+Timer: 75 ticks
+Thread: 30 idle ticks, 42 kernel ticks, 3 user ticks
 hd0:0: 0 reads, 0 writes
-hd0:1: 80 reads, 236 writes
+hd0:1: 106 reads, 396 writes
 hd1:0: 104 reads, 0 writes
-Console: 1242 characters output
+Console: 1236 characters output
 Key
