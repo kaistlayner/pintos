@@ -249,7 +249,7 @@ int
 process_exec (void *f_name) {
 	char *file_name = f_name;
 	bool success;
-
+	//printf("exec2 : %s\n",file_name);
 	/* We cannot use the intr_frame in the thread structure.
 	 * This is because when current thread rescheduled,
 	 * it stores the execution information to the member. */
@@ -260,7 +260,6 @@ process_exec (void *f_name) {
 
 	/* We first kill the current context */
 	process_cleanup ();
-
 	/* And then load the binary */
 	success = load (file_name, &_if);
 
@@ -320,10 +319,10 @@ process_exit (void) {
 	 * TODO: project2/process_termination.html).
 	 * TODO: We recommend you to implement process resource cleanup here. */
 	int i;
-	/*
+	
 	for (i = cur->next_fd-1; i >= 2; i--){
 		file_close (cur->fds[i]);
-	}*/
+	}
 	cur->fds += 2;
 	palloc_free_page (cur->fds);
 	//file_close (cur->running_file);
@@ -440,7 +439,9 @@ load (const char *file_name, struct intr_frame *if_) {
 	off_t file_ofs;
 	bool success = false;
 	int i;
-
+	
+	strlcpy (fn_copy, file_name, PGSIZE);
+	
 	char *ptr1, *ptr2;
 	l = argc = 0;
 	ptr1 = strtok_r(fn_copy, " ", &ptr2);
@@ -459,15 +460,18 @@ load (const char *file_name, struct intr_frame *if_) {
 	lock_acquire(&file_lock);
 	
 	/* Open executable file. */
+	//printf("fncpy before = %s\n",fn_copy);
 	file = filesys_open (fn_copy);
+	//printf("fncpy after = %s\n",fn_copy);
 	if (file == NULL) {
 		printf ("load: %s: open failed\n", file_name);
+		lock_release (&file_lock);
 		goto done;
 	}
 	t->running_file = file;
 	file_deny_write (file);
 	lock_release (&file_lock);
-	
+
 	/* Read and verify executable header. */
 	if (file_read (file, &ehdr, sizeof ehdr) != sizeof ehdr
 			|| memcmp (ehdr.e_ident, "\177ELF\2\1\1", 7)
@@ -479,7 +483,7 @@ load (const char *file_name, struct intr_frame *if_) {
 		printf ("load: %s: error loading executable\n", file_name);
 		goto done;
 	}
-
+	
 	/* Read program headers. */
 	file_ofs = ehdr.e_phoff;
 	for (i = 0; i < ehdr.e_phnum; i++) {
@@ -544,7 +548,6 @@ load (const char *file_name, struct intr_frame *if_) {
 	 * TODO: Implement argument passing (see project2/argument_passing.html). */
 
 	arg_to_stack(if_);
-
 	success = true;
 
 done:

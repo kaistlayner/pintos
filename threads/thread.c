@@ -467,6 +467,14 @@ thread_exit (void) {
 	struct list_elem *e;
 	struct thread *cur = thread_current();
 	
+	 /* for (e = list_begin (&cur ->child_list);
+       e != list_end (&cur ->child_list); )
+    {
+      struct thread *t = list_entry (e, struct thread, child_elem);
+      e = list_remove (e);
+      sema_up (&t->child_wait);
+    }*/
+	
 	//printf("parent go on\n");
 	sema_up(&cur->parent_wait);
 	//printf("wait for parent...\n");
@@ -618,7 +626,8 @@ init_thread (struct thread *t, const char *name, int priority) {
 	t->nice = 0;
  	t->recent_cpu = 0;
 	t->magic = THREAD_MAGIC;
-
+	
+	t->exit_status = -1;
 	list_init (&t->don_list);
 	list_init (&t->child_list);
 	sema_init (&t->parent_wait, 0);

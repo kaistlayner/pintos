@@ -14,8 +14,8 @@ Putting 'wait-twice' into the file system...
 Putting 'child-simple' into the file system...
 Executing 'wait-twice':
 (wait-twice) begin
-(wait-twice) wait(exec()) = 4
-(wait-twice) wait(exec()) = 4
+(wait-twice) wait(exec()) = -1
+(wait-twice) wait(exec()) = -1
 (wait-twice) end
 wait-twice: exit(0)
 Execution of 'wait-twice' complete.
@@ -24,7 +24,7 @@ Thread: 30 idle ticks, 44 kernel ticks, 1 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 106 reads, 434 writes
 hd1:0: 198 reads, 0 writes
-Console: 974 characters output
+Console: 976 characters output
 Keyboard: 0 keys pressed
 Exception: 0 page faults
 Powering off...

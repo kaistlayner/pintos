@@ -13,23 +13,14 @@ Boot complete.
 Putting 'bad-jump2' into the file system...
 Executing 'bad-jump2':
 (bad-jump2) begin
-Page fault at 0x8004000000: rights violation error reading page in user context.
-bad-jump2: dying due to interrupt 0x0e (#PF Page-Fault Exception).
-Interrupt 0x0e (#PF Page-Fault Exception) at rip=8004000000
- cr2=0000008004000000 error=               5
-rax 0000008004000000 rbx 0000000000000000 rcx 00000000000000ff rdx 0000000000000000
-rsp 000000004747ff88 rbp 000000004747ff90 rsi 0000000000604f2e rdi 000000000060501f
-rip 0000008004000000 r8 0000000000000000  r9 0000000000000000 r10 0000000000000000
-r11 0000000000000206 r12 0000000000000000 r13 0000000000000000 r14 0000000000000000
-r15 0000000000000000 rflags 00000212
-es: 001b ds: 001b cs: 0023 ss: 001b
+bad-jump2: exit(-1)
 Execution of 'bad-jump2' complete.
-Timer: 74 ticks
-Thread: 30 idle ticks, 42 kernel ticks, 2 user ticks
+Timer: 73 ticks
+Thread: 30 idle ticks, 43 kernel ticks, 1 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 79 reads, 228 writes
 hd1:0: 100 reads, 0 writes
-Console: 1467 characters output
+Console: 826 characters output
 Keyboard: 0 keys pressed
 Exception: 1 page faults
 Powering off...

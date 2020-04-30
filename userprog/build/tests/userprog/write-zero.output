@@ -4,10 +4,10 @@ Kernel command line: -q -f put write-zero put sample.txt run write-zero
 Pintos booting with: 
 	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
 	ext_mem: 0x100000 ~ 0xffe0000 (Usable: 260,992 kB)
-Calibrating timer...  206,233,600 loops/s.
+Calibrating timer...  209,510,400 loops/s.
 hd0:0: detected 313 sector (156 kB) disk, model "QEMU HARDDISK", serial "QM00001"
 hd0:1: detected 20,160 sector (9 MB) disk, model "QEMU HARDDISK", serial "QM00002"
-hd1:0: detected 102 sector (51 kB) disk, model "QEMU HARDDISK", serial "QM00003"
+hd1:0: detected 103 sector (51 kB) disk, model "QEMU HARDDISK", serial "QM00003"
 Formatting file system...done.
 Boot complete.
 Putting 'write-zero' into the file system...
@@ -15,15 +15,15 @@ Putting 'sample.txt' into the file system...
 Executing 'write-zero':
 (write-zero) begin
 (write-zero) open "sample.txt"
-Kernel PANIC at ../../threads/synch.c:213 in lock_acquire(): assertion `!lock_held_by_current_thread (lock)' failed.
-Call stack: 0x80042185c6 0x800420abb3 0x800421d6b3 0x800421d571 0x800421d31f 0x400358 0x40042c 0x40018f 0x4001ed 0x400c8e.
-The `backtrace' program can make call stacks useful.
-Read "Backtraces" in the "Debugging Tools" chapter
-of the Pintos documentation for more information.
-Timer: 75 ticks
-Thread: 30 idle ticks, 44 kernel ticks, 1 user ticks
+(write-zero) end
+write-zero: exit(0)
+Execution of 'write-zero' complete.
+Timer: 74 ticks
+Thread: 30 idle ticks, 43 kernel ticks, 1 user ticks
 hd0:0: 0 reads, 0 writes
-hd0:1: 110 reads, 242 writes
-hd1:0: 102 reads, 0 writes
-Console: 1262 characters output
-Key
+hd0:1: 110 reads, 244 writes
+hd1:0: 103 reads, 0 writes
+Console: 941 characters output
+Keyboard: 0 keys pressed
+Exception: 0 page faults
+Powering off...

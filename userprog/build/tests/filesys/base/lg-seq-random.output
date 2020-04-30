@@ -16,15 +16,18 @@ Executing 'lg-seq-random':
 (lg-seq-random) create "nibble"
 (lg-seq-random) open "nibble"
 (lg-seq-random) writing "nibble"
-Kernel PANIC at ../../threads/synch.c:213 in lock_acquire(): assertion `!lock_held_by_current_thread (lock)' failed.
-Call stack: 0x80042185c6 0x800420abb3 0x800421d6b3 0x800421d571 0x800421d31f 0x4002c0 0x400394 0x400d7f 0x400174 0x400e5d 0x400ea6.
-The `backtrace' program can make call stacks useful.
-Read "Backtraces" in the "Debugging Tools" chapter
-of the Pintos documentation for more information.
-Timer: 76 ticks
-Thread: 30 idle ticks, 42 kernel ticks, 4 user ticks
+(lg-seq-random) close "nibble"
+(lg-seq-random) open "nibble" for verification
+(lg-seq-random) size of nibble (8) differs from expected (75678)
+(lg-seq-random) read of 512 bytes at offset 0 in "nibble" returned 9: FAILED
+lg-seq-random: exit(1)
+Execution of 'lg-seq-random' complete.
+Timer: 82 ticks
+Thread: 30 idle ticks, 43 kernel ticks, 9 user ticks
 hd0:0: 0 reads, 0 writes
-hd0:1: 106 reads, 396 writes
+hd0:1: 357 reads, 680 writes
 hd1:0: 104 reads, 0 writes
-Console: 1290 characters output
-Key
+Console: 1169 characters output
+Keyboard: 0 keys pressed
+Exception: 0 page faults
+Powering off...

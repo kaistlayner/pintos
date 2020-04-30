@@ -1,17 +1,19 @@
 FAIL
-Kernel panic in run: PANIC at ../../userprog/exception.c:97 in kill(): Kernel bug - unexpected interrupt in kernel
-Call stack: 0x80042185c6 0x800421d12b 0x800421d2aa 0x8004209644 0x8004209a62 0x80042161d7 0x800421b92b 0x8004215ac9 0x800421c602 0x800421c221 0x800421d722 0x800421d4a6 0x800421d31f
-Translation of call stack:
-0x00000080042185c6: debug_panic (lib/kernel/debug.c:32)
-0x000000800421d12b: kill (userprog/exception.c:103)
-0x000000800421d2aa: page_fault (userprog/exception.c:159 (discriminator 12))
-0x0000008004209644: intr_handler (threads/interrupt.c:352)
-0x0000008004209a62: intr_entry (threads/intr-stubs.o:?)
-0x00000080042161d7: __vprintf (lib/stdio.c:282)
-0x000000800421b92b: vprintf (lib/kernel/console.c:123)
-0x0000008004215ac9: printf (lib/stdio.c:80)
-0x000000800421c602: load (userprog/process.c:465)
-0x000000800421c221: process_exec (userprog/process.c:265)
-0x000000800421d722: exec (userprog/syscall.c:200)
-0x000000800421d4a6: syscall_handler (userprog/syscall.c:118)
-0x000000800421d31f: no_sti (userprog/syscall-entry.o:?)
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (exec-missing) begin
+  load: no-such-file: open failed
+  exec-missing: exit(-1)
+Differences in `diff -u' format:
+  (exec-missing) begin
+- load: no-such-file: open failed
+  exec-missing: exit(-1)
+Acceptable output:
+  (exec-missing) begin
+  (exec-missing) exec("no-such-file"): -1
+  exec-missing: exit(-1)
+Differences in `diff -u' format:
+  (exec-missing) begin
+- (exec-missing) exec("no-such-file"): -1
+  exec-missing: exit(-1)

@@ -1,13 +1,1 @@
-FAIL
-Kernel panic in run: PANIC at ../../filesys/directory.c:110 in dir_lookup(): assertion `name != NULL' failed.
-Call stack: 0x80042185c6 0x800421ec37 0x800421ddee 0x800421d81e 0x800421d50d 0x800421d31f 0x4000fd 0x40015b 0x400bfc
-Translation of call stack:
-0x00000080042185c6: debug_panic (lib/kernel/debug.c:32)
-0x000000800421ec37: dir_lookup (filesys/directory.c:112)
-0x000000800421ddee: filesys_open (filesys/filesys.c:71)
-0x000000800421d81e: open (userprog/syscall.c:225)
-0x000000800421d50d: syscall_handler (userprog/syscall.c:130)
-0x000000800421d31f: no_sti (userprog/syscall-entry.o:?)
-0x00000000004000fd: (unknown)
-0x000000000040015b: (unknown)
-0x0000000000400bfc: (unknown)
+PASS

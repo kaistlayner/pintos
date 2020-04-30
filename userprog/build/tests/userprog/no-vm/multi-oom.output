@@ -13,16 +13,15 @@ Boot complete.
 Putting 'multi-oom' into the file system...
 Executing 'multi-oom':
 (multi-oom) begin
-(multi-oom) Spawned at least 10 children.
-(multi-oom) Spawned at least 10 children.: FAILED
+(multi-oom) Should return > 0.: FAILED
 multi-oom: exit(1)
 Execution of 'multi-oom' complete.
-Timer: 74 ticks
-Thread: 30 idle ticks, 43 kernel ticks, 1 user ticks
+Timer: 75 ticks
+Thread: 30 idle ticks, 44 kernel ticks, 1 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 89 reads, 238 writes
 hd1:0: 105 reads, 0 writes
-Console: 916 characters output
+Console: 863 characters output
 Keyboard: 0 keys pressed
 Exception: 0 page faults
 Powering off...

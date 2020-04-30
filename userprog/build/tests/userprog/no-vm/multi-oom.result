@@ -1,2 +1,2 @@
 FAIL
-run: Spawned at least 10 children.: FAILED
+run: Should return > 0.: FAILED

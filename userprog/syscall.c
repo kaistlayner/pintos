@@ -11,12 +11,13 @@
 #include "intrinsic.h"
 #include "userprog/process.h"
 #include "threads/init.h"
+#include "filesys/filesys.h"
 
 void syscall_entry (void);
 void syscall_handler (struct intr_frame *);
 
 static void halt (void);
-static void exit(int n);
+void exit(int n);
 static tid_t fork2(const char *thread_name);
 static int exec (const char *cmd_line);
 static int wait(tid_t tid);
@@ -114,19 +115,19 @@ syscall_handler (struct intr_frame *f) {
 			fork2((const char *)one);
 			break;
 		case SYS_EXEC:                   /* Switch current process. */
-			exec ((const char *)one);
+			f->R.rax = exec ((const char *)one);
 			break;
 	 	case SYS_WAIT:                 	  /* Wait for a child process to die. */
-	 		wait((tid_t) one);
+	 		f->R.rax = wait((tid_t) one);
 			break;
 		case SYS_CREATE:                 /* Create a file. */
-			create ((const char *)one, (unsigned) two);
+			f->R.rax = create ((const char *)one, (unsigned) two);
 			break;
 		case SYS_REMOVE:                 /* Delete a file. */
 			remove ((const char *)one);
 			break;
 		case SYS_OPEN:                   /* Open a file. */
-			open ((const char *)one);
+			f->R.rax = open ((const char *)one);
 			break;
 		case SYS_FILESIZE:              /* Obtain a file's size. */
 			filesize ((int) one);
@@ -135,7 +136,7 @@ syscall_handler (struct intr_frame *f) {
 			read ((int) one, (void *)two, (unsigned) three);
 			break;
 		case SYS_WRITE:                  /* Write to a file. */
-			write((int)one,(const void *)two,(unsigned)three);
+			f->R.rax = write((int)one,(const void *)two,(unsigned)three);
 			break;
 		case SYS_SEEK:
 			seek ((int) one, (unsigned) two);
@@ -155,7 +156,7 @@ static void halt (void) {
 	power_off();
 }
 
-static void exit(int n){
+void exit(int n){
 	struct thread *cur = thread_current();
 	cur->exit_status = n;
 	char *ptr1, *ptr2, *name;
@@ -175,7 +176,7 @@ wait(tid_t tid)
 static int
 write (int fd, const void * buffer, unsigned size)
 {
-  //struct file *f;
+  struct file *f;
   lock_acquire (&file_lock);
   if (fd == STDOUT_FILENO)
     {
@@ -183,16 +184,14 @@ write (int fd, const void * buffer, unsigned size)
       lock_release (&file_lock);
       return size;  
     }
-   //else printf("fd = %d\n",fd);
-   return 0;
-  /*if ((f = process_get_file (fd)) == NULL)
+  if ((f = process_get_file (fd)) == NULL)
     {
       lock_release (&file_lock);
       return 0;
     }
   size = file_write (f, buffer, size);
   lock_release (&file_lock);
-  return size;*/
+  return size;
 }
 
 static tid_t fork2(const char *thread_name){}
@@ -208,23 +207,21 @@ static bool create (const char *file, unsigned initial_size){
 	if(file==NULL){
 		exit(-1);
 	}
-	else if(initial_size == 0) return 0;
-	else {
-		return filesys_create(file, initial_size);
-	}
+	return filesys_create(file, initial_size);
 }
 static bool remove (const char *file){
 	return filesys_remove(file);
 }
 
-//아래는 다 다시짜야함
 static int open (const char *file){
 	int result = -1;
-  lock_acquire (&file_lock);
-  // process_add_file는 NULL에서 -1 반환하므로 안전합니다.
-  result = process_add_file (filesys_open (file));
-  lock_release (&file_lock);
-  return result;
+	lock_acquire (&file_lock);
+	// process_add_file는 NULL에서 -1 반환하므로 안전합니다.
+	if (file == NULL || file == "") exit(-1);
+	struct file *f = filesys_open (file);
+	result = process_add_file (f);
+	lock_release (&file_lock);
+	return result;
 }
 static int filesize (int fd){
 	struct file *f = process_get_file (fd);

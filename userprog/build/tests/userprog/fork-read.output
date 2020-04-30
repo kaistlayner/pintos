@@ -18,8 +18,8 @@ Executing 'fork-read':
 (fork-read) read() returned 9 instead of 353: FAILED
 fork-read: exit(1)
 Execution of 'fork-read' complete.
-Timer: 76 ticks
-Thread: 30 idle ticks, 44 kernel ticks, 2 user ticks
+Timer: 75 ticks
+Thread: 30 idle ticks, 44 kernel ticks, 1 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 121 reads, 256 writes
 hd1:0: 109 reads, 0 writes

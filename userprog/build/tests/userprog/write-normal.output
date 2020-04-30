@@ -4,7 +4,7 @@ Kernel command line: -q -f put write-normal put sample.txt run write-normal
 Pintos booting with: 
 	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
 	ext_mem: 0x100000 ~ 0xffe0000 (Usable: 260,992 kB)
-Calibrating timer...  209,510,400 loops/s.
+Calibrating timer...  183,296,000 loops/s.
 hd0:0: detected 313 sector (156 kB) disk, model "QEMU HARDDISK", serial "QM00001"
 hd0:1: detected 20,160 sector (9 MB) disk, model "QEMU HARDDISK", serial "QM00002"
 hd1:0: detected 104 sector (52 kB) disk, model "QEMU HARDDISK", serial "QM00003"
@@ -16,15 +16,15 @@ Executing 'write-normal':
 (write-normal) begin
 (write-normal) create "test.txt"
 (write-normal) open "test.txt"
-Kernel PANIC at ../../threads/synch.c:213 in lock_acquire(): assertion `!lock_held_by_current_thread (lock)' failed.
-Call stack: 0x80042185c6 0x800420abb3 0x800421d6b3 0x800421d571 0x800421d31f 0x4003b7 0x40048b 0x4001ee 0x40024c 0x400ced.
-The `backtrace' program can make call stacks useful.
-Read "Backtraces" in the "Debugging Tools" chapter
-of the Pintos documentation for more information.
-Timer: 74 ticks
-Thread: 30 idle ticks, 43 kernel ticks, 1 user ticks
+(write-normal) end
+write-normal: exit(0)
+Execution of 'write-normal' complete.
+Timer: 76 ticks
+Thread: 30 idle ticks, 44 kernel ticks, 2 user ticks
 hd0:0: 0 reads, 0 writes
-hd0:1: 141 reads, 259 writes
+hd0:1: 142 reads, 260 writes
 hd1:0: 104 reads, 0 writes
-Console: 1305 characters output
-Key
+Console: 990 characters output
+Keyboard: 0 keys pressed
+Exception: 0 page faults
+Powering off...

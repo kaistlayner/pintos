@@ -4,7 +4,7 @@ Kernel command line: -q -f put syn-read put child-syn-read run syn-read
 Pintos booting with: 
 	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
 	ext_mem: 0x100000 ~ 0xffe0000 (Usable: 260,992 kB)
-Calibrating timer...  155,443,200 loops/s.
+Calibrating timer...  209,510,400 loops/s.
 hd0:0: detected 313 sector (156 kB) disk, model "QEMU HARDDISK", serial "QM00001"
 hd0:1: detected 20,160 sector (9 MB) disk, model "QEMU HARDDISK", serial "QM00002"
 hd1:0: detected 221 sector (110 kB) disk, model "QEMU HARDDISK", serial "QM00003"
@@ -17,15 +17,27 @@ Executing 'syn-read':
 (syn-read) create "data"
 (syn-read) open "data"
 (syn-read) write "data"
-Kernel PANIC at ../../threads/synch.c:213 in lock_acquire(): assertion `!lock_held_by_current_thread (lock)' failed.
-Call stack: 0x80042185c6 0x800420abb3 0x800421d6b3 0x800421d571 0x800421d31f 0x40040a 0x40047e 0x400273 0x400fa7 0x400ff0.
-The `backtrace' program can make call stacks useful.
-Read "Backtraces" in the "Debugging Tools" chapter
-of the Pintos documentation for more information.
-Timer: 80 ticks
-Thread: 30 idle ticks, 47 kernel ticks, 3 user ticks
+(syn-read) close "data"
+(syn-read) exec child 1 of 10: "child-syn-read 0"
+(syn-read) exec child 2 of 10: "child-syn-read 1"
+(syn-read) exec child 3 of 10: "child-syn-read 2"
+(syn-read) exec child 4 of 10: "child-syn-read 3"
+(syn-read) exec child 5 of 10: "child-syn-read 4"
+(syn-read) exec child 6 of 10: "child-syn-read 5"
+(syn-read) exec child 7 of 10: "child-syn-read 6"
+(syn-read) exec child 8 of 10: "child-syn-read 7"
+(syn-read) exec child 9 of 10: "child-syn-read 8"
+(syn-read) exec child 10 of 10: "child-syn-read 9"
+(syn-read) wait for child 1 of 10 returned -1 (expected 0)
+(syn-read) wait for child 1 of 10 returned -1 (expected 0): FAILED
+syn-read: exit(1)
+Execution of 'syn-read' complete.
+Timer: 79 ticks
+Thread: 30 idle ticks, 46 kernel ticks, 3 user ticks
 hd0:0: 0 reads, 0 writes
-hd0:1: 136 reads, 494 writes
+hd0:1: 136 reads, 496 writes
 hd1:0: 221 reads, 0 writes
-Console: 1302 characters output
-Key
+Console: 1611 characters output
+Keyboard: 0 keys pressed
+Exception: 0 page faults
+Powering off...

@@ -54,6 +54,7 @@ Differences in `diff -u' format:
 - child: exit(5)
 - (fork-recursive) Parent: child exit status is 5
 - child: exit(4)
-  (fork-recursive) Parent: child exit status is 4
+- (fork-recursive) Parent: child exit status is 4
++ (fork-recursive) Parent: child exit status is -1
   (fork-recursive) end
   fork-recursive: exit(0)

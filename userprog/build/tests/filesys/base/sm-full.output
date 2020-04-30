@@ -4,7 +4,7 @@ Kernel command line: -q -f put sm-full run sm-full
 Pintos booting with: 
 	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
 	ext_mem: 0x100000 ~ 0xffe0000 (Usable: 260,992 kB)
-Calibrating timer...  209,510,400 loops/s.
+Calibrating timer...  157,081,600 loops/s.
 hd0:0: detected 313 sector (156 kB) disk, model "QEMU HARDDISK", serial "QM00001"
 hd0:1: detected 20,160 sector (9 MB) disk, model "QEMU HARDDISK", serial "QM00002"
 hd1:0: detected 104 sector (52 kB) disk, model "QEMU HARDDISK", serial "QM00003"
@@ -16,15 +16,18 @@ Executing 'sm-full':
 (sm-full) create "quux"
 (sm-full) open "quux"
 (sm-full) writing "quux"
-Kernel PANIC at ../../threads/synch.c:213 in lock_acquire(): assertion `!lock_held_by_current_thread (lock)' failed.
-Call stack: 0x80042185c6 0x800420abb3 0x800421d6b3 0x800421d571 0x800421d31f 0x40027d 0x400351 0x400d3c 0x400131 0x400e1a 0x400e63.
-The `backtrace' program can make call stacks useful.
-Read "Backtraces" in the "Debugging Tools" chapter
-of the Pintos documentation for more information.
-Timer: 74 ticks
-Thread: 30 idle ticks, 42 kernel ticks, 2 user ticks
+(sm-full) close "quux"
+(sm-full) open "quux" for verification
+(sm-full) size of quux (8) differs from expected (5678)
+(sm-full) read of 512 bytes at offset 0 in "quux" returned 9: FAILED
+sm-full: exit(1)
+Execution of 'sm-full' complete.
+Timer: 76 ticks
+Thread: 30 idle ticks, 43 kernel ticks, 3 user ticks
 hd0:0: 0 reads, 0 writes
-hd0:1: 106 reads, 260 writes
+hd0:1: 111 reads, 272 writes
 hd1:0: 104 reads, 0 writes
-Console: 1236 characters output
-Key
+Console: 1070 characters output
+Keyboard: 0 keys pressed
+Exception: 0 page faults
+Powering off...

@@ -16,17 +16,17 @@ Putting 'child-close' into the file system...
 Executing 'multi-child-fd':
 (multi-child-fd) begin
 (multi-child-fd) open "sample.txt"
-(multi-child-fd) wait(exec()) = 4
+(multi-child-fd) wait(exec()) = -1
 (multi-child-fd) size of sample.txt (8) differs from expected (373)
 (multi-child-fd) read of 373 bytes at offset 0 in "sample.txt" returned 9: FAILED
 multi-child-fd: exit(1)
 Execution of 'multi-child-fd' complete.
-Timer: 76 ticks
-Thread: 30 idle ticks, 45 kernel ticks, 1 user ticks
+Timer: 77 ticks
+Thread: 30 idle ticks, 45 kernel ticks, 2 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 146 reads, 478 writes
 hd1:0: 215 reads, 0 writes
-Console: 1203 characters output
+Console: 1204 characters output
 Keyboard: 0 keys pressed
 Exception: 0 page faults
 Powering off...
