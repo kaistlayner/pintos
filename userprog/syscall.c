@@ -233,7 +233,7 @@ static int filesize (int fd){
 // 메모리 유효 검사 추가 필요
 static int read (int fd, void *buffer, unsigned size){
 	int ret;
-	lock_acquire(&file_lock)
+	lock_acquire(&file_lock);
 	struct file *f;
 	unsigned count = size;
 
