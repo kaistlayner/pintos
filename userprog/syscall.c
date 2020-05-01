@@ -130,7 +130,7 @@ syscall_handler (struct intr_frame *f) {
 			f->R.rax = open ((const char *)one);
 			break;
 		case SYS_FILESIZE:              /* Obtain a file's size. */
-			filesize ((int) one);
+		  f->R.rax = filesize ((int) one);
 			break;
 		case SYS_READ:                   /* Read from a file. */
 			f->R.rax = read ((int) one, (void *)two, (unsigned) three);
