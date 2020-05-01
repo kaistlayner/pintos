@@ -65,7 +65,7 @@ syscall_init (void) {
 //uintptr_t esp
 /*static void pick_argu(int64_t *args, struct intr_frame *f, int n){
 	int i;
-	
+
 	int argc = (int) f->R.rdi;
 	uint64_t argv = f->R.rsi;
 	printf("saved argc : %d\n",argc);
@@ -77,7 +77,7 @@ syscall_init (void) {
 	}
 	printf("recall esp : %x\n", f->rsp);
 	for (i=0; i<n; i++){
-		
+
 		if(i==1){
 			*(args+i) = f->R.rdi;
 		}
@@ -103,7 +103,7 @@ syscall_handler (struct intr_frame *f) {
 	uint64_t two = f->R.rsi;
 	uint64_t three = f->R.rdx;
 	//uint64_t four = f->R.r10;
-	
+
 	switch ((int)f->R.rax){
 		case SYS_HALT:                   /* Halt the operating system. */
 			halt();
@@ -133,7 +133,7 @@ syscall_handler (struct intr_frame *f) {
 			filesize ((int) one);
 			break;
 		case SYS_READ:                   /* Read from a file. */
-			read ((int) one, (void *)two, (unsigned) three);
+			f->R.rax = read ((int) one, (void *)two, (unsigned) three);
 			break;
 		case SYS_WRITE:                  /* Write to a file. */
 			f->R.rax = write((int)one,(const void *)two,(unsigned)three);
@@ -182,7 +182,7 @@ write (int fd, const void * buffer, unsigned size)
     {
       putbuf (buffer, size);
       lock_release (&file_lock);
-      return size;  
+      return size;
     }
   if ((f = process_get_file (fd)) == NULL)
     {
@@ -198,9 +198,9 @@ static tid_t fork2(const char *thread_name){}
 static int exec (const char *cmd_line){
 	tid_t tid = process_exec(cmd_line);
 	struct thread *ch = child_thread(tid);
-	
+
 	sema_down(&ch->exec_wait);
-	
+
 	return tid;
 }
 static bool create (const char *file, unsigned initial_size){
@@ -229,12 +229,39 @@ static int filesize (int fd){
     return -1;
 	return file_length (f);
 }
-static int read (int fd, void *buffer, unsigned size){}
+
+// 메모리 유효 검사 추가 필요
+static int read (int fd, void *buffer, unsigned size){
+	int ret;
+	lock_acquire(&file_lock)
+	struct file *f;
+	unsigned count = size;
+
+	if (fd == 0) {
+		for (i=0; i<size; i++) {
+			*((char *)buffer+i) = input_getc();
+		}
+		lock_release(&file_lock);
+		return size;
+	}
+	else {
+		f = process_get_file(fd);
+		if (f == NULL) {
+			lock_release(&file_lock);
+			return 1;
+		}
+		else {
+			size = file_read(f, buffer, size);
+			lock_release(&file_lock);
+			return size;
+		}
+	}
+}
 static void seek (int fd, unsigned position){
 	struct file *f = process_get_file (fd);
 	if (f == NULL)
 		return;
-	file_seek (f, position);  
+	file_seek (f, position);
 }
 static unsigned tell (int fd){
 	struct file *f = process_get_file (fd);
@@ -245,4 +272,3 @@ static unsigned tell (int fd){
 static void close (int fd){
 	process_close_file (fd);
 }
-
