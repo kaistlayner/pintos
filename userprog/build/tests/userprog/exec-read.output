@@ -17,15 +17,15 @@ Executing 'exec-read':
 (exec-read) begin
 (exec-read) open "sample.txt"
 (exec-read) read "sample.txt" first 20 bytes
-(exec-read) read "sample.txt" first 20 bytes: FAILED
-exec-read: exit(1)
-Execution of 'exec-read' complete.
-Timer: 77 ticks
-Thread: 30 idle ticks, 46 kernel ticks, 1 user ticks
+Kernel PANIC at ../../threads/mmu.c:236 in pml4_set_page(): assertion `is_user_vaddr (upage)' failed.
+Call stack: 0x80042185d4 0x800420d79c 0x800421c15a 0x800420d0b6 0x800420d168 0x800420d20d 0x800420d2a5 0x800421c28c 0x8004207fd2.
+The `backtrace' program can make call stacks useful.
+Read "Backtraces" in the "Debugging Tools" chapter
+of the Pintos documentation for more information.
+Timer: 78 ticks
+Thread: 30 idle ticks, 47 kernel ticks, 1 user ticks
 hd0:0: 0 reads, 0 writes
-hd0:1: 149 reads, 494 writes
+hd0:1: 150 reads, 494 writes
 hd1:0: 223 reads, 0 writes
-Console: 1075 characters output
-Keyboard: 0 keys pressed
-Exception: 0 page faults
-Powering off...
+Console: 1354 characters output
+Key

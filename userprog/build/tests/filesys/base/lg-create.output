@@ -4,7 +4,7 @@ Kernel command line: -q -f put lg-create run lg-create
 Pintos booting with: 
 	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
 	ext_mem: 0x100000 ~ 0xffe0000 (Usable: 260,992 kB)
-Calibrating timer...  209,510,400 loops/s.
+Calibrating timer...  157,081,600 loops/s.
 hd0:0: detected 313 sector (156 kB) disk, model "QEMU HARDDISK", serial "QM00001"
 hd0:1: detected 20,160 sector (9 MB) disk, model "QEMU HARDDISK", serial "QM00002"
 hd1:0: detected 104 sector (52 kB) disk, model "QEMU HARDDISK", serial "QM00003"
@@ -15,16 +15,17 @@ Executing 'lg-create':
 (lg-create) begin
 (lg-create) create "blargle"
 (lg-create) open "blargle" for verification
-(lg-create) size of blargle (8) differs from expected (75678)
-(lg-create) read of 512 bytes at offset 0 in "blargle" returned 9: FAILED
-lg-create: exit(1)
+(lg-create) verified contents of "blargle"
+(lg-create) close "blargle"
+(lg-create) end
+lg-create: exit(0)
 Execution of 'lg-create' complete.
-Timer: 76 ticks
-Thread: 30 idle ticks, 43 kernel ticks, 3 user ticks
+Timer: 78 ticks
+Thread: 30 idle ticks, 44 kernel ticks, 4 user ticks
 hd0:0: 0 reads, 0 writes
-hd0:1: 106 reads, 396 writes
+hd0:1: 254 reads, 396 writes
 hd1:0: 104 reads, 0 writes
-Console: 1035 characters output
+Console: 986 characters output
 Keyboard: 0 keys pressed
 Exception: 0 page faults
 Powering off...

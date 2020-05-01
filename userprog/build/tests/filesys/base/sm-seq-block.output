@@ -4,7 +4,7 @@ Kernel command line: -q -f put sm-seq-block run sm-seq-block
 Pintos booting with: 
 	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
 	ext_mem: 0x100000 ~ 0xffe0000 (Usable: 260,992 kB)
-Calibrating timer...  209,100,800 loops/s.
+Calibrating timer...  209,510,400 loops/s.
 hd0:0: detected 313 sector (156 kB) disk, model "QEMU HARDDISK", serial "QM00001"
 hd0:1: detected 20,160 sector (9 MB) disk, model "QEMU HARDDISK", serial "QM00002"
 hd1:0: detected 104 sector (52 kB) disk, model "QEMU HARDDISK", serial "QM00003"
@@ -18,16 +18,17 @@ Executing 'sm-seq-block':
 (sm-seq-block) writing "noodle"
 (sm-seq-block) close "noodle"
 (sm-seq-block) open "noodle" for verification
-(sm-seq-block) size of noodle (8) differs from expected (5678)
-(sm-seq-block) read of 512 bytes at offset 0 in "noodle" returned 9: FAILED
-sm-seq-block: exit(1)
+(sm-seq-block) verified contents of "noodle"
+(sm-seq-block) close "noodle"
+(sm-seq-block) end
+sm-seq-block: exit(0)
 Execution of 'sm-seq-block' complete.
 Timer: 77 ticks
-Thread: 30 idle ticks, 44 kernel ticks, 3 user ticks
+Thread: 30 idle ticks, 43 kernel ticks, 4 user ticks
 hd0:0: 0 reads, 0 writes
-hd0:1: 132 reads, 283 writes
+hd0:1: 144 reads, 283 writes
 hd1:0: 104 reads, 0 writes
-Console: 1154 characters output
+Console: 1109 characters output
 Keyboard: 0 keys pressed
 Exception: 0 page faults
 Powering off...

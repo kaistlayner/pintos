@@ -18,16 +18,17 @@ Executing 'lg-full':
 (lg-full) writing "quux"
 (lg-full) close "quux"
 (lg-full) open "quux" for verification
-(lg-full) size of quux (8) differs from expected (75678)
-(lg-full) read of 512 bytes at offset 0 in "quux" returned 9: FAILED
-lg-full: exit(1)
+(lg-full) verified contents of "quux"
+(lg-full) close "quux"
+(lg-full) end
+lg-full: exit(0)
 Execution of 'lg-full' complete.
-Timer: 78 ticks
-Thread: 30 idle ticks, 44 kernel ticks, 4 user ticks
+Timer: 80 ticks
+Thread: 30 idle ticks, 44 kernel ticks, 6 user ticks
 hd0:0: 0 reads, 0 writes
-hd0:1: 111 reads, 544 writes
+hd0:1: 259 reads, 544 writes
 hd1:0: 104 reads, 0 writes
-Console: 1071 characters output
+Console: 1020 characters output
 Keyboard: 0 keys pressed
 Exception: 0 page faults
 Powering off...

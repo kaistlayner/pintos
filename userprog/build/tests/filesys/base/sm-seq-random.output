@@ -4,7 +4,7 @@ Kernel command line: -q -f put sm-seq-random run sm-seq-random
 Pintos booting with: 
 	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
 	ext_mem: 0x100000 ~ 0xffe0000 (Usable: 260,992 kB)
-Calibrating timer...  202,956,800 loops/s.
+Calibrating timer...  104,755,200 loops/s.
 hd0:0: detected 313 sector (156 kB) disk, model "QEMU HARDDISK", serial "QM00001"
 hd0:1: detected 20,160 sector (9 MB) disk, model "QEMU HARDDISK", serial "QM00002"
 hd1:0: detected 104 sector (52 kB) disk, model "QEMU HARDDISK", serial "QM00003"
@@ -18,16 +18,17 @@ Executing 'sm-seq-random':
 (sm-seq-random) writing "nibble"
 (sm-seq-random) close "nibble"
 (sm-seq-random) open "nibble" for verification
-(sm-seq-random) size of nibble (8) differs from expected (5678)
-(sm-seq-random) read of 512 bytes at offset 0 in "nibble" returned 9: FAILED
-sm-seq-random: exit(1)
+(sm-seq-random) verified contents of "nibble"
+(sm-seq-random) close "nibble"
+(sm-seq-random) end
+sm-seq-random: exit(0)
 Execution of 'sm-seq-random' complete.
-Timer: 76 ticks
-Thread: 30 idle ticks, 44 kernel ticks, 3 user ticks
+Timer: 75 ticks
+Thread: 30 idle ticks, 41 kernel ticks, 4 user ticks
 hd0:0: 0 reads, 0 writes
-hd0:1: 127 reads, 281 writes
+hd0:1: 139 reads, 281 writes
 hd1:0: 104 reads, 0 writes
-Console: 1168 characters output
+Console: 1124 characters output
 Keyboard: 0 keys pressed
 Exception: 0 page faults
 Powering off...

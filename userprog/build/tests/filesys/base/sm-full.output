@@ -18,16 +18,17 @@ Executing 'sm-full':
 (sm-full) writing "quux"
 (sm-full) close "quux"
 (sm-full) open "quux" for verification
-(sm-full) size of quux (8) differs from expected (5678)
-(sm-full) read of 512 bytes at offset 0 in "quux" returned 9: FAILED
-sm-full: exit(1)
+(sm-full) verified contents of "quux"
+(sm-full) close "quux"
+(sm-full) end
+sm-full: exit(0)
 Execution of 'sm-full' complete.
-Timer: 76 ticks
-Thread: 30 idle ticks, 43 kernel ticks, 3 user ticks
+Timer: 77 ticks
+Thread: 30 idle ticks, 44 kernel ticks, 3 user ticks
 hd0:0: 0 reads, 0 writes
-hd0:1: 111 reads, 272 writes
+hd0:1: 123 reads, 272 writes
 hd1:0: 104 reads, 0 writes
-Console: 1070 characters output
+Console: 1020 characters output
 Keyboard: 0 keys pressed
 Exception: 0 page faults
 Powering off...

@@ -18,7 +18,7 @@ void syscall_handler (struct intr_frame *);
 
 static void halt (void);
 void exit(int n);
-static tid_t fork2(const char *thread_name);
+static tid_t fork2(const char *thread_name, struct intr_frame *if_);
 static int exec (const char *cmd_line);
 static int wait(tid_t tid);
 static bool create (const char *file, unsigned initial_size);
@@ -112,7 +112,7 @@ syscall_handler (struct intr_frame *f) {
 			exit(one);
 			break;
 		case SYS_FORK:                   /* Clone current process. */
-			fork2((const char *)one);
+			f->R.rax = fork2((const char *)one, f);
 			break;
 		case SYS_EXEC:                   /* Switch current process. */
 			f->R.rax = exec ((const char *)one);
@@ -130,7 +130,7 @@ syscall_handler (struct intr_frame *f) {
 			f->R.rax = open ((const char *)one);
 			break;
 		case SYS_FILESIZE:              /* Obtain a file's size. */
-		  f->R.rax = filesize ((int) one);
+		 	f->R.rax = filesize ((int) one);
 			break;
 		case SYS_READ:                   /* Read from a file. */
 			f->R.rax = read ((int) one, (void *)two, (unsigned) three);
@@ -142,7 +142,7 @@ syscall_handler (struct intr_frame *f) {
 			seek ((int) one, (unsigned) two);
 			break;
 		case SYS_TELL:                   /* Report current position in a file. */
-			tell((int)one);
+			f->R.rax = tell((int)one);
 			break;
 		case SYS_CLOSE:
 			close((int)one);
@@ -167,14 +167,12 @@ void exit(int n){
 	thread_exit ();
 }
 
-static int
-wait(tid_t tid)
+static int wait(tid_t tid)
 {
   return process_wait(tid);
 }
 
-static int
-write (int fd, const void * buffer, unsigned size)
+static int write (int fd, const void * buffer, unsigned size)
 {
   struct file *f;
   lock_acquire (&file_lock);
@@ -194,7 +192,10 @@ write (int fd, const void * buffer, unsigned size)
   return size;
 }
 
-static tid_t fork2(const char *thread_name){}
+static tid_t fork2(const char *thread_name, struct intr_frame *if_){
+	return process_fork(thread_name, if_);
+}
+
 static int exec (const char *cmd_line){
 	tid_t tid = process_exec(cmd_line);
 	struct thread *ch = child_thread(tid);
@@ -225,8 +226,7 @@ static int open (const char *file){
 }
 static int filesize (int fd){
 	struct file *f = process_get_file (fd);
-  if (f == NULL)
-    return -1;
+  	if (f == NULL) return -1;
 	return file_length (f);
 }
 

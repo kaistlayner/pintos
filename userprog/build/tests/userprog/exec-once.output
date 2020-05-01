@@ -17,8 +17,8 @@ Executing 'exec-once':
 (exec-once) I'm your father
 exec-once: exit(-1)
 Execution of 'exec-once' complete.
-Timer: 75 ticks
-Thread: 30 idle ticks, 44 kernel ticks, 1 user ticks
+Timer: 76 ticks
+Thread: 30 idle ticks, 46 kernel ticks, 0 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 106 reads, 434 writes
 hd1:0: 198 reads, 0 writes
