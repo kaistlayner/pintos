@@ -217,7 +217,6 @@ static bool remove (const char *file){
 static int open (const char *file){
 	int result = -1;
 	lock_acquire (&file_lock);
-	// process_add_file는 NULL에서 -1 반환하므로 안전합니다.
 	if (file == NULL || file == "") exit(-1);
 	struct file *f = filesys_open (file);
 	result = process_add_file (f);

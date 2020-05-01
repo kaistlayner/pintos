@@ -166,7 +166,7 @@ process_fork (const char *name, struct intr_frame *if_) {
 	return thread_create (name, PRI_DEFAULT, __do_fork, thread_current ());
 }
 
-bool dup_func(uint64_t *pte){
+static bool dup_func(uint64_t *pte){
 	return !(*(pte) & PTE_U);
 }
 
@@ -183,7 +183,7 @@ duplicate_pte (uint64_t *pte, void *va, void *aux) {
 	
 	pte_for_each_func *func = dup_func;
 	/* 1. TODO: If the parent_page is kernel page, then return immediately. */
-	if(pml4_for_each (parent->pml4, func, aux)) return false;
+	if(dup_func(pte)) return false;
 	/* 2. Resolve VA from the parent's page map level 4. */
 	parent_page = pml4_get_page (parent->pml4, va);
 
@@ -194,15 +194,17 @@ duplicate_pte (uint64_t *pte, void *va, void *aux) {
 	/* 4. TODO: Duplicate parent's page to the new page and
 	 *    TODO: check whether parent's page is writable or not (set WRITABLE
 	 *    TODO: according to the result). */
-	
+	memcpy(newpage, parent_page, sizeof(PGSIZE));
 	//parent_page = pg_round_down(pte);
-	writable = false;
+	
+	writable = is_writable(pte);
 	//bool success = (pml4_get_page (current->pml4, parent_page) == NULL && pml4_set_page (current->pml4, parent_page, newpage, writable));
-	pml4_set_page (current->pml4, parent_page, newpage, writable);
+	
+	//pml4_set_page (current->pml4, parent_page, newpage, writable);
 	
 	/* 5. Add new page to child's page table at address VA with WRITABLE
 	 *    permission. */
-	writable = true;
+
 	if (!pml4_set_page (current->pml4, va, newpage, writable)) {
 		/* 6. TODO: if fail to insert page, do error handling. */
 		NOT_REACHED();
@@ -238,8 +240,10 @@ __do_fork (void *aux) {
 	if (!supplemental_page_table_copy (&current->spt, &parent->spt))
 		goto error;
 #else
-	if (!pml4_for_each (parent->pml4, duplicate_pte, parent))
+	if (!pml4_for_each (parent->pml4, duplicate_pte, parent)){
+		NOT_REACHED();
 		goto error;
+	}
 #endif
 
 	/* TODO: Your code goes here.
@@ -252,8 +256,11 @@ __do_fork (void *aux) {
 	int i;
 	for (i=2;i<parent->next_fd;i++){
 		struct file *cp_file = file_duplicate((parent->fds)[i]);
-		process_add_file(cp_file);
+		int result = process_add_file(cp_file);
+		NOT_REACHED();
+		printf("fd : %d added in fork\n", result);
 	}
+	NOT_REACHED();
 	
 	lock_release(&file_lock);
 	
