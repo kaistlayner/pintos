@@ -238,6 +238,7 @@ static int read (int fd, void *buffer, unsigned size){
 	unsigned count = size;
 
 	if (fd == 0) {
+		int i;
 		for (i=0; i<size; i++) {
 			*((char *)buffer+i) = input_getc();
 		}
