@@ -31,6 +31,7 @@ static void seek (int fd, unsigned position);
 static unsigned tell (int fd);
 static void close (int fd);
 struct lock file_lock;
+struct semaphore fork_sema;
 
 /* System call.
  *
@@ -58,6 +59,7 @@ syscall_init (void) {
 			FLAG_IF | FLAG_TF | FLAG_DF | FLAG_IOPL | FLAG_AC | FLAG_NT);
 
 	lock_init (&file_lock);
+	sema_init(&fork_sema, 0);
 
 
 
@@ -103,6 +105,7 @@ syscall_handler (struct intr_frame *f) {
 	uint64_t two = f->R.rsi;
 	uint64_t three = f->R.rdx;
 	//uint64_t four = f->R.r10;
+	uint64_t rax;
 
 	switch ((int)f->R.rax){
 		case SYS_HALT:                   /* Halt the operating system. */
@@ -112,7 +115,9 @@ syscall_handler (struct intr_frame *f) {
 			exit(one);
 			break;
 		case SYS_FORK:                   /* Clone current process. */
-			f->R.rax = fork2((const char *)one, f);
+			rax = fork2((const char *)one, f);
+			//printf("fork return : %d\n",rax);
+			f->R.rax = rax;
 			break;
 		case SYS_EXEC:                   /* Switch current process. */
 			f->R.rax = exec ((const char *)one);
@@ -193,7 +198,28 @@ static int write (int fd, const void * buffer, unsigned size)
 }
 
 static tid_t fork2(const char *thread_name, struct intr_frame *if_){
-	return process_fork(thread_name, if_);
+	//printf("before fork : %d\n", thread_current()->tid);
+	tid_t tid = process_fork(thread_name, if_);
+	//if_->R.rax = tid;
+	//printf("child tid : %d\n", tid);
+	//printf("after fork : %d\n", thread_current()->tid);
+	if (tid != thread_current()->tid) {
+		/*struct thread *ch = child_thread(tid);
+		while(!ch->fork_done){
+			thread_yield();
+		}*/
+		//printf("before sema\n");
+		//sema_down(&fork_sema);
+		//printf("after sema\n");
+		thread_yield();
+		return tid;
+	}
+	else if (tid == thread_current()->tid) {
+		//forksema_up(&fork_sema);
+		return 0;
+	}
+	NOT_REACHED();
+	return -1;
 }
 
 static int exec (const char *cmd_line){

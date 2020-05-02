@@ -26,6 +26,7 @@
 char *fn_copy;
 int l, argc;
 extern struct lock file_lock;
+extern struct semaphore fork_sema;
 
 static void process_cleanup (void);
 static bool load (const char *file_name, struct intr_frame *if_);
@@ -76,11 +77,9 @@ static void arg_to_stack(struct intr_frame *if_){
 		}
 		temp = strlen(fn_copy)+1;
 		delta2 = delta + 8 * (argc - i) - (l - saved_length);
-		//printf("# argv %d : %x\n",i, esp);
 		strlcpy((char *)esp, fn_copy, temp);					// saving argvs
 
 		esp -= delta2;
-		//printf("# &argv %d : %x\n",i, esp);
 		*(uint64_t *)esp = (uint64_t)esp + delta2;	// saving argvs addr
 		esp += delta2;
 
@@ -89,14 +88,10 @@ static void arg_to_stack(struct intr_frame *if_){
 
 		saved_length += temp;
 	}
-	//printf("%d == %d \n",saved_length,l);
-	//printf("after saving arguments, stack pointer : %x\n", esp);
 	// move esp to push argvs' addr
 	esp -= delta;
 	*(uint64_t *)esp = 0;			// &argv[argc] = NULL
-	//printf("delta minus, stack pointer : %x\n", esp);
 	esp -= 8 * (argc + 1);
-	//printf("return address position, stack pointer : %x\n", esp);
 	//
 	/*
 	*(uint64_t *)esp = (uint64_t)esp + 4; // &argv
@@ -162,7 +157,7 @@ initd (void *f_name) {
 tid_t
 process_fork (const char *name, struct intr_frame *if_) {
 	/* Clone current thread to new thread.*/
-	thread_current()->tochild_if = if_;
+	thread_current()->tochild_if = *if_;
 	return thread_create (name, PRI_DEFAULT, __do_fork, thread_current ());
 }
 
@@ -181,9 +176,9 @@ duplicate_pte (uint64_t *pte, void *va, void *aux) {
 	void *newpage;
 	bool writable;
 	
-	pte_for_each_func *func = dup_func;
+	//pte_for_each_func *func = dup_func;
 	/* 1. TODO: If the parent_page is kernel page, then return immediately. */
-	if(dup_func(pte)) return false;
+	if(dup_func(pte)) return true;
 	/* 2. Resolve VA from the parent's page map level 4. */
 	parent_page = pml4_get_page (parent->pml4, va);
 
@@ -194,8 +189,10 @@ duplicate_pte (uint64_t *pte, void *va, void *aux) {
 	/* 4. TODO: Duplicate parent's page to the new page and
 	 *    TODO: check whether parent's page is writable or not (set WRITABLE
 	 *    TODO: according to the result). */
-	memcpy(newpage, parent_page, sizeof(PGSIZE));
+	 
 	//parent_page = pg_round_down(pte);
+	memcpy(newpage, parent_page, PGSIZE);
+	//
 	
 	writable = is_writable(pte);
 	//bool success = (pml4_get_page (current->pml4, parent_page) == NULL && pml4_set_page (current->pml4, parent_page, newpage, writable));
@@ -223,11 +220,13 @@ __do_fork (void *aux) {
 	struct thread *parent = (struct thread *) aux;
 	struct thread *current = thread_current ();
 	/* TODO: somehow pass the parent_if. (i.e. process_fork()'s if_) */
-	struct intr_frame *parent_if = parent->tochild_if;
+	struct intr_frame parent_if = (parent->tochild_if);
+	
 	bool succ = true;
 
 	/* 1. Read the cpu context to local stack. */
-	memcpy (&if_, parent_if, sizeof (struct intr_frame));
+	if_ = parent_if;
+	if_.R.rax = 0;
 
 	/* 2. Duplicate PT */
 	current->pml4 = pml4_create();
@@ -251,24 +250,28 @@ __do_fork (void *aux) {
 	 * TODO:       in include/filesys/file.h. Note that parent should not return
 	 * TODO:       from the fork() until this function successfully duplicates
 	 * TODO:       the resources of parent.*/
+	
 	lock_acquire(&file_lock);
 	
 	int i;
 	for (i=2;i<parent->next_fd;i++){
 		struct file *cp_file = file_duplicate((parent->fds)[i]);
 		int result = process_add_file(cp_file);
-		NOT_REACHED();
-		printf("fd : %d added in fork\n", result);
 	}
-	NOT_REACHED();
-	
 	lock_release(&file_lock);
+	current->fork_done == true;
+	
+	current->running_file = parent->running_file;
+	
+	
 	
 	process_init ();
-
+	
 	/* Finally, switch to the newly created process. */
-	if (succ)
+	if (succ){
 		do_iret (&if_);
+		
+	}
 error:
 	thread_exit ();
 }
@@ -326,12 +329,9 @@ process_wait (tid_t child_tid) {
 
 	if(ch == thread_current()) return -1;
 
-
 	sema_down(&ch->parent_wait);
-	//printf("wait for child done\n");
 	list_remove(&ch->child_elem);
 	temp = ch->exit_status;
-	//printf("child go on\n");
 	sema_up(&ch->child_wait);
 
 	
@@ -355,7 +355,6 @@ process_exit (void) {
 	}
 	cur->fds += 2;
 	palloc_free_page (cur->fds);
-	//file_close (cur->running_file);
 	
 	process_cleanup ();
 }

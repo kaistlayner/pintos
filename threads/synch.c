@@ -137,6 +137,22 @@ sema_up (struct semaphore *sema) {
 	intr_set_level (old_level);
 }
 
+void
+forksema_up (struct semaphore *sema) {
+	enum intr_level old_level;
+
+	ASSERT (sema != NULL);
+
+	old_level = intr_disable ();
+	if (!list_empty (&sema->waiters)){
+  		list_sort(&sema->waiters, higher_pri, 0);
+    	thread_unblock (list_entry (list_pop_front (&sema->waiters), struct thread, elem));
+	}
+	sema->value++;
+
+	intr_set_level (old_level);
+}
+
 static void sema_test_helper (void *sema_);
 
 /* Self-test for semaphores that makes control "ping-pong"

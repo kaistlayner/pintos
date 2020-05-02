@@ -361,7 +361,7 @@ thread_create (const char *name, int priority,
 	/* Initialize thread. */
 	init_thread (t, name, priority);
 	tid = t->tid = allocate_tid ();
-	
+	//printf("pid in thread create : %d\n", tid);
 	t->fds = palloc_get_multiple (PAL_ZERO, 2);
 	if (t->fds == NULL){
       palloc_free_page (t);
@@ -466,8 +466,8 @@ thread_exit (void) {
 	
 	struct list_elem *e;
 	struct thread *cur = thread_current();
-	
-	 /* for (e = list_begin (&cur ->child_list);
+	/*
+	 for (e = list_begin (&cur ->child_list);
        e != list_end (&cur ->child_list); )
     {
       struct thread *t = list_entry (e, struct thread, child_elem);
@@ -633,6 +633,7 @@ init_thread (struct thread *t, const char *name, int priority) {
 	sema_init (&t->parent_wait, 0);
 	sema_init (&t->child_wait, 0);
 	sema_init (&t->exec_wait, 0);
+	t->fork_done == false;
 	
  	list_push_back(&all_list, &t->all_elem);
 	t->waiting_for = NULL;

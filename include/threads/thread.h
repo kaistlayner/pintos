@@ -114,6 +114,7 @@ struct thread {
 	struct file **fds;
 	struct file *running_file;
 	int next_fd;
+	bool fork_done;
 
 #ifdef USERPROG
 	/* Owned by userprog/process.c. */
@@ -126,7 +127,7 @@ struct thread {
 
 	/* Owned by thread.c. */
 	struct intr_frame tf;               /* Information for switching */
-	struct intr_frame *tochild_if;
+	struct intr_frame tochild_if;
 	unsigned magic;                     /* Detects stack overflow. */
 };
 
