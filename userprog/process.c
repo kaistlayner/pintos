@@ -175,7 +175,7 @@ duplicate_pte (uint64_t *pte, void *va, void *aux) {
 	void *parent_page;
 	void *newpage;
 	bool writable;
-	
+
 	//pte_for_each_func *func = dup_func;
 	/* 1. TODO: If the parent_page is kernel page, then return immediately. */
 	if(dup_func(pte)) return true;
@@ -184,21 +184,21 @@ duplicate_pte (uint64_t *pte, void *va, void *aux) {
 
 	/* 3. TODO: Allocate new PAL_USER page for the child and set result to
 	 *    TODO: NEWPAGE. */
-	
+
 	newpage = (void*)palloc_get_page(PAL_USER);
 	/* 4. TODO: Duplicate parent's page to the new page and
 	 *    TODO: check whether parent's page is writable or not (set WRITABLE
 	 *    TODO: according to the result). */
-	 
+
 	//parent_page = pg_round_down(pte);
 	memcpy(newpage, parent_page, PGSIZE);
 	//
-	
+
 	writable = is_writable(pte);
 	//bool success = (pml4_get_page (current->pml4, parent_page) == NULL && pml4_set_page (current->pml4, parent_page, newpage, writable));
-	
+
 	//pml4_set_page (current->pml4, parent_page, newpage, writable);
-	
+
 	/* 5. Add new page to child's page table at address VA with WRITABLE
 	 *    permission. */
 
@@ -221,7 +221,7 @@ __do_fork (void *aux) {
 	struct thread *current = thread_current ();
 	/* TODO: somehow pass the parent_if. (i.e. process_fork()'s if_) */
 	struct intr_frame parent_if = (parent->tochild_if);
-	
+
 	bool succ = true;
 
 	/* 1. Read the cpu context to local stack. */
@@ -250,9 +250,9 @@ __do_fork (void *aux) {
 	 * TODO:       in include/filesys/file.h. Note that parent should not return
 	 * TODO:       from the fork() until this function successfully duplicates
 	 * TODO:       the resources of parent.*/
-	
+
 	lock_acquire(&file_lock);
-	
+
 	int i;
 	for (i=2;i<parent->next_fd;i++){
 		struct file *cp_file = file_duplicate((parent->fds)[i]);
@@ -260,17 +260,17 @@ __do_fork (void *aux) {
 	}
 	lock_release(&file_lock);
 	current->fork_done == true;
-	
+
 	current->running_file = parent->running_file;
-	
-	
-	
+
+
+
 	process_init ();
-	
+
 	/* Finally, switch to the newly created process. */
 	if (succ){
 		do_iret (&if_);
-		
+
 	}
 error:
 	thread_exit ();
@@ -283,6 +283,9 @@ process_exec (void *f_name) {
 	char *file_name = f_name;
 	bool success;
 	//printf("exec2 : %s\n",file_name);
+	file_name = palloc_get_page(0);
+	strlcpy(file_name, f_name, PGSIZE);
+
 	/* We cannot use the intr_frame in the thread structure.
 	 * This is because when current thread rescheduled,
 	 * it stores the execution information to the member. */
@@ -334,7 +337,7 @@ process_wait (tid_t child_tid) {
 	temp = ch->exit_status;
 	sema_up(&ch->child_wait);
 
-	
+
 	return temp;
 
 
@@ -349,13 +352,13 @@ process_exit (void) {
 	 * TODO: project2/process_termination.html).
 	 * TODO: We recommend you to implement process resource cleanup here. */
 	int i;
-	
+
 	for (i = cur->next_fd-1; i >= 2; i--){
 		file_close (cur->fds[i]);
 	}
 	cur->fds += 2;
 	palloc_free_page (cur->fds);
-	
+
 	process_cleanup ();
 }
 
@@ -468,9 +471,9 @@ load (const char *file_name, struct intr_frame *if_) {
 	off_t file_ofs;
 	bool success = false;
 	int i;
-	
+
 	strlcpy (fn_copy, file_name, PGSIZE);
-	
+
 	char *ptr1, *ptr2;
 	l = argc = 0;
 	ptr1 = strtok_r(fn_copy, " ", &ptr2);
@@ -485,9 +488,9 @@ load (const char *file_name, struct intr_frame *if_) {
 	if (t->pml4 == NULL)
 		goto done;
 	process_activate (thread_current ());
-	
+
 	lock_acquire(&file_lock);
-	
+
 	/* Open executable file. */
 	//printf("fncpy before = %s\n",fn_copy);
 	file = filesys_open (fn_copy);
@@ -512,7 +515,7 @@ load (const char *file_name, struct intr_frame *if_) {
 		printf ("load: %s: error loading executable\n", file_name);
 		goto done;
 	}
-	
+
 	/* Read program headers. */
 	file_ofs = ehdr.e_phoff;
 	for (i = 0; i < ehdr.e_phnum; i++) {

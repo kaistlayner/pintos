@@ -223,12 +223,13 @@ static tid_t fork2(const char *thread_name, struct intr_frame *if_){
 }
 
 static int exec (const char *cmd_line){
-	tid_t tid = process_exec(cmd_line);
-	struct thread *ch = child_thread(tid);
-
-	sema_down(&ch->exec_wait);
-
-	return tid;
+	//tid_t tid = process_exec(cmd_line);
+	//struct thread *ch = child_thread(tid);
+	int ret;
+	ret = process_exec(cmd_line);
+	struct thread* t = thread_current();
+	sema_down(&t->exec_wait);
+	return ret;
 }
 static bool create (const char *file, unsigned initial_size){
 	if(file==NULL){
