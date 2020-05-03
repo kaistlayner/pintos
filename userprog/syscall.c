@@ -275,7 +275,7 @@ static int read (int fd, void *buffer, unsigned size){
 		f = process_get_file(fd);
 		if (f == NULL) {
 			lock_release(&file_lock);
-			return 1;
+			return -1;
 		}
 		else {
 			size = file_read(f, buffer, size);
