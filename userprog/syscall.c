@@ -246,6 +246,9 @@ static int open (const char *file){
 	lock_acquire (&file_lock);
 	if (file == NULL || file == "") exit(-1);
 	struct file *f = filesys_open (file);
+	if (!strcmp(thread_current()->name, file)) {
+		file_deny_write(f);
+	}
 	result = process_add_file (f);
 	lock_release (&file_lock);
 	return result;
