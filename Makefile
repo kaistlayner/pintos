@@ -1,11 +1,11 @@
-BUILD_SUBDIRS = threads userprog filesys
+BUILD_SUBDIRS = threads userprog vm filesys
 TAR_PATH := team${TEAM}.tar.gz
 
 all::
 	@echo "Run 'make' in subdirectories: $(BUILD_SUBDIRS)."
 	@echo "This top-level make has only 'clean' targets."
 
-CLEAN_SUBDIRS = $(BUILD_SUBDIRS)
+CLEAN_SUBDIRS = threads userprog vm 
 
 clean::
 	for d in $(CLEAN_SUBDIRS); do $(MAKE) -C $$d $@; done
@@ -36,5 +36,5 @@ ifeq ($(shell echo ${TEAM} | egrep "^[1-9]{1}[0-9]{0,2}$$"),)
 else
 	@tar -zcf /tmp/${TAR_PATH} . && \
 		mv /tmp/${TAR_PATH} . && \
-		echo "Successfully arhived. Submit '${TAR_PATH}'."
+		echo "Successfully archived. Submit '${TAR_PATH}'."
 endif
