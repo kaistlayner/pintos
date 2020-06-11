@@ -54,7 +54,7 @@ vm_alloc_page_with_initializer (enum vm_type type, void *upage, bool writable,
 		 * TODO: and then create "uninit" page struct by calling uninit_new. You
 		 * TODO: should modify the field after calling the uninit_new. */
 		if (!vm_claim_page (upage)) return false;
-		struct page *pg = spt_find_page(upage);
+		struct page *pg = spt_find_page(spt, upage);
 		//pg->operations->type = type;
 		if (type == VM_ANON) uninit_new(pg, upage, init, type, aux, anon_initializer);
 		else if (type == VM_FILE) uninit_new(pg, upage, init, type, aux, file_map_initializer);
