@@ -14,18 +14,19 @@ Putting 'exec-boundary' into the file system...
 Putting 'child-simple' into the file system...
 Executing 'exec-boundary':
 (exec-boundary) begin
-child-simple: exit(-1)
+(child-simple) run
+child-simple: exit(81)
 (exec-boundary) fork
 (exec-boundary) wait
-(exec-boundary) wait: FAILED
-exec-boundary: exit(1)
+(exec-boundary) end
+exec-boundary: exit(0)
 Execution of 'exec-boundary' complete.
-Timer: 78 ticks
-Thread: 30 idle ticks, 45 kernel ticks, 3 user ticks
+Timer: 77 ticks
+Thread: 30 idle ticks, 44 kernel ticks, 3 user ticks
 hd0:0: 0 reads, 0 writes
-hd0:1: 107 reads, 440 writes
+hd0:1: 158 reads, 440 writes
 hd1:0: 201 reads, 0 writes
-Console: 1013 characters output
+Console: 1023 characters output
 Keyboard: 0 keys pressed
-Exception: 1 page faults
+Exception: 0 page faults
 Powering off...

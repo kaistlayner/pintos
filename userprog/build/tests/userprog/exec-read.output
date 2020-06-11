@@ -17,17 +17,23 @@ Executing 'exec-read':
 (exec-read) begin
 (exec-read) open "sample.txt"
 (exec-read) read "sample.txt" first 20 bytes
-child-read: exit(-1)
+(child-read) begin
+(child-read) open "sample.txt"
+(child-read) read "sample.txt" first 20 bytes
+(child-read) read "sample.txt" remainders
+(child-read) Child success
+(child-read) end
+child-read: exit(0)
 (exec-read) Parent success
 (exec-read) end
 exec-read: exit(0)
 Execution of 'exec-read' complete.
-Timer: 80 ticks
-Thread: 30 idle ticks, 46 kernel ticks, 4 user ticks
+Timer: 79 ticks
+Thread: 30 idle ticks, 45 kernel ticks, 4 user ticks
 hd0:0: 0 reads, 0 writes
-hd0:1: 151 reads, 494 writes
+hd0:1: 212 reads, 494 writes
 hd1:0: 223 reads, 0 writes
-Console: 1086 characters output
+Console: 1267 characters output
 Keyboard: 0 keys pressed
-Exception: 1 page faults
+Exception: 0 page faults
 Powering off...

@@ -53,8 +53,15 @@ vm_alloc_page_with_initializer (enum vm_type type, void *upage, bool writable,
 		/* TODO: Create the page, fetch the initialier according to the VM type,
 		 * TODO: and then create "uninit" page struct by calling uninit_new. You
 		 * TODO: should modify the field after calling the uninit_new. */
+		if (!vm_claim_page (upage)) return false;
+		struct page *pg = spt_find_page(upage);
+		//pg->operations->type = type;
+		if (type == VM_ANON) uninit_new(pg, upage, init, type, aux, anon_initializer);
+		else if (type == VM_FILE) uninit_new(pg, upage, init, type, aux, file_map_initializer);
+		//bool success2 = init(pg, type, pg->frame->kva);
 
 		/* TODO: Insert the page into the spt. */
+		if (!spt_insert_page (spt , pg)) return false;
 	}
 err:
 	return false;
@@ -62,21 +69,29 @@ err:
 
 /* Find VA from spt and return page. On error, return NULL. */
 struct page *
-spt_find_page (struct supplemental_page_table *spt UNUSED, void *va UNUSED) {
-	struct page *page = NULL;
+spt_find_page (struct supplemental_page_table *spt , void *va ) {
 	/* TODO: Fill this function. */
-
-	return page;
+	struct page *pg;
+	struct list_elem *e;	
+	
+	for (e = list_begin (&spt->page_list); e != list_end (&spt->page_list); e = e->next){
+		pg = list_entry(e, struct page, pg_e);
+		if(pg->va == va) return pg;
+	}
+	return NULL;
 }
 
 /* Insert PAGE into spt with validation. */
 bool
-spt_insert_page (struct supplemental_page_table *spt UNUSED,
-		struct page *page UNUSED) {
-	int succ = false;
+spt_insert_page (struct supplemental_page_table *spt ,
+		struct page *page ) {
 	/* TODO: Fill this function. */
-
-	return succ;
+	struct page *pg = spt_find_page(spt, page->va);
+	if (pg == NULL){
+		list_push_back(&spt->page_list, &page->pg_e);
+		return true;
+	}
+	return false;
 }
 
 void
@@ -110,9 +125,10 @@ vm_evict_frame (void) {
  * space.*/
 static struct frame *
 vm_get_frame (void) {
-	struct frame *frame = NULL;
+	struct frame *frame;
 	/* TODO: Fill this function. */
 
+	frame->kva = palloc_get_page(PAL_USER);
 	ASSERT (frame != NULL);
 	ASSERT (frame->page == NULL);
 	return frame;
@@ -150,10 +166,10 @@ vm_dealloc_page (struct page *page) {
 
 /* Claim the page that allocate on VA. */
 bool
-vm_claim_page (void *va UNUSED) {
+vm_claim_page (void *va) {
 	struct page *page = NULL;
 	/* TODO: Fill this function */
-
+	page->va = va;
 	return vm_do_claim_page (page);
 }
 
@@ -165,15 +181,18 @@ vm_do_claim_page (struct page *page) {
 	/* Set links */
 	frame->page = page;
 	page->frame = frame;
-
 	/* TODO: Insert page table entry to map page's VA to frame's PA. */
-
+	struct thread *t = thread_current();
+	struct supplemental_page_table *sptt = &t->spt;
+	spt_insert_page (sptt , page);
+	
 	return swap_in (page, frame->kva);
 }
 
 /* Initialize new supplemental page table */
 void
-supplemental_page_table_init (struct supplemental_page_table *spt UNUSED) {
+supplemental_page_table_init (struct supplemental_page_table *spt) {
+	list_init(&spt->page_list);
 }
 
 /* Copy supplemental page table from src to dst */

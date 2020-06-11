@@ -4,7 +4,7 @@ Kernel command line: -q -f put rox-child put child-rox run rox-child
 Pintos booting with: 
 	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
 	ext_mem: 0x100000 ~ 0xffe0000 (Usable: 260,992 kB)
-Calibrating timer...  157,081,600 loops/s.
+Calibrating timer...  209,510,400 loops/s.
 hd0:0: detected 321 sector (160 kB) disk, model "QEMU HARDDISK", serial "QM00001"
 hd0:1: detected 20,160 sector (9 MB) disk, model "QEMU HARDDISK", serial "QM00002"
 hd1:0: detected 214 sector (107 kB) disk, model "QEMU HARDDISK", serial "QM00003"
@@ -18,16 +18,21 @@ Executing 'rox-child':
 (rox-child) read "child-rox"
 (rox-child) write "child-rox"
 (rox-child) exec "child-rox 1"
-child-rox: exit(-1)
-(rox-child) wait for child: FAILED
-rox-child: exit(1)
+(child-rox) begin
+(child-rox) try to write "child-rox"
+(child-rox) try to write "child-rox"
+(child-rox) end
+child-rox: exit(12)
+(rox-child) write "child-rox"
+(rox-child) end
+rox-child: exit(0)
 Execution of 'rox-child' complete.
-Timer: 79 ticks
-Thread: 30 idle ticks, 47 kernel ticks, 2 user ticks
+Timer: 78 ticks
+Thread: 30 idle ticks, 44 kernel ticks, 4 user ticks
 hd0:0: 0 reads, 0 writes
-hd0:1: 113 reads, 467 writes
+hd0:1: 173 reads, 468 writes
 hd1:0: 214 reads, 0 writes
-Console: 1059 characters output
+Console: 1178 characters output
 Keyboard: 0 keys pressed
-Exception: 1 page faults
+Exception: 0 page faults
 Powering off...
