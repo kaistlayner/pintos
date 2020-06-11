@@ -45,6 +45,7 @@ struct page {
 
 	/* Your implementation */
 	struct list_elem pg_e;	
+	bool writable;
 	
 	/* Per-type data are binded into the union.
 	 * Each function automatically detects the current union */

@@ -17,5 +17,6 @@ threads/init.o: ../../threads/init.c ../../include/threads/init.h \
  ../../include/filesys/file.h ../../include/filesys/off_t.h \
  ../../include/userprog/exception.h ../../include/userprog/gdt.h \
  ../../include/userprog/syscall.h ../../include/userprog/tss.h \
- ../../include/devices/disk.h ../../include/lib/inttypes.h \
- ../../include/filesys/filesys.h ../../include/filesys/fsutil.h
+ ../../tests/threads/tests.h ../../include/devices/disk.h \
+ ../../include/lib/inttypes.h ../../include/filesys/filesys.h \
+ ../../include/filesys/fsutil.h
