@@ -455,7 +455,7 @@ struct ELF64_PHDR {
 
 static bool setup_stack (struct intr_frame *if_);
 static bool validate_segment (const struct Phdr *, struct file *);
-static bool load_segment (struct file *file, off_t ofs, uint8_t *upage,
+static bool load_segment (struct file *file, off_t ofs, void *upage,
 		uint32_t read_bytes, uint32_t zero_bytes,
 		bool writable);
 
@@ -769,7 +769,7 @@ lazy_load_segment (struct page *page, void *aux) {
 	}
 	memset (page + read_bytes, 0, zero_bytes);
 	
-	install_page (page->va, page->frame->kva, page->writable);
+	//install_page (page->va, page->frame->kva, page->writable);
 	//struct supplemental_page_table *spt = &thread_current()->spt;
 	//spt_insert_page(spt, page);
 	return true;
@@ -790,12 +790,16 @@ lazy_load_segment (struct page *page, void *aux) {
  * Return true if successful, false if a memory allocation error
  * or disk read error occurs. */
 static bool
-load_segment (struct file *file, off_t ofs, uint8_t *upage,
+load_segment (struct file *file, off_t ofs, void *upage,
 		uint32_t read_bytes, uint32_t zero_bytes, bool writable) {
 	ASSERT ((read_bytes + zero_bytes) % PGSIZE == 0);
 	ASSERT (pg_ofs (upage) == 0);
 	ASSERT (ofs % PGSIZE == 0);
-
+	
+	struct aux_setting aux;
+	aux.file = (struct file*)malloc(sizeof(file));
+	memcpy(aux.file, file, sizeof(file));
+	
 	while (read_bytes > 0 || zero_bytes > 0) {
 		/* Do calculate how to fill this page.
 		 * We will read PAGE_READ_BYTES bytes from FILE
@@ -804,21 +808,22 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
 		size_t page_zero_bytes = PGSIZE - page_read_bytes;
 
 		/* TODO: Set up aux to pass information to the lazy_load_segment. */
-		struct aux_setting *aux;
-		aux->file = file;
-		aux->ofs = ofs;
+		
+		aux.ofs = ofs;
 		//aux->upage = upage;
-		aux->read_bytes = page_read_bytes;
-		aux->zero_bytes = page_zero_bytes;
+		aux.read_bytes = page_read_bytes;
+		aux.zero_bytes = page_zero_bytes;
 		//aux->writable = writable;
 		//void *aux = NULL;
-		bool t = vm_alloc_page_with_initializer (VM_ANON, upage, writable, lazy_load_segment, aux);
+		bool t = vm_alloc_page_with_initializer (VM_ANON, upage, writable, lazy_load_segment, &aux);
 		PANIC("RETURNED?");	
 		/* Advance. */
 		read_bytes -= page_read_bytes;
 		zero_bytes -= page_zero_bytes;
 		upage += PGSIZE;
+		ofs += PGSIZE;
 	}
+	free(aux.file);
 	return true;
 }
 /*
@@ -842,19 +847,28 @@ setup_stack (struct intr_frame *if_) {
 static bool
 setup_stack (struct intr_frame *if_) {
 	//bool success = false;
+	PANIC("STOP!");
 	void *stack_bottom = (void *) (((uint8_t *) USER_STACK) - PGSIZE);
 	
 	/* TODO: Map the stack on stack_bottom and claim the page immediately.
 	 * TODO: If success, set the rsp accordingly.
 	 * TODO: You should mark the page is stack. */
 	/* TODO: Your code goes here */
+	/*
+	struct page pg;
+	pg.va = stack_bottom;
+	pg.writable = true;
+	spt_insert_page(spt, &pg);
+	pg.operations->type = VM_MARKER_0;*/
+	//uninit_new(&pg, stack_bottom, init, type, aux, anon_initializer);
 	
 	if (!vm_claim_page (stack_bottom)){
 		palloc_free_page(stack_bottom);
 		return false;
 	}
-	//struct supplemental_page_table *spt = &thread_current()->spt;
-	//struct page *pg = spt_find_page(spt, stack_bottom);
+	struct supplemental_page_table *spt = &thread_current()->spt;
+	struct page *pg = spt_find_page(spt, stack_bottom);
+	install_page (stack_bottom, pg->frame->kva, pg->writable);
 	//pg->operations->type = (1 << 3);
 	if_->rsp = USER_STACK;
 	

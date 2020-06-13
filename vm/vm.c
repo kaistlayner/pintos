@@ -174,14 +174,15 @@ vm_handle_wp (struct page *page UNUSED) {
 
 bool
 vm_try_handle_fault (struct intr_frame *f, void *addr,
-		bool user UNUSED, bool write, bool not_present UNUSED) {
+		bool user, bool write, bool not_present) {
 		
 	struct supplemental_page_table *spt = &thread_current ()->spt;
 	//printf("%x\n", addr);
 	//struct page *page = NULL;
 	//page = spt_find_page(spt, addr);
 	//page->va = addr;
-	
+	//if(!write) PANIC("READ ONLY");
+	if(!not_present) PANIC("ALREADY PRESENT");
 	
 	//return vm_do_claim_page (page);
 	if(!vm_claim_page(addr)) NOT_REACHED();
@@ -233,8 +234,8 @@ vm_claim_page (void *va) {
 	/* TODO: Fill this function */
 	page = spt_find_page(&thread_current()->spt, pg_round_down(va));
 	
-	/*if (page == NULL) PANIC("NO PAGE");
-	else if (page->frame == NULL) PANIC("NO FRAME");*/
+	if (page == NULL) PANIC("NO PAGE");
+	//else if (page->frame == NULL) PANIC("NO FRAME");
 	bool t = vm_do_claim_page (page);
 	PANIC("THERE IS A GOOD PAGE!");
 	
