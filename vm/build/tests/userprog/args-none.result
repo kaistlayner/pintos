@@ -1,0 +1,8 @@
+FAIL
+Kernel panic in run: PANIC at ../../vm/vm.c:256 in vm_do_claim_page(): HERE
+Call stack: 0x80042186d1 0x8004220e11 0x80042209bc 0x4b6a
+Translation of call stack:
+0x00000080042186d1: debug_panic (lib/kernel/debug.c:32)
+0x0000008004220e11: supplemental_page_table_init (vm/vm.c:262)
+0x00000080042209bc: vm_alloc_page_with_initializer (vm/vm.c:86)
+0x0000000000004b6a: (unknown)

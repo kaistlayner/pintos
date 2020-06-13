@@ -64,7 +64,12 @@ struct frame {
 	void *kva;
 	struct page *page;
 };
-
+/*
+struct frame_table{
+	struct bitmap *fmap;
+	struct list page_list;
+};
+*/
 /* The function table for page operations.
  * This is one way of implementing "interface" in C.
  * Put the table of "method" into the struct's member, and

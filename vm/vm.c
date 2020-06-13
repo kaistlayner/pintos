@@ -46,7 +46,6 @@ vm_alloc_page_with_initializer (enum vm_type type, void *upage, bool writable,
 		vm_initializer *init, void *aux) {
 
 	ASSERT (VM_TYPE(type) != VM_UNINIT)
-
 	struct supplemental_page_table *spt = &thread_current ()->spt;
 
 	/* Check wheter the upage is already occupied or not. */
@@ -54,17 +53,37 @@ vm_alloc_page_with_initializer (enum vm_type type, void *upage, bool writable,
 		/* TODO: Create the page, fetch the initialier according to the VM type,
 		 * TODO: and then create "uninit" page struct by calling uninit_new. You
 		 * TODO: should modify the field after calling the uninit_new. */
-		if (!vm_claim_page (upage)) return false;
+		/*
+		if (!vm_claim_page (upage)) NOT_REACHED();
 		struct page *pg = spt_find_page(spt, upage);
 		pg->writable = writable;
 		//pg->operations->type = type;
-		if (type == VM_ANON) uninit_new(pg, upage, init, type, aux, anon_initializer);
+		if (type == VM_ANON){
+			uninit_new(pg, upage, init, type, aux, anon_initializer);
+			PANIC("HERE2!");
+			if(!swap_in(pg, upage)) NOT_REACHED();
+		}
 		else if (type == VM_FILE) uninit_new(pg, upage, init, type, aux, file_map_initializer);
 		//bool success2 = init(pg, type, pg->frame->kva);
 
 		/* TODO: Insert the page into the spt. */
-		if (!spt_insert_page (spt , pg)) return false;
+		//if (!spt_insert_page (spt , pg)) NOT_REACHED();)*/
+		
+		struct page pg;
+		
+		pg.va = upage;
+		pg.writable = writable;
+		spt_insert_page(spt, &pg);
+		
+		if (type == VM_ANON){
+			uninit_new(&pg, upage, init, type, aux, anon_initializer);
+		}
+		else if (type == VM_FILE) {
+			uninit_new(&pg, upage, init, type, aux, file_map_initializer);
+		}
+		vm_do_claim_page(&pg);
 	}
+	return true;
 err:
 	return false;
 }
@@ -127,10 +146,17 @@ vm_evict_frame (void) {
  * space.*/
 static struct frame *
 vm_get_frame (void) {
-	struct frame *frame;
+	
+	struct frame *frame = NULL;
 	/* TODO: Fill this function. */
-
-	frame->kva = palloc_get_page(PAL_USER);
+	//frame = palloc_get_page(PAL_USER);
+	//frame->kva = frame;
+	//frame->page = NULL;
+	
+	frame = palloc_get_page(PAL_USER);
+	frame->kva = frame;
+	
+	//frame->kva = frame;
 	ASSERT (frame != NULL);
 	ASSERT (frame->page == NULL);
 	return frame;
@@ -159,7 +185,8 @@ vm_try_handle_fault (struct intr_frame *f, void *addr,
 	
 	
 	//return vm_do_claim_page (page);
-	return vm_claim_page(addr);
+	if(!vm_claim_page(addr)) NOT_REACHED();
+	do_iret(f);
 }
 
 
@@ -203,24 +230,31 @@ bool
 vm_claim_page (void *va) {
 	struct page *page = NULL;
 	/* TODO: Fill this function */
-	page->va = va;
-	return vm_do_claim_page (page);
+	page = spt_find_page(&thread_current()->spt, pg_round_down(va));
+	if (page == NULL) PANIC("NO PAGE");
+	PANIC("THERE IS A PAGE!");
+	bool t = vm_do_claim_page (page);
+	
+	return t;
 }
 
 /* Claim the PAGE and set up the mmu. */
 static bool
 vm_do_claim_page (struct page *page) {
 	struct frame *frame = vm_get_frame ();
-
+	
 	/* Set links */
 	frame->page = page;
+	//PANIC("HERE!");
 	page->frame = frame;
-	/* TODO: Insert page table entry to map page's VA to frame's PA. */
-	struct thread *t = thread_current();
-	struct supplemental_page_table *spt = &t->spt;
-	spt_insert_page (spt , page);
 	
-	return swap_in (page, frame->kva);
+	/* TODO: Insert page table entry to map page's VA to frame's PA. */
+	/*struct thread *t = thread_current();
+	struct supplemental_page_table *spt = &t->spt;
+	spt_insert_page (spt , page);*/
+	bool a = swap_in (page, frame->kva);
+	//PANIC("HERE");
+	return a;
 }
 
 /* Initialize new supplemental page table */
