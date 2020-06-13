@@ -736,6 +736,8 @@ install_page (void *upage, void *kpage, bool writable) {
  * If you want to implement the function for only project 2, implement it on the
  * upper block. */
 
+static bool install_page (void *upage, void *kpage, bool writable);
+
 struct aux_setting{
 	struct file *file;
 	off_t ofs;
@@ -747,6 +749,7 @@ struct aux_setting{
 
 static bool
 lazy_load_segment (struct page *page, void *aux) {
+	//PANIC("lazy load segment func");
 	/* TODO: Load the segment from the file */
 	/* TODO: This called when the first page fault occurs on address VA. */
 	/* TODO: VA is available when calling this function. */
@@ -766,8 +769,9 @@ lazy_load_segment (struct page *page, void *aux) {
 	}
 	memset (page + read_bytes, 0, zero_bytes);
 	
-	struct supplemental_page_table *spt = &thread_current()->spt;
-	spt_insert_page(spt, page);
+	install_page (page->va, page->frame->kva, page->writable);
+	//struct supplemental_page_table *spt = &thread_current()->spt;
+	//spt_insert_page(spt, page);
 	return true;
 }
 
@@ -808,10 +812,8 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
 		aux->zero_bytes = page_zero_bytes;
 		//aux->writable = writable;
 		//void *aux = NULL;
-		if (!vm_alloc_page_with_initializer (VM_ANON, upage,
-					writable, lazy_load_segment, aux))
-			return false;
-
+		bool t = vm_alloc_page_with_initializer (VM_ANON, upage, writable, lazy_load_segment, aux);
+		PANIC("RETURNED?");	
 		/* Advance. */
 		read_bytes -= page_read_bytes;
 		zero_bytes -= page_zero_bytes;
@@ -857,5 +859,15 @@ setup_stack (struct intr_frame *if_) {
 	if_->rsp = USER_STACK;
 	
 	return true;
+}
+
+static bool
+install_page (void *upage, void *kpage, bool writable) {
+	struct thread *t = thread_current ();
+
+	/* Verify that there's not already a page at that virtual
+	 * address, then map our page there. */
+	return (pml4_get_page (t->pml4, upage) == NULL
+			&& pml4_set_page (t->pml4, upage, kpage, writable));
 }
 #endif /* VM */

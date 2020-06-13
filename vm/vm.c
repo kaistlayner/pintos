@@ -81,9 +81,8 @@ vm_alloc_page_with_initializer (enum vm_type type, void *upage, bool writable,
 		else if (type == VM_FILE) {
 			uninit_new(&pg, upage, init, type, aux, file_map_initializer);
 		}
-		vm_do_claim_page(&pg);
+		if(vm_do_claim_page(&pg)) return true;
 	}
-	return true;
 err:
 	return false;
 }
@@ -186,7 +185,9 @@ vm_try_handle_fault (struct intr_frame *f, void *addr,
 	
 	//return vm_do_claim_page (page);
 	if(!vm_claim_page(addr)) NOT_REACHED();
-	do_iret(f);
+	//do_iret(f);
+	PANIC("COME?");
+	return true;
 }
 
 
@@ -231,9 +232,12 @@ vm_claim_page (void *va) {
 	struct page *page = NULL;
 	/* TODO: Fill this function */
 	page = spt_find_page(&thread_current()->spt, pg_round_down(va));
-	if (page == NULL) PANIC("NO PAGE");
-	PANIC("THERE IS A PAGE!");
+	
+	/*if (page == NULL) PANIC("NO PAGE");
+	else if (page->frame == NULL) PANIC("NO FRAME");*/
 	bool t = vm_do_claim_page (page);
+	PANIC("THERE IS A GOOD PAGE!");
+	
 	
 	return t;
 }
@@ -252,8 +256,8 @@ vm_do_claim_page (struct page *page) {
 	/*struct thread *t = thread_current();
 	struct supplemental_page_table *spt = &t->spt;
 	spt_insert_page (spt , page);*/
+	
 	bool a = swap_in (page, frame->kva);
-	//PANIC("HERE");
 	return a;
 }
 
