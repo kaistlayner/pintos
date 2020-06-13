@@ -3,6 +3,7 @@
 #include "threads/malloc.h"
 #include "vm/vm.h"
 #include "vm/inspect.h"
+#include "threads/vaddr.h"
 
 /* Initializes the virtual memory subsystem by invoking each subsystem's
  * intialize codes. */
@@ -77,7 +78,7 @@ spt_find_page (struct supplemental_page_table *spt , void *va ) {
 	
 	for (e = list_begin (&spt->page_list); e != list_end (&spt->page_list); e = e->next){
 		pg = list_entry(e, struct page, pg_e);
-		if(pg->va == va) return pg;
+		if(pg->va == pg_round_down (va)) return pg;
 	}
 	return NULL;
 }
@@ -145,17 +146,49 @@ static bool
 vm_handle_wp (struct page *page UNUSED) {
 }
 
-/* Return true on success */
-bool
-vm_try_handle_fault (struct intr_frame *f UNUSED, void *addr UNUSED,
-		bool user UNUSED, bool write UNUSED, bool not_present UNUSED) {
-	struct supplemental_page_table *spt UNUSED = &thread_current ()->spt;
-	struct page *page = NULL;
-	/* TODO: Validate the fault */
-	/* TODO: Your code goes here */
 
-	return vm_do_claim_page (page);
+bool
+vm_try_handle_fault (struct intr_frame *f, void *addr,
+		bool user UNUSED, bool write, bool not_present UNUSED) {
+		
+	struct supplemental_page_table *spt = &thread_current ()->spt;
+	//printf("%x\n", addr);
+	//struct page *page = NULL;
+	//page = spt_find_page(spt, addr);
+	//page->va = addr;
+	
+	
+	//return vm_do_claim_page (page);
+	return vm_claim_page(addr);
 }
+
+
+/* Return true on success */
+/* TODO: Validate the fault */
+/* TODO: Your code goes here */
+/*
+bool
+vm_try_handle_fault (struct intr_frame *f, void *addr,
+		bool user UNUSED, bool write, bool not_present UNUSED) {
+	
+
+	if(!vm_claim_page(addr)){
+		return false;
+	}
+	return true;
+	struct page *page = NULL;
+	page->va = addr;
+	return vm_do_claim_page (page);
+	
+	//return vm_claim_page(addr);
+	
+	//struct supplemental_page_table *spt = &thread_current ()->spt;
+	//struct page *page = spt_find_page(spt, addr);
+	//page->writable = write;
+
+	//do_iret(f);	
+	
+}*/
 
 /* Free the page.
  * DO NOT MODIFY THIS FUNCTION. */
@@ -184,8 +217,8 @@ vm_do_claim_page (struct page *page) {
 	page->frame = frame;
 	/* TODO: Insert page table entry to map page's VA to frame's PA. */
 	struct thread *t = thread_current();
-	struct supplemental_page_table *sptt = &t->spt;
-	spt_insert_page (sptt , page);
+	struct supplemental_page_table *spt = &t->spt;
+	spt_insert_page (spt , page);
 	
 	return swap_in (page, frame->kva);
 }

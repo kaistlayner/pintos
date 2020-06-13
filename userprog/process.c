@@ -851,9 +851,9 @@ setup_stack (struct intr_frame *if_) {
 		palloc_free_page(stack_bottom);
 		return false;
 	}
-	struct supplemental_page_table *spt = &thread_current()->spt;
-	struct page *pg = spt_find_page(spt, stack_bottom);
-	//pg->operations->type = VM_MARKER_0;
+	//struct supplemental_page_table *spt = &thread_current()->spt;
+	//struct page *pg = spt_find_page(spt, stack_bottom);
+	//pg->operations->type = (1 << 3);
 	if_->rsp = USER_STACK;
 	
 	return true;
