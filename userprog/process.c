@@ -455,7 +455,7 @@ struct ELF64_PHDR {
 
 static bool setup_stack (struct intr_frame *if_);
 static bool validate_segment (const struct Phdr *, struct file *);
-static bool load_segment (struct file *file, off_t ofs, void *upage,
+static bool load_segment (struct file *file, off_t ofs, uint64_t *upage,
 		uint32_t read_bytes, uint32_t zero_bytes,
 		bool writable);
 
@@ -559,7 +559,7 @@ load (const char *file_name, struct intr_frame *if_) {
 						read_bytes = 0;
 						zero_bytes = ROUND_UP (page_offset + phdr.p_memsz, PGSIZE);
 					}
-					if (!load_segment (file, file_page, (void *) mem_page,
+					if (!load_segment (file, file_page, &mem_page,
 								read_bytes, zero_bytes, writable))
 						goto done;
 				}
@@ -790,8 +790,10 @@ lazy_load_segment (struct page *page, void *aux) {
  * Return true if successful, false if a memory allocation error
  * or disk read error occurs. */
 static bool
-load_segment (struct file *file, off_t ofs, void *upage,
+load_segment (struct file *file, off_t ofs, uint64_t *upage,
 		uint32_t read_bytes, uint32_t zero_bytes, bool writable) {
+	
+	//upage = (void*)malloc(sizeof(uint64_t));
 	ASSERT ((read_bytes + zero_bytes) % PGSIZE == 0);
 	ASSERT (pg_ofs (upage) == 0);
 	ASSERT (ofs % PGSIZE == 0);
