@@ -37,6 +37,7 @@ page_get_type (struct page *page) {
 static struct frame *vm_get_victim (void);
 static bool vm_do_claim_page (struct page *page);
 static struct frame *vm_evict_frame (void);
+static struct frame *vm_get_frame (void);
 
 /* Create the pending page object with initializer. If you want to create a
  * page, do not create it directly and make it through this function or
@@ -69,19 +70,23 @@ vm_alloc_page_with_initializer (enum vm_type type, void *upage, bool writable,
 		/* TODO: Insert the page into the spt. */
 		//if (!spt_insert_page (spt , pg)) NOT_REACHED();)*/
 		
-		struct page pg;
+		struct page *pg;
+		struct frame *frame = vm_get_frame ();
+		pg = frame->kva;
+		frame->page = pg;
+		pg->frame = frame;
 		
-		pg.va = upage;
-		pg.writable = writable;
+		pg->va = upage;
+		pg->writable = writable;
 		spt_insert_page(spt, &pg);
 		
 		if (type == VM_ANON){
-			uninit_new(&pg, upage, init, type, aux, anon_initializer);
+			uninit_new(pg, upage, init, type, aux, anon_initializer);
 		}
 		else if (type == VM_FILE) {
-			uninit_new(&pg, upage, init, type, aux, file_map_initializer);
+			uninit_new(pg, upage, init, type, aux, file_map_initializer);
 		}
-		if(vm_do_claim_page(&pg)) return true;
+		if(vm_do_claim_page(pg)) return true;
 	}
 err:
 	return false;
@@ -146,19 +151,19 @@ vm_evict_frame (void) {
 static struct frame *
 vm_get_frame (void) {
 	
-	struct frame *frame = NULL;
+	struct frame frame;
 	/* TODO: Fill this function. */
 	//frame = palloc_get_page(PAL_USER);
 	//frame->kva = frame;
 	//frame->page = NULL;
 	
-	frame = palloc_get_page(PAL_USER);
-	frame->kva = frame;
+	frame.kva = palloc_get_page(PAL_USER);
+	//frame->kva = frame;
 	
 	//frame->kva = frame;
-	ASSERT (frame != NULL);
-	ASSERT (frame->page == NULL);
-	return frame;
+	//ASSERT (frame != NULL);
+	//ASSERT (frame->page == NULL);
+	return &frame;
 }
 
 /* Growing the stack. */
@@ -195,29 +200,7 @@ vm_try_handle_fault (struct intr_frame *f, void *addr,
 /* Return true on success */
 /* TODO: Validate the fault */
 /* TODO: Your code goes here */
-/*
-bool
-vm_try_handle_fault (struct intr_frame *f, void *addr,
-		bool user UNUSED, bool write, bool not_present UNUSED) {
-	
 
-	if(!vm_claim_page(addr)){
-		return false;
-	}
-	return true;
-	struct page *page = NULL;
-	page->va = addr;
-	return vm_do_claim_page (page);
-	
-	//return vm_claim_page(addr);
-	
-	//struct supplemental_page_table *spt = &thread_current ()->spt;
-	//struct page *page = spt_find_page(spt, addr);
-	//page->writable = write;
-
-	//do_iret(f);	
-	
-}*/
 
 /* Free the page.
  * DO NOT MODIFY THIS FUNCTION. */
@@ -234,7 +217,17 @@ vm_claim_page (void *va) {
 	/* TODO: Fill this function */
 	page = spt_find_page(&thread_current()->spt, pg_round_down(va));
 	
-	if (page == NULL) PANIC("NO PAGE");
+	if (page == NULL){
+		//PANIC("NO PAGE");
+		struct page *pg;
+		struct frame *frame = vm_get_frame ();
+		pg = frame->kva;
+		frame->page = pg;
+		pg->frame = frame;
+		
+		pg->va = va;
+		spt_insert_page(&thread_current()->spt, &pg);
+	} 
 	//else if (page->frame == NULL) PANIC("NO FRAME");
 	bool t = vm_do_claim_page (page);
 	PANIC("THERE IS A GOOD PAGE!");
@@ -246,19 +239,17 @@ vm_claim_page (void *va) {
 /* Claim the PAGE and set up the mmu. */
 static bool
 vm_do_claim_page (struct page *page) {
-	struct frame *frame = vm_get_frame ();
+	//struct frame *frame = vm_get_frame ();
 	
 	/* Set links */
-	frame->page = page;
-	//PANIC("HERE!");
-	page->frame = frame;
+	
 	
 	/* TODO: Insert page table entry to map page's VA to frame's PA. */
 	/*struct thread *t = thread_current();
 	struct supplemental_page_table *spt = &t->spt;
 	spt_insert_page (spt , page);*/
 	
-	bool a = swap_in (page, frame->kva);
+	bool a = swap_in (page, page->frame->kva);
 	return a;
 }
 

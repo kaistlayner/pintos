@@ -740,7 +740,7 @@ static bool install_page (void *upage, void *kpage, bool writable);
 
 struct aux_setting{
 	struct file *file;
-	//off_t ofs;
+	off_t ofs;
 	//uint8_t *upage;
 	uint32_t read_bytes;
 	uint32_t zero_bytes;
@@ -755,7 +755,7 @@ lazy_load_segment (struct page *page, void *aux) {
 	/* TODO: VA is available when calling this function. */
 	struct aux_setting *auxset = (struct aux_setting *)aux;
 	struct file *file = auxset->file;
-	off_t ofs = file->pos;
+	off_t ofs = auxset->ofs;
 	//uint8_t *upage = auxset->upage;
 	uint32_t read_bytes = auxset->read_bytes;
 	uint32_t zero_bytes = auxset->zero_bytes;
@@ -763,13 +763,14 @@ lazy_load_segment (struct page *page, void *aux) {
 	
 	// open needed maybe here
 	file_seek(file, ofs);
-	file_read (file, page, 8);
+	//file_read (file, page, 8);
 	
 	if (file_read (file, page, read_bytes) != (int) read_bytes) {
+			NOT_REACHED();
 			palloc_free_page (page);
 			return false;
 	}
-	file->pos += PGSIZE;
+	//file->pos += PGSIZE;
 	memset (page + read_bytes, 0, zero_bytes);
 	
 	//install_page (page->va, page->frame->kva, page->writable);
@@ -802,9 +803,10 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
 	ASSERT (ofs % PGSIZE == 0);
 	
 	struct aux_setting aux;
-	aux.file = (struct file*)malloc(sizeof(file));
-	memcpy(aux.file, file, sizeof(file));
-	aux.file->pos = ofs;
+	aux.file = file;
+	//aux.file = (struct file*)malloc(sizeof(file));
+	//memcpy(aux.file, file, sizeof(file));
+	aux.ofs = ofs;
 	
 	while (read_bytes > 0 || zero_bytes > 0) {
 		/* Do calculate how to fill this page.
@@ -827,9 +829,9 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
 		read_bytes -= page_read_bytes;
 		zero_bytes -= page_zero_bytes;
 		upage += PGSIZE;
-		//ofs += PGSIZE;
+		ofs += PGSIZE;
 	}
-	free(aux.file);
+	//free(aux.file);
 	return true;
 }
 /*
