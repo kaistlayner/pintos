@@ -17,7 +17,7 @@ Executing 'exec-arg':
 (exec-arg) begin
 (exec-arg) I'm your father
 Kernel PANIC at ../../vm/vm.c:160 in vm_get_frame(): assertion `frame->page == NULL' failed.
-Call stack: 0x80042186d1 0x8004220d1d 0x8004220e99 0x8004220ade 0x800421d028 0x800421cbbd 0x800421c4a9 0x800421dc7c 0x800421d8a6 0x800421d6f0Kernel PANIC recursion at ../../vm/vm.c:160 in vm_get_frame().
+Call stack: 0x80042186d1 0x8004220d1d 0x8004220f4e 0x8004220ade 0x800421d028 0x800421cbbd 0x800421c4a9 0x800421dc7c 0x800421d8a6 0x800421d6f0Kernel PANIC recursion at ../../vm/vm.c:160 in vm_get_frame().
 Timer: 76 ticks
 Thread: 30 idle ticks, 45 kernel ticks, 1 user ticks
 hd0:0: 0 reads, 0 writes

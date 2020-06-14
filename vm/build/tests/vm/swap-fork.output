@@ -4,7 +4,7 @@ Kernel command line: -q -f put swap-fork put child-swap run swap-fork
 Pintos booting with: 
 	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
 	ext_mem: 0x100000 ~ 0x27e0000 (Usable: 39,808 kB)
-Calibrating timer...  130,867,200 loops/s.
+Calibrating timer...  157,081,600 loops/s.
 hd0:0: detected 321 sector (160 kB) disk, model "QEMU HARDDISK", serial "QM00001"
 hd0:1: detected 20,160 sector (9 MB) disk, model "QEMU HARDDISK", serial "QM00002"
 hd1:0: detected 4,114 sector (2 MB) disk, model "QEMU HARDDISK", serial "QM00003"
@@ -18,8 +18,8 @@ Executing 'swap-fork':
 (swap-fork) More than one child process' stack is corrupted: FAILED
 swap-fork: exit(1)
 Execution of 'swap-fork' complete.
-Timer: 179 ticks
-Thread: 30 idle ticks, 122 kernel ticks, 27 user ticks
+Timer: 162 ticks
+Thread: 30 idle ticks, 106 kernel ticks, 26 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 4024 reads, 8266 writes
 hd1:0: 4114 reads, 0 writes

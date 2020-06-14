@@ -4,7 +4,7 @@ Kernel command line: -q -f put exec-once put child-simple run exec-once
 Pintos booting with: 
 	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
 	ext_mem: 0x100000 ~ 0x13e0000 (Usable: 19,328 kB)
-Calibrating timer...  130,867,200 loops/s.
+Calibrating timer...  157,081,600 loops/s.
 hd0:0: detected 321 sector (160 kB) disk, model "QEMU HARDDISK", serial "QM00001"
 hd0:1: detected 20,160 sector (9 MB) disk, model "QEMU HARDDISK", serial "QM00002"
 hd1:0: detected 198 sector (99 kB) disk, model "QEMU HARDDISK", serial "QM00003"
@@ -18,8 +18,8 @@ Executing 'exec-once':
 (exec-once) I'm your father
 Kernel PANIC at ../../vm/vm.c:160 in vm_get_frame(): assertion `frame->page == NULL' failed.
 Call stack: 0x80042186d1 0x8004220d1d 0x800421d0ac 0x800421cbef 0x800421c4a9 0x800421dc7c 0x800421d8a6 0x800421d6f0Kernel PANIC recursion at ../../vm/vm.c:160 in vm_get_frame().
-Timer: 79 ticks
-Thread: 30 idle ticks, 47 kernel ticks, 2 user ticks
+Timer: 77 ticks
+Thread: 30 idle ticks, 46 kernel ticks, 1 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 114 reads, 434 writes
 hd1:0: 198 reads, 0 writes

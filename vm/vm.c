@@ -193,13 +193,23 @@ vm_try_handle_fault(struct intr_frame* f, void* addr,
 /* Return true on success */
 
 bool
-vm_try_handle_fault(struct intr_frame* f UNUSED, void* addr UNUSED,
-	bool user UNUSED, bool write UNUSED, bool not_present UNUSED) {
-	struct supplemental_page_table* spt UNUSED = &thread_current()->spt;
+vm_try_handle_fault(struct intr_frame* f, void* addr,
+	bool user UNUSED, bool write UNUSED, bool not_present) {
+	struct supplemental_page_table* spt = &thread_current()->spt;
 	struct page* page = NULL;
 	/* TODO: Validate the fault */
 	/* TODO: Your code goes here */
+	
+	if(!not_present) exit(-1);
+	page = spt_find_page(spt, addr);
 
+	if(page == NULL){
+		if(!(is_user_vaddr(addr) && (uint64_t)f->rsp - (uint64_t)addr <= 64)) exit(-1);
+		PANIC("TO DO");
+		vm_stack_growth(addr);
+		return;
+	}
+	
 	return vm_do_claim_page(page);
 }
 
@@ -277,8 +287,11 @@ supplemental_page_table_init(struct supplemental_page_table* spt) {
 
 /* Copy supplemental page table from src to dst */
 bool
-supplemental_page_table_copy(struct supplemental_page_table* dst UNUSED,
-	struct supplemental_page_table* src UNUSED) {
+supplemental_page_table_copy(struct supplemental_page_table* dst,
+	struct supplemental_page_table* src) {
+	
+	
+	
 }
 
 /* Free the resource hold by the supplemental page table */
@@ -287,3 +300,23 @@ supplemental_page_table_kill(struct supplemental_page_table* spt UNUSED) {
 	/* TODO: Destroy all the supplemental_page_table hold by thread and
 	 * TODO: writeback all the modified contents to the storage. */
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

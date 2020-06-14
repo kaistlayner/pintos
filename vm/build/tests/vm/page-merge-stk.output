@@ -28,8 +28,8 @@ Executing 'page-merge-stk':
 (page-merge-stk) wait for child 0: FAILED
 page-merge-stk: exit(1)
 Execution of 'page-merge-stk' complete.
-Timer: 124 ticks
-Thread: 30 idle ticks, 48 kernel ticks, 46 user ticks
+Timer: 120 ticks
+Thread: 30 idle ticks, 46 kernel ticks, 44 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 391 reads, 4666 writes
 hd1:0: 218 reads, 0 writes
