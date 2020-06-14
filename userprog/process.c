@@ -676,13 +676,6 @@ load_segment(struct file* file, off_t ofs, uint8_t* upage,
 		if (kpage == NULL)
 			return false;
 
-		printf("read_bytes: %zu\n", read_bytes);
-		printf("zero_bytes: %zu\n", zero_bytes);
-		printf("ofs: %ld\n", ofs);
-		printf("upage : %d\n", upage);
-		printf("page frame kva : %p\n", kpage);
-		printf("writable : %d\n", writable);
-
 		/* Load this page. */
 		if (file_read(file, kpage, page_read_bytes) != (int)page_read_bytes) {
 			palloc_free_page(kpage);
@@ -774,27 +767,29 @@ lazy_load_segment(struct page* page, void* aux) {
 	uint32_t read_bytes = auxset->read_bytes;
 	uint32_t zero_bytes = auxset->zero_bytes;
 	bool writable = auxset->writable;
+	void* kpage = page->frame->kva;
 
 	printf("read_bytes: %zu\n", read_bytes);
 	printf("zero_bytes: %zu\n", zero_bytes);
 	printf("ofs: %ld\n", ofs);
-	printf("upage : %d\n", upage);
+	printf("upage : %p\n", upage);
 	printf("page va : %p\n", page->va);
 	printf("page frame kva : %p\n", page->frame->kva);
+	printf("kpage: %p\n", kpage);
 	printf("writable : %d\n", writable);
 	// open needed maybe here
-	//file_seek(file, ofs);
-	printf("pg_ofs: %lld\n", pg_ofs(page->frame->kva));
 	printf("file->pos : %zu\n", file->pos);
-	if (file_read(file, page->frame->kva, read_bytes) != (int)read_bytes) {
-		palloc_free_page(page);
+	file_seek(file, ofs);
+	printf("file->pos : %zu\n", file->pos);
+
+	if (file_read(file, kpage, read_bytes) != (int)read_bytes) {
+		palloc_free_page(kpage);
 		return false;
 	}
-	printf("file->pos : %zu\n", file->pos);
-	memset(page->frame->kva + read_bytes, 0, zero_bytes);
-	printf("pg_ofs: %lld\n", pg_ofs(page->frame->kva));
-	if (!install_page(page->va, page->frame->kva, writable)) {
-			palloc_free_page(page->frame->kva);
+	printf("kpage2: %p\n", kpage);
+	memset(kpage + read_bytes, 0, zero_bytes);
+	if (!install_page(upage, kpage, writable)) {
+			palloc_free_page(kpage);
 			return false;
 	}
 
@@ -821,7 +816,7 @@ load_segment(struct file* file, off_t ofs, uint8_t* upage,
 	ASSERT((read_bytes + zero_bytes) % PGSIZE == 0);
 	ASSERT(pg_ofs(upage) == 0);
 	ASSERT(ofs % PGSIZE == 0);
-	file_seek(file, ofs);
+
 	while (read_bytes > 0 || zero_bytes > 0) {
 		/* Do calculate how to fill this page.
 		 * We will read PAGE_READ_BYTES bytes from FILE
@@ -837,13 +832,12 @@ load_segment(struct file* file, off_t ofs, uint8_t* upage,
 		aux.read_bytes = page_read_bytes;
 		aux.zero_bytes = page_zero_bytes;
 		aux.writable = writable;
-		//void *aux = NULL;
 		bool t = vm_alloc_page_with_initializer(VM_ANON, upage, writable, lazy_load_segment, &aux);
 		/* Advance. */
 		read_bytes -= page_read_bytes;
 		zero_bytes -= page_zero_bytes;
 		upage += PGSIZE;
-		//ofs += PGSIZE;
+		ofs += PGSIZE;
 	}
 	return true;
 }

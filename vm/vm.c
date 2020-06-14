@@ -56,20 +56,21 @@ vm_alloc_page_with_initializer(enum vm_type type, void* upage, bool writable,
 
 		 /* TODO: Insert the page into the spt. */
 
-		struct page pg;
+		struct page *pg;
+		pg = malloc(sizeof(struct page));
 
-		pg.va = upage;
-		pg.writable = writable;
+		pg->va = upage;
+		pg->writable = writable;
 
 		if (type == VM_ANON) {
-			uninit_new(&pg, upage, init, type, aux, anon_initializer);
+			uninit_new(pg, upage, init, type, aux, anon_initializer);
 		}
 		else if (type == VM_FILE) {
-			uninit_new(&pg, upage, init, type, aux, file_map_initializer);
+			uninit_new(pg, upage, init, type, aux, file_map_initializer);
 		}
-		spt_insert_page(spt, &pg);
+		//spt_insert_page(spt, &pg);
 		//return true;
-		if (vm_do_claim_page(&pg)) return true;
+		if (vm_do_claim_page(pg)) return true;
 	}
 err:
 	return false;
@@ -79,13 +80,22 @@ err:
 struct page*
 	spt_find_page(struct supplemental_page_table* spt, void* va) {
 	/* TODO: Fill this function. */
-	struct page* pg;
-	struct list_elem* e;
+
+	struct list_elem *e;
+	printf("va input : %p\n", va);
+
+	struct list_elem *e1 = list_begin(&spt->page_list);
+	struct page *page1 = list_entry(e1, struct page, pg_e);
+	printf("page1 -> va : %p\n", page1->va);
 
 	for (e = list_begin(&spt->page_list); e != list_end(&spt->page_list); e = e->next) {
+		struct page* pg;
 		pg = list_entry(e, struct page, pg_e);
-		if (pg->va == pg_round_down(va))
+		printf("pg->va : %p\n", pg->va);
+		printf("pg_round_down(va) : %p\n", pg_round_down(va));
+		if (pg->va == pg_round_down(va)) {
 			return pg;
+		}
 	}
 	return NULL;
 }
