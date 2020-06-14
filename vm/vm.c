@@ -82,17 +82,10 @@ struct page*
 	/* TODO: Fill this function. */
 
 	struct list_elem *e;
-	//printf("va input : %p\n", va);
-
-	struct list_elem *e1 = list_begin(&spt->page_list);
-	struct page *page1 = list_entry(e1, struct page, pg_e);
-	//printf("page1 -> va : %p\n", page1->va);
 
 	for (e = list_begin(&spt->page_list); e != list_end(&spt->page_list); e = e->next) {
 		struct page* pg;
 		pg = list_entry(e, struct page, pg_e);
-		//printf("pg->va : %p\n", pg->va);
-		//printf("pg_round_down(va) : %p\n", pg_round_down(va));
 		if (pg->va == pg_round_down(va)) {
 			return pg;
 		}
@@ -291,14 +284,43 @@ supplemental_page_table_copy(struct supplemental_page_table* dst,
 	struct supplemental_page_table* src) {
 	
 	
-	
+	bool result = true;
+	struct list_elem *e;
+
+	for (e = list_begin(&src->page_list); e != list_end(&src->page_list); e = e->next) {
+		struct page* pg;
+		pg = list_entry(e, struct page, pg_e);
+		void* parent_page = pg->frame->kva;
+		
+		struct page *pg2;
+		pg2 = malloc(sizeof(struct page));
+		
+		pg2->va = pg->va;
+		pg2->writable = pg->writable;
+		vm_do_claim_page(pg2);
+		void* child_page = pg2->frame->kva;
+		
+		memcpy(child_page, parent_page, PGSIZE);
+		
+		list_push_back(&dst->page_list, &pg2->pg_e);
+		pml4_set_page(thread_current()->pml4, pg2->va, child_page, pg2->writable);
+	}
+	return result;
 }
 
 /* Free the resource hold by the supplemental page table */
 void
-supplemental_page_table_kill(struct supplemental_page_table* spt UNUSED) {
+supplemental_page_table_kill(struct supplemental_page_table* spt) {
 	/* TODO: Destroy all the supplemental_page_table hold by thread and
 	 * TODO: writeback all the modified contents to the storage. */
+	 
+	 struct list_elem *e;
+	 while(!list_empty(&spt->page_list)){
+	 	struct page *pg = list_entry (list_pop_front (&spt->page_list), struct page, pg_e);
+	 	void *kpage = pg->frame->kva;
+	 	palloc_free_page(kpage);
+	 	vm_dealloc_page(pg);
+	 }
 }
 
 
