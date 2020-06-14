@@ -455,9 +455,9 @@ struct ELF64_PHDR {
 
 static bool setup_stack (struct intr_frame *if_);
 static bool validate_segment (const struct Phdr *, struct file *);
-static bool load_segment (struct file *file, off_t ofs, uint8_t *upage,
+static bool load_segment (struct file *file, off_t ofs,
 		uint32_t read_bytes, uint32_t zero_bytes,
-		bool writable);
+		bool writable, uint8_t *upage);
 
 /* Loads an ELF executable from FILE_NAME into the current thread.
  * Stores the executable's entry point into *RIP
@@ -559,8 +559,8 @@ load (const char *file_name, struct intr_frame *if_) {
 						read_bytes = 0;
 						zero_bytes = ROUND_UP (page_offset + phdr.p_memsz, PGSIZE);
 					}
-					if (!load_segment (file, file_page, (void*) mem_page,
-								read_bytes, zero_bytes, writable))
+					if (!load_segment (file, file_page,
+								read_bytes, zero_bytes, writable, (void*) mem_page))
 						goto done;
 				}
 				else
@@ -656,8 +656,8 @@ static bool install_page (void *upage, void *kpage, bool writable);
  * Return true if successful, false if a memory allocation error
  * or disk read error occurs. */
 static bool
-load_segment (struct file *file, off_t ofs, uint8_t *upage,
-		uint32_t read_bytes, uint32_t zero_bytes, bool writable) {
+load_segment (struct file *file, off_t ofs,
+		uint32_t read_bytes, uint32_t zero_bytes, bool writable, uint8_t *upage) {
 	ASSERT ((read_bytes + zero_bytes) % PGSIZE == 0);
 	ASSERT (pg_ofs (upage) == 0);
 	ASSERT (ofs % PGSIZE == 0);
@@ -749,7 +749,7 @@ struct aux_setting{
 
 static bool
 lazy_load_segment (struct page *page, void *aux) {
-	//PANIC("lazy load segment func");
+	
 	/* TODO: Load the segment from the file */
 	/* TODO: This called when the first page fault occurs on address VA. */
 	/* TODO: VA is available when calling this function. */
@@ -762,6 +762,7 @@ lazy_load_segment (struct page *page, void *aux) {
 	//bool writable = auxset->writable;
 	
 	file_seek(file, ofs);
+	file_read (file, page, 8);
 	
 	if (file_read (file, page, read_bytes) != (int) read_bytes) {
 			palloc_free_page (page);
@@ -790,8 +791,8 @@ lazy_load_segment (struct page *page, void *aux) {
  * Return true if successful, false if a memory allocation error
  * or disk read error occurs. */
 static bool
-load_segment (struct file *file, off_t ofs, uint8_t *upage,
-		uint32_t read_bytes, uint32_t zero_bytes, bool writable) {
+load_segment (struct file *file, off_t ofs,
+		uint32_t read_bytes, uint32_t zero_bytes, bool writable, uint8_t *upage) {
 	
 	//upage = (void*)malloc(sizeof(uint64_t));
 	ASSERT ((read_bytes + zero_bytes) % PGSIZE == 0);
