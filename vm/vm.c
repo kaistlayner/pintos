@@ -82,17 +82,17 @@ struct page*
 	/* TODO: Fill this function. */
 
 	struct list_elem *e;
-	printf("va input : %p\n", va);
+	//printf("va input : %p\n", va);
 
 	struct list_elem *e1 = list_begin(&spt->page_list);
 	struct page *page1 = list_entry(e1, struct page, pg_e);
-	printf("page1 -> va : %p\n", page1->va);
+	//printf("page1 -> va : %p\n", page1->va);
 
 	for (e = list_begin(&spt->page_list); e != list_end(&spt->page_list); e = e->next) {
 		struct page* pg;
 		pg = list_entry(e, struct page, pg_e);
-		printf("pg->va : %p\n", pg->va);
-		printf("pg_round_down(va) : %p\n", pg_round_down(va));
+		//printf("pg->va : %p\n", pg->va);
+		//printf("pg_round_down(va) : %p\n", pg_round_down(va));
 		if (pg->va == pg_round_down(va)) {
 			return pg;
 		}
@@ -142,7 +142,7 @@ vm_evict_frame(void) {
  * and return it. This always return valid address. That is, if the user pool
  * memory is full, this function evicts the frame to get the available memory
  * space.*/
-static struct frame*
+struct frame*
 vm_get_frame(void) {
 
 	struct frame* frame = NULL;
@@ -153,7 +153,7 @@ vm_get_frame(void) {
 
 	frame = palloc_get_page(PAL_USER);
 	frame->kva = frame;
-	printf("in vm_get_frame frame kva : %p\n", frame->kva);
+	//printf("in vm_get_frame frame kva : %p\n", frame->kva);
 
 	//frame->kva = frame;
 	ASSERT(frame != NULL);
@@ -244,6 +244,9 @@ vm_claim_page(void* va) {
 	struct page* page = NULL;
 	/* TODO: Fill this function */
 	page = spt_find_page(&thread_current()->spt, pg_round_down(va));
+	if(page == NULL){
+		NOT_REACHED();
+	}
 	bool t = vm_do_claim_page(page);
 
 	return t;

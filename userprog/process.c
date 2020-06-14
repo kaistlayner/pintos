@@ -768,7 +768,7 @@ lazy_load_segment(struct page* page, void* aux) {
 	uint32_t zero_bytes = auxset->zero_bytes;
 	bool writable = auxset->writable;
 	void* kpage = page->frame->kva;
-
+/*
 	printf("read_bytes: %zu\n", read_bytes);
 	printf("zero_bytes: %zu\n", zero_bytes);
 	printf("ofs: %ld\n", ofs);
@@ -779,14 +779,14 @@ lazy_load_segment(struct page* page, void* aux) {
 	printf("writable : %d\n", writable);
 	// open needed maybe here
 	printf("file->pos : %zu\n", file->pos);
+	
+	printf("file->pos : %zu\n", file->pos);*/
 	file_seek(file, ofs);
-	printf("file->pos : %zu\n", file->pos);
-
 	if (file_read(file, kpage, read_bytes) != (int)read_bytes) {
 		palloc_free_page(kpage);
 		return false;
 	}
-	printf("kpage2: %p\n", kpage);
+	//printf("kpage2: %p\n", kpage);
 	memset(kpage + read_bytes, 0, zero_bytes);
 	if (!install_page(upage, kpage, writable)) {
 			palloc_free_page(kpage);
@@ -846,7 +846,6 @@ load_segment(struct file* file, off_t ofs, uint8_t* upage,
 static bool
 setup_stack(struct intr_frame* if_) {
 	//bool success = false;
-	PANIC("STOP!");
 	void* stack_bottom = (void*)(((uint8_t*)USER_STACK) - PGSIZE);
 
 	/* TODO: Map the stack on stack_bottom and claim the page immediately.
@@ -860,14 +859,27 @@ setup_stack(struct intr_frame* if_) {
 	 spt_insert_page(spt, &pg);
 	 pg.operations->type = VM_MARKER_0;*/
 	 //uninit_new(&pg, stack_bottom, init, type, aux, anon_initializer);
-
+	
+	/*
 	if (!vm_claim_page(stack_bottom)) {
+		NOT_REACHED();
 		palloc_free_page(stack_bottom);
 		return false;
-	}
+	}*/
+	
+	struct page *pg;
+	pg = malloc(sizeof(struct page));
+	pg->va = stack_bottom;
+	pg->writable = true;
+	struct frame* frame = vm_get_frame();
+	void *kpage = frame->kva;
+	frame->page = pg;
+	pg->frame = frame;
+	
 	struct supplemental_page_table* spt = &thread_current()->spt;
-	struct page* pg = spt_find_page(spt, stack_bottom);
-	install_page(stack_bottom, pg->frame->kva, pg->writable);
+	spt_insert_page(spt, pg);
+
+	install_page(stack_bottom, kpage, pg->writable);
 	//pg->operations->type = (1 << 3);
 	if_->rsp = USER_STACK;
 

@@ -1,0 +1,27 @@
+Kernel command line: -q -f put exec-missing run exec-missing
+0 ~ 9fc00 1
+100000 ~ 13e0000 1
+Pintos booting with: 
+	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
+	ext_mem: 0x100000 ~ 0x13e0000 (Usable: 19,328 kB)
+Calibrating timer...  157,081,600 loops/s.
+hd0:0: detected 321 sector (160 kB) disk, model "QEMU HARDDISK", serial "QM00001"
+hd0:1: detected 20,160 sector (9 MB) disk, model "QEMU HARDDISK", serial "QM00002"
+hd1:0: detected 100 sector (50 kB) disk, model "QEMU HARDDISK", serial "QM00003"
+hd1:1: detected 8,064 sector (3 MB) disk, model "QEMU HARDDISK", serial "QM00004"
+Formatting file system...done.
+Boot complete.
+Putting 'exec-missing' into the file system...
+Executing 'exec-missing':
+(exec-missing) begin
+load: no-such-file: open failed
+Kernel PANIC at ../../vm/vm.c:160 in vm_get_frame(): assertion `frame->page == NULL' failed.
+Call stack: 0x80042186d1 0x8004220d1d 0x8004220e99 0x8004220d92 0x800421d648 0x8004209659 0x8004209a77Kernel PANIC recursion at ../../vm/vm.c:160 in vm_get_frame().
+Timer: 76 ticks
+Thread: 30 idle ticks, 44 kernel ticks, 2 user ticks
+hd0:0: 0 reads, 0 writes
+hd0:1: 96 reads, 228 writes
+hd1:0: 100 reads, 0 writes
+hd1:1: 0 reads, 0 writes
+Console: 1182 characters output
+Key

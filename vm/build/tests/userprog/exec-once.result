@@ -1,0 +1,12 @@
+FAIL
+Kernel panic in run: PANIC at ../../vm/vm.c:160 in vm_get_frame(): assertion `frame->page == NULL' failed.
+Call stack: 0x80042186d1 0x8004220d1d 0x800421d0ac 0x800421cbef 0x800421c4a9 0x800421dc7c 0x800421d8a6 0x800421d6f0
+Translation of call stack:
+0x00000080042186d1: debug_panic (lib/kernel/debug.c:32)
+0x0000008004220d1d: vm_get_frame (vm/vm.c:161)
+0x000000800421d0ac: setup_stack (userprog/process.c:874)
+0x000000800421cbef: load (userprog/process.c:574)
+0x000000800421c4a9: process_exec (userprog/process.c:300)
+0x000000800421dc7c: exec (userprog/syscall.c:229)
+0x000000800421d8a6: syscall_handler (userprog/syscall.c:123)
+0x000000800421d6f0: no_sti (userprog/syscall-entry.o:?)
