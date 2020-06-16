@@ -140,9 +140,11 @@ vm_get_frame(void) {
 
 	struct frame* frame = NULL;
 	/* TODO: Fill this function. */
-
-	frame = palloc_get_page(PAL_USER);
-	frame->kva = frame;
+	
+	frame = malloc(sizeof(struct frame));
+	uint64_t kpage = palloc_get_page(PAL_USER);
+	frame->kva = kpage;
+	frame->page = NULL;
 	//printf("in vm_get_frame frame kva : %p\n", frame->kva);
 
 	ASSERT(frame != NULL);
@@ -255,15 +257,14 @@ vm_claim_page(void* va) {
 static bool
 vm_do_claim_page(struct page* page) {
 	struct frame* frame = vm_get_frame();
-
+	
 	/* Set links */
 	frame->page = page;
 	page->frame = frame;
-
+	
 	/* TODO: Insert page table entry to map page's VA to frame's PA. */
 	struct supplemental_page_table* spt = &thread_current()->spt;
 	spt_insert_page(spt, page);
-
 	bool a = swap_in(page, frame->kva);
 	return a;
 }
@@ -282,24 +283,35 @@ supplemental_page_table_copy(struct supplemental_page_table* dst,
 	
 	bool result = true;
 	struct list_elem *e;
-
+	printf("parent size : %d\n", list_size(&src->page_list));
+	int i = 1;
 	for (e = list_begin(&src->page_list); e != list_end(&src->page_list); e = e->next) {
 		struct page* pg;
 		pg = list_entry(e, struct page, pg_e);
 		void* parent_page = pg->frame->kva;
-		
+		printf("\n%dth iteration\n", i);
+		printf("parent_kva : %p\n", parent_page);
 		struct page *pg2;
 		pg2 = malloc(sizeof(struct page));
 		
-		pg2->va = pg->va;
-		pg2->writable = pg->writable;
-		vm_do_claim_page(pg2);
+		//pg2->writable = pg->writable;
+		//uninit_new(pg2, pg->va, pg->uninit.init, pg->uninit.type, pg->uninit.aux, pg->uninit.page_initializer);
+		//uint64_t error_page = palloc_get_page(PAL_USER);
+		//printf("repeated_kva : %p\n", error_page);
+		memcpy(pg2, pg, sizeof(struct page));
+		
+		//vm_do_claim_page(pg2);
+		struct frame* frame = vm_get_frame();
+		frame->page = pg2;
+		pg2->frame = frame;
+		
 		void* child_page = pg2->frame->kva;
-		
+		printf("child_kva : %p\n", child_page);
 		memcpy(child_page, parent_page, PGSIZE);
+		//printf("child_kva : %p\n", child_page);
 		
-		list_push_back(&dst->page_list, &pg2->pg_e);
 		pml4_set_page(thread_current()->pml4, pg2->va, child_page, pg2->writable);
+		printf("%dth iteration done\n", i++);
 	}
 	return result;
 }
