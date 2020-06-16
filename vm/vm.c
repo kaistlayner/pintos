@@ -140,15 +140,11 @@ vm_get_frame(void) {
 
 	struct frame* frame = NULL;
 	/* TODO: Fill this function. */
-	//frame = palloc_get_page(PAL_USER);
-	//frame->kva = frame;
-	//frame->page = NULL;
 
 	frame = palloc_get_page(PAL_USER);
 	frame->kva = frame;
 	//printf("in vm_get_frame frame kva : %p\n", frame->kva);
 
-	//frame->kva = frame;
 	ASSERT(frame != NULL);
 	ASSERT(frame->page == NULL);
 	return frame;
@@ -313,14 +309,14 @@ void
 supplemental_page_table_kill(struct supplemental_page_table* spt) {
 	/* TODO: Destroy all the supplemental_page_table hold by thread and
 	 * TODO: writeback all the modified contents to the storage. */
-	 
+	 /*
 	 struct list_elem *e;
 	 while(!list_empty(&spt->page_list)){
 	 	struct page *pg = list_entry (list_pop_front (&spt->page_list), struct page, pg_e);
 	 	void *kpage = pg->frame->kva;
 	 	palloc_free_page(kpage);
 	 	vm_dealloc_page(pg);
-	 }
+	 }*/
 }
 
 
