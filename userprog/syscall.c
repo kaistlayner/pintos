@@ -30,6 +30,8 @@ static int write (int fd, const void * buffer, unsigned size);
 static void seek (int fd, unsigned position);
 static unsigned tell (int fd);
 static void close (int fd);
+static void *mmap (void *addr, size_t length, int writable, int fd, off_t offset);
+static void munmap (void *addr);
 struct lock file_lock;
 struct semaphore fork_sema;
 
@@ -104,6 +106,9 @@ syscall_handler (struct intr_frame *f) {
 	uint64_t one = f->R.rdi;
 	uint64_t two = f->R.rsi;
 	uint64_t three = f->R.rdx;
+	uint64_t four = f->R.rcx;
+	uint64_t five = f->R.r8;
+	
 	//uint64_t four = f->R.r10;
 	uint64_t rax;
 
@@ -151,6 +156,12 @@ syscall_handler (struct intr_frame *f) {
 			break;
 		case SYS_CLOSE:
 			close((int)one);
+			break;
+		case SYS_MMAP:
+			mmap((void *)one, (size_t)two, (int)three, (int)four, (off_t)five);
+			break;
+		case SYS_MUNMAP:
+			munmap((void *)one);
 			break;
 		default:
 			exit(-1);
@@ -302,3 +313,14 @@ static unsigned tell (int fd){
 static void close (int fd){
 	process_close_file (fd);
 }
+static void *mmap (void *addr, size_t length, int writable, int fd, off_t offset){
+	exit(-1);
+}
+static void munmap (void *addr){
+	exit(-1);
+}
+
+
+
+
+
