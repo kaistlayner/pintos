@@ -630,6 +630,7 @@ init_thread (struct thread *t, const char *name, int priority) {
 	t->exit_status = -1;
 	list_init (&t->don_list);
 	list_init (&t->child_list);
+	list_init (&t->spt.page_list);
 	sema_init (&t->parent_wait, 0);
 	sema_init (&t->child_wait, 0);
 	sema_init (&t->exec_wait, 0);

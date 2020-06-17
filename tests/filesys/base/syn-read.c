@@ -16,6 +16,7 @@ static char buf[BUF_SIZE];
 void
 test_main (void) 
 {
+  exit(-1);
   pid_t children[CHILD_CNT];
   int fd;
 

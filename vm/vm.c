@@ -98,6 +98,7 @@ struct page*
 bool
 spt_insert_page(struct supplemental_page_table* spt,
 	struct page* page) {
+	//printf("insert!\n");
 	/* TODO: Fill this function. */
 	struct page* pg = spt_find_page(spt, page->va);
 	if (pg == NULL) {
@@ -155,7 +156,20 @@ vm_get_frame(void) {
 
 /* Growing the stack. */
 static void
-vm_stack_growth(void* addr UNUSED) {
+vm_stack_growth(void* addr) {
+	struct page *pg;
+	pg = malloc(sizeof(struct page));
+	pg->va = pg_round_down(addr);
+	pg->writable = true;
+	struct frame* frame = vm_get_frame();
+	void *kpage = frame->kva;
+	frame->page = pg;
+	pg->frame = frame;
+	struct supplemental_page_table* spt = &thread_current()->spt;
+	spt_insert_page(spt, pg);
+	
+	pml4_set_page(thread_current()->pml4, pg->va, kpage, pg->writable);
+	//install_page(pg->va, kpage, pg->writable);
 }
 
 /* Handle the fault on write_protected page */
@@ -177,9 +191,8 @@ vm_try_handle_fault(struct intr_frame* f, void* addr,
 
 	if(page == NULL){
 		if(!(is_user_vaddr(addr) && (uint64_t)f->rsp - (uint64_t)addr <= 64)) exit(-1);
-		PANIC("TO DO");
 		vm_stack_growth(addr);
-		return;
+		return true;
 	}
 	
 	return vm_do_claim_page(page);
@@ -226,7 +239,8 @@ vm_do_claim_page(struct page* page) {
 /* Initialize new supplemental page table */
 void
 supplemental_page_table_init(struct supplemental_page_table* spt) {
-	list_init(&spt->page_list);
+	//printf("init!\n");
+	//list_init(&spt->page_list);
 	spt->i = 0;
 }
 
@@ -310,7 +324,7 @@ void
 supplemental_page_table_kill(struct supplemental_page_table* spt) {
 	/* TODO: Destroy all the supplemental_page_table hold by thread and
 	 * TODO: writeback all the modified contents to the storage. */
-	 
+	 //if(spt->page_list.head.next = NULL) return;
 	 struct list_elem *e;
 	 while(!list_empty(&spt->page_list)){
 	 	struct page *pg = list_entry (list_pop_front (&spt->page_list), struct page, pg_e);

@@ -1,0 +1,15 @@
+FAIL
+Kernel panic in run: PANIC at ../../lib/string.c:261 in memset(): assertion `dst != NULL || size == 0' failed.
+Call stack: 0x80042186ea 0x8004217f3e 0x800421ce67 0x80042215aa 0x800422105d 0x8004220aea 0x800421d034 0x800421cbc9 0x800421c4b5 0x800421c0d4 0x8004207fd9
+Translation of call stack:
+0x00000080042186ea: debug_panic (lib/kernel/debug.c:32)
+0x0000008004217f3e: memset (lib/string.c:264)
+0x000000800421ce67: lazy_load_segment (userprog/process.c:795)
+0x00000080042215aa: uninit_initialize (vm/uninit.c:55 (discriminator 4))
+0x000000800422105d: vm_do_claim_page (vm/vm.c:235)
+0x0000008004220aea: vm_alloc_page_with_initializer (vm/vm.c:74)
+0x000000800421d034: load_segment (userprog/process.c:839)
+0x000000800421cbc9: load (userprog/process.c:567)
+0x000000800421c4b5: process_exec (userprog/process.c:303)
+0x000000800421c0d4: initd (userprog/process.c:150)
+0x0000008004207fd9: kernel_thread (threads/thread.c:608)

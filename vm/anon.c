@@ -48,15 +48,8 @@ anon_swap_out (struct page *page) {
 /* Destroy the anonymous page. PAGE will be freed by the caller. */
 static void
 anon_destroy (struct page *page) {
-	printf("anon_destroy\n");
-	/*struct anon_page *anon_page = &page->anon;
-	struct supplemental_page_table* spt = &thread_current()->spt;
-	struct list_elem *e;
-	for (e = list_begin(&spt->page_list); e != list_end(&spt->page_list); e = e->next) {
-		struct page* pg;
-		pg = list_entry(e, struct page, pg_e);
-		if(page == pg) list_remove(e);
-	}*/
+	//printf("anon_destroy\n");
+	//struct anon_page *anon_page = &page->anon;
 }
 
 

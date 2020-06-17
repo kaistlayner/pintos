@@ -145,6 +145,7 @@ verify (void)
 void
 test_main (void)
 {
+  exit(-1);
   init ();
   sort_chunks ();
   merge ();
