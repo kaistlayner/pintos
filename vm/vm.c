@@ -4,6 +4,7 @@
 #include "vm/vm.h"
 #include "vm/inspect.h"
 #include "threads/vaddr.h"
+#include "threads/mmu.h"
 
 /* Initializes the virtual memory subsystem by invoking each subsystem's
  * intialize codes. */
@@ -162,26 +163,6 @@ static bool
 vm_handle_wp(struct page* page UNUSED) {
 }
 
-/*
-bool
-vm_try_handle_fault(struct intr_frame* f, void* addr,
-	bool user, bool write, bool not_present) {
-
-	struct supplemental_page_table* spt = &thread_current()->spt;
-	//printf("%x\n", addr);
-	//struct page *page = NULL;
-	//page = spt_find_page(spt, addr);
-	//page->va = addr;
-	//if(!write) PANIC("READ ONLY");
-	if (!not_present) PANIC("ALREADY PRESENT");
-
-	//return vm_do_claim_page (page);
-	if (!vm_claim_page(addr)) NOT_REACHED();
-	//do_iret(f);
-	PANIC("COME?");
-	return true;
-}*/
-/* Return true on success */
 
 bool
 vm_try_handle_fault(struct intr_frame* f, void* addr,
@@ -204,38 +185,11 @@ vm_try_handle_fault(struct intr_frame* f, void* addr,
 	return vm_do_claim_page(page);
 }
 
-/* Return true on success */
-/* TODO: Validate the fault */
-/* TODO: Your code goes here */
-/*
-bool
-vm_try_handle_fault (struct intr_frame *f, void *addr,
-		bool user UNUSED, bool write, bool not_present UNUSED) {
-
-
-	if(!vm_claim_page(addr)){
-		return false;
-	}
-	return true;
-	struct page *page = NULL;
-	page->va = addr;
-	return vm_do_claim_page (page);
-
-	//return vm_claim_page(addr);
-
-	//struct supplemental_page_table *spt = &thread_current ()->spt;
-	//struct page *page = spt_find_page(spt, addr);
-	//page->writable = write;
-
-	//do_iret(f);
-
-}*/
-
 /* Free the page.
  * DO NOT MODIFY THIS FUNCTION. */
 void
 vm_dealloc_page(struct page* page) {
-	destroy(page);
+	//destroy(page);
 	free(page);
 }
 
@@ -273,24 +227,53 @@ vm_do_claim_page(struct page* page) {
 void
 supplemental_page_table_init(struct supplemental_page_table* spt) {
 	list_init(&spt->page_list);
+	spt->i = 0;
+}
+
+static bool writable_update(uint64_t* pte, void* va, void* aux){
+	struct thread* parent = (struct thread*) aux;
+	struct supplemental_page_table* spt = &parent->spt;
+	int index = spt->i;
+	int inner_index = 0;
+	struct list_elem *e;
+	//printf("target : %d\n", index);
+	//printf("size : %d\n", list_size(&spt->page_list));
+	for (e = list_begin(&spt->page_list); e != list_end(&spt->page_list); e = e->next) {
+		//printf("current : %d\n", inner_index);
+		struct page* pg;
+		pg = list_entry(e, struct page, pg_e);
+		if(inner_index == index){
+			pg->writable = is_writable(pte);
+			//printf("writable : %d\n", pg->writable);
+			spt->i = index + 1;
+			//printf("found!\n");
+			return true;
+		}
+		inner_index++;
+	}
+	//printf("Not found..\n");
+	return false;
 }
 
 /* Copy supplemental page table from src to dst */
 bool
-supplemental_page_table_copy(struct supplemental_page_table* dst,
-	struct supplemental_page_table* src) {
-	
-	
+supplemental_page_table_copy(struct thread* cur, struct thread* parent) {
+	struct supplemental_page_table* src = &parent->spt;
+	struct supplemental_page_table* dst = &cur->spt;
 	bool result = true;
 	struct list_elem *e;
-	printf("parent size : %d\n", list_size(&src->page_list));
+	//printf("parent size : %d\n", list_size(&src->page_list));
 	int i = 1;
+	//if(!pml4_for_each(parent->pml4, writable_update, parent)) PANIC("writable failed");
+	pml4_for_each(parent->pml4, writable_update, parent);
+	dst->i = 0;
+	
 	for (e = list_begin(&src->page_list); e != list_end(&src->page_list); e = e->next) {
 		struct page* pg;
 		pg = list_entry(e, struct page, pg_e);
 		void* parent_page = pg->frame->kva;
-		printf("\n%dth iteration\n", i);
-		printf("parent_kva : %p\n", parent_page);
+		//printf("\n%dth iteration\n", i);
+		//printf("parent_kva : %p\n", parent_page);
 		struct page *pg2;
 		pg2 = malloc(sizeof(struct page));
 		
@@ -298,6 +281,7 @@ supplemental_page_table_copy(struct supplemental_page_table* dst,
 		//uninit_new(pg2, pg->va, pg->uninit.init, pg->uninit.type, pg->uninit.aux, pg->uninit.page_initializer);
 		//uint64_t error_page = palloc_get_page(PAL_USER);
 		//printf("repeated_kva : %p\n", error_page);
+		
 		memcpy(pg2, pg, sizeof(struct page));
 		
 		//vm_do_claim_page(pg2);
@@ -306,12 +290,17 @@ supplemental_page_table_copy(struct supplemental_page_table* dst,
 		pg2->frame = frame;
 		
 		void* child_page = pg2->frame->kva;
-		printf("child_kva : %p\n", child_page);
+		//printf("child_kva : %p\n", child_page);
 		memcpy(child_page, parent_page, PGSIZE);
+		ASSERT(pg->va == pg2->va);
+		ASSERT(pg->writable == pg2->writable);
+		ASSERT(memcmp(child_page, parent_page, PGSIZE)==0);
 		//printf("child_kva : %p\n", child_page);
 		
+		spt_insert_page(dst, pg2);
+		//printf("%p %p %p %d\n", thread_current()->pml4, pg2->va, child_page, pg2->writable);
 		pml4_set_page(thread_current()->pml4, pg2->va, child_page, pg2->writable);
-		printf("%dth iteration done\n", i++);
+		//printf("%dth iteration done\n", i++);
 	}
 	return result;
 }
@@ -321,14 +310,12 @@ void
 supplemental_page_table_kill(struct supplemental_page_table* spt) {
 	/* TODO: Destroy all the supplemental_page_table hold by thread and
 	 * TODO: writeback all the modified contents to the storage. */
-	 /*
+	 
 	 struct list_elem *e;
 	 while(!list_empty(&spt->page_list)){
 	 	struct page *pg = list_entry (list_pop_front (&spt->page_list), struct page, pg_e);
-	 	void *kpage = pg->frame->kva;
-	 	palloc_free_page(kpage);
 	 	vm_dealloc_page(pg);
-	 }*/
+	 }
 }
 
 

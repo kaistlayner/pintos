@@ -678,6 +678,7 @@ do_iret (struct intr_frame *tf) {
 			"addq $32, %%rsp\n"
 			"iretq"
 			: : "g" ((uint64_t) tf) : "memory");
+	
 }
 
 /* Switching the thread by activating the new thread's page

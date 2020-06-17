@@ -180,6 +180,7 @@ duplicate_pte(uint64_t* pte, void* va, void* aux) {
 	/* 1. TODO: If the parent_page is kernel page, then return immediately. */
 	if (dup_func(pte)) return true;
 	/* 2. Resolve VA from the parent's page map level 4. */
+
 	parent_page = pml4_get_page(parent->pml4, va);
 
 	/* 3. TODO: Allocate new PAL_USER page for the child and set result to
@@ -201,7 +202,7 @@ duplicate_pte(uint64_t* pte, void* va, void* aux) {
 
 	/* 5. Add new page to child's page table at address VA with WRITABLE
 	 *    permission. */
-
+	//printf("%p %p %p %d\n", current->pml4, va, newpage, writable);
 	if (!pml4_set_page(current->pml4, va, newpage, writable)) {
 		/* 6. TODO: if fail to insert page, do error handling. */
 		NOT_REACHED();
@@ -229,14 +230,16 @@ __do_fork(void* aux) {
 	if_.R.rax = 0;
 
 	/* 2. Duplicate PT */
+	
 	current->pml4 = pml4_create();
+	//printf("child's pml4 : %p\n", current->pml4);
 	if (current->pml4 == NULL)
 		goto error;
 
 	process_activate(current);
 #ifdef VM
 	supplemental_page_table_init(&current->spt);
-	if (!supplemental_page_table_copy(&current->spt, &parent->spt))
+	if (!supplemental_page_table_copy(current, parent))
 		goto error;
 #else
 	if (!pml4_for_each(parent->pml4, duplicate_pte, parent)) {
@@ -485,6 +488,7 @@ load(const char* file_name, struct intr_frame* if_) {
 
 	/* Allocate and activate page directory. */
 	t->pml4 = pml4_create();
+	//printf("pml4 : %p\n", t->pml4);
 	if (t->pml4 == NULL)
 		goto done;
 	process_activate(thread_current());
