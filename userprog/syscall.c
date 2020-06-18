@@ -318,7 +318,7 @@ static void close (int fd){
 static void *mmap (void *addr, size_t length, int writable, int fd, off_t offset){
 	struct file *file = process_get_file(fd);
 	//if (file == NULL || length <= 0 || addr == NULL || addr != pg_round_down(addr) || offset > PGSIZE || !is_user_vaddr(addr) || !is_user_vaddr((uint64_t)addr + (uint64_t)length) - 1) return NULL;
-	if (file == NULL || length <= 0 || addr == NULL || addr != pg_round_down(addr) || offset > PGSIZE) return NULL;
+	if (file == NULL || length <= 0 || addr == NULL || addr != pg_round_down(addr) || offset > PGSIZE || !is_user_vaddr(addr) || (size_t)addr >= ((size_t)addr + length)) return NULL;
 	/*if (file == NULL) PANIC("1");
 	if (length == 0) PANIC("2");
 	if (addr == NULL) PANIC("3");*/

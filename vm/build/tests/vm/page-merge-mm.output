@@ -17,8 +17,8 @@ Executing 'page-merge-mm':
 (page-merge-mm) begin
 page-merge-mm: exit(-1)
 Execution of 'page-merge-mm' complete.
-Timer: 84 ticks
-Thread: 30 idle ticks, 47 kernel ticks, 7 user ticks
+Timer: 83 ticks
+Thread: 30 idle ticks, 46 kernel ticks, 7 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 111 reads, 474 writes
 hd1:0: 218 reads, 0 writes

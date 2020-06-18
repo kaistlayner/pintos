@@ -100,7 +100,7 @@ pass tests/vm/mmap-bad-fd3
 pass tests/vm/mmap-zero-len
 FAIL tests/vm/mmap-off
 pass tests/vm/mmap-bad-off
-FAIL tests/vm/mmap-kernel
+pass tests/vm/mmap-kernel
 FAIL tests/vm/lazy-file
 FAIL tests/vm/lazy-anon
 FAIL tests/vm/swap-file

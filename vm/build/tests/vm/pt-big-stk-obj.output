@@ -16,8 +16,8 @@ Executing 'pt-big-stk-obj':
 (pt-big-stk-obj) begin
 pt-big-stk-obj: exit(-1)
 Execution of 'pt-big-stk-obj' complete.
-Timer: 75 ticks
-Thread: 30 idle ticks, 44 kernel ticks, 1 user ticks
+Timer: 74 ticks
+Thread: 30 idle ticks, 44 kernel ticks, 0 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 93 reads, 250 writes
 hd1:0: 111 reads, 0 writes

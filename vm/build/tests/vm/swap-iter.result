@@ -1,13 +1,13 @@
 FAIL
 Kernel panic in run: PANIC at ../../lib/string.c:261 in memset(): assertion `dst != NULL || size == 0' failed.
-Call stack: 0x80042186ea 0x8004217f3e 0x800421ce67 0x80042216c7 0x800422117a 0x8004220c07 0x800421d034 0x800421cbc9 0x800421c4b5 0x800421c0d4 0x8004207fd9
+Call stack: 0x80042186ea 0x8004217f3e 0x800421ce67 0x80042216ee 0x80042211a1 0x8004220c2e 0x800421d034 0x800421cbc9 0x800421c4b5 0x800421c0d4 0x8004207fd9
 Translation of call stack:
 0x00000080042186ea: debug_panic (lib/kernel/debug.c:32)
 0x0000008004217f3e: memset (lib/string.c:264)
 0x000000800421ce67: lazy_load_segment (userprog/process.c:796)
-0x00000080042216c7: uninit_initialize (vm/uninit.c:55 (discriminator 4))
-0x000000800422117a: vm_do_claim_page (vm/vm.c:236)
-0x0000008004220c07: vm_alloc_page_with_initializer (vm/vm.c:74)
+0x00000080042216ee: uninit_initialize (vm/uninit.c:55 (discriminator 4))
+0x00000080042211a1: vm_do_claim_page (vm/vm.c:236)
+0x0000008004220c2e: vm_alloc_page_with_initializer (vm/vm.c:74)
 0x000000800421d034: load_segment (userprog/process.c:840)
 0x000000800421cbc9: load (userprog/process.c:568)
 0x000000800421c4b5: process_exec (userprog/process.c:304)

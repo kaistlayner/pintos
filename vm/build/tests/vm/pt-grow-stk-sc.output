@@ -24,7 +24,7 @@ slen : 794
 pt-grow-stk-sc: exit(-1)
 Execution of 'pt-grow-stk-sc' complete.
 Timer: 75 ticks
-Thread: 30 idle ticks, 43 kernel ticks, 2 user ticks
+Thread: 30 idle ticks, 42 kernel ticks, 3 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 120 reads, 254 writes
 hd1:0: 105 reads, 0 writes
