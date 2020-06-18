@@ -103,6 +103,7 @@ spt_insert_page(struct supplemental_page_table* spt,
 	struct page* pg = spt_find_page(spt, page->va);
 	if (pg == NULL) {
 		list_push_back(&spt->page_list, &page->pg_e);
+		//printf("inserted pg addr : %p\n", page->va);
 		return true;
 	}
 	return false;

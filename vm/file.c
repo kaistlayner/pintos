@@ -1,6 +1,8 @@
 /* file.c: Implementation of memory mapped file object (mmaped object). */
 
 #include "vm/vm.h"
+#include "threads/vaddr.h"
+/* An open file. */
 
 static bool file_map_swap_in (struct page *page, void *kva);
 static bool file_map_swap_out (struct page *page);
@@ -50,9 +52,39 @@ file_map_destroy (struct page *page) {
 void *
 do_mmap (void *addr, size_t length, int writable,
 		struct file *file, off_t offset) {
+		struct supplemental_page_table* spt = &thread_current()->spt;
+		struct page *pg;
+		if(pg = spt_find_page(spt, addr) != NULL) {
+			return NULL;
+		}
+		file_seek(file, offset);
+		int left = length;
+		while(left > 0){
+			pg = malloc(sizeof(struct page));
+			struct frame* frame = vm_get_frame();
+			frame->page = pg;
+			pg->frame = frame;
+			file_map_initializer(pg, VM_FILE, frame->kva);
+			pg->writable = writable;
+			pg->va = addr;
+	
+			spt_insert_page(spt, pg);
+			int read_bytes = left > PGSIZE ? PGSIZE : left;
+			int readed = file_read(file, pg->frame->kva, read_bytes);
+			memset(pg->frame->kva + readed, 0, PGSIZE - readed);
+			left = left - PGSIZE;
+			if (readed != read_bytes) break;
+		}
+		
+		
+		
+// here
+		pml4_set_page(thread_current()->pml4, pg->va, pg->frame->kva, pg->writable);
+		return addr;
 }
 
 /* Do the munmap */
 void
 do_munmap (void *addr) {
+	
 }

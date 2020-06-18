@@ -11,6 +11,7 @@
 #include "intrinsic.h"
 #include "userprog/process.h"
 #include "threads/init.h"
+#include "threads/vaddr.h"
 #include "filesys/filesys.h"
 
 void syscall_entry (void);
@@ -106,7 +107,7 @@ syscall_handler (struct intr_frame *f) {
 	uint64_t one = f->R.rdi;
 	uint64_t two = f->R.rsi;
 	uint64_t three = f->R.rdx;
-	uint64_t four = f->R.rcx;
+	uint64_t four = f->R.r10;
 	uint64_t five = f->R.r8;
 	
 	//uint64_t four = f->R.r10;
@@ -158,7 +159,8 @@ syscall_handler (struct intr_frame *f) {
 			close((int)one);
 			break;
 		case SYS_MMAP:
-			mmap((void *)one, (size_t)two, (int)three, (int)four, (off_t)five);
+			rax = mmap((void *)one, (size_t)two, (int)three, (int)four, (off_t)five);
+			f->R.rax = rax;
 			break;
 		case SYS_MUNMAP:
 			munmap((void *)one);
@@ -314,10 +316,16 @@ static void close (int fd){
 	process_close_file (fd);
 }
 static void *mmap (void *addr, size_t length, int writable, int fd, off_t offset){
-	exit(-1);
+	struct file *file = process_get_file(fd);
+	//if (file == NULL || length <= 0 || addr == NULL || addr != pg_round_down(addr) || offset > PGSIZE || !is_user_vaddr(addr) || !is_user_vaddr((uint64_t)addr + (uint64_t)length) - 1) return NULL;
+	if (file == NULL || length <= 0 || addr == NULL || addr != pg_round_down(addr) || offset > PGSIZE) return NULL;
+	/*if (file == NULL) PANIC("1");
+	if (length == 0) PANIC("2");
+	if (addr == NULL) PANIC("3");*/
+	return do_mmap (addr, length, writable, file, offset);
 }
 static void munmap (void *addr){
-	exit(-1);
+	do_munmap(addr);
 }
 
 

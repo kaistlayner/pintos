@@ -41,6 +41,7 @@ int process_add_file(struct file* f) {
 		return -1;
 	t = thread_current();
 	fd = t->next_fd++;
+	//printf("added fd : %d\n", fd);
 	t->fds[fd] = f;
 	return fd;
 }
