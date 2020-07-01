@@ -231,7 +231,7 @@ __do_fork(void* aux) {
 	if_.R.rax = 0;
 
 	/* 2. Duplicate PT */
-	
+
 	current->pml4 = pml4_create();
 	//printf("child's pml4 : %p\n", current->pml4);
 	if (current->pml4 == NULL)
@@ -689,8 +689,9 @@ load_segment(struct file* file, off_t ofs, uint8_t* upage,
 		memset(kpage + page_read_bytes, 0, page_zero_bytes);
 
 		/* Add the page to the process's address space. */
-		if (!install_page(upage, kpage, writable)) {
-			palloc_free_page(kpage);
+		if (!install_page (upage, kpage, writable)) {
+			printf("fail\n");
+			palloc_free_page (kpage);
 			return false;
 		}
 
@@ -784,7 +785,7 @@ lazy_load_segment(struct page* page, void* aux) {
 	printf("writable : %d\n", writable);
 	// open needed maybe here
 	printf("file->pos : %zu\n", file->pos);
-	
+
 	printf("file->pos : %zu\n", file->pos);*/
 	file_seek(file, ofs);
 	if (file_read(file, kpage, read_bytes) != (int)read_bytes) {
@@ -864,14 +865,14 @@ setup_stack(struct intr_frame* if_) {
 	 spt_insert_page(spt, &pg);
 	 pg.operations->type = VM_MARKER_0;*/
 	 //uninit_new(&pg, stack_bottom, init, type, aux, anon_initializer);
-	
+
 	/*
 	if (!vm_claim_page(stack_bottom)) {
 		NOT_REACHED();
 		palloc_free_page(stack_bottom);
 		return false;
 	}*/
-	
+
 	struct page *pg;
 	pg = malloc(sizeof(struct page));
 	pg->va = stack_bottom;
@@ -880,7 +881,7 @@ setup_stack(struct intr_frame* if_) {
 	void *kpage = frame->kva;
 	frame->page = pg;
 	pg->frame = frame;
-	
+
 	struct supplemental_page_table* spt = &thread_current()->spt;
 	spt_insert_page(spt, pg);
 
