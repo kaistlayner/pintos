@@ -4,13 +4,34 @@ Kernel command line: -q -threads-tests -f run alarm-single
 Pintos booting with: 
 	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
 	ext_mem: 0x100000 ~ 0x13e0000 (Usable: 19,328 kB)
-Calibrating timer...  104,755,200 loops/s.
+Calibrating timer...  209,510,400 loops/s.
 hd0:0: detected 329 sector (164 kB) disk, model "QEMU HARDDISK", serial "QM00001"
 hd0:1: detected 20,160 sector (9 MB) disk, model "QEMU HARDDISK", serial "QM00002"
 hd1:1: detected 8,064 sector (3 MB) disk, model "QEMU HARDDISK", serial "QM00004"
-Formatting file system...Kernel PANIC at ../../filesys/fat.c:125 in fat_create(): FAT creation failed
-Call stack: 0x8004214430 0x800421aa5a 0x800421a3c1 0x800421a19a 0x8004206151.
-The `backtrace' program can make call stacks useful.
-Read "Backtraces" in the "Debugging Tools" chapter
-of the Pintos documentation for more information.
-Kernel PANIC recursion at ../../devices/timer.c:184 in real_time_sleep().
+Formatting file system...
+len : 20160	cluster size : 4
+done.
+Boot complete.
+Executing 'alarm-single':
+(alarm-single) begin
+(alarm-single) Creating 5 threads to sleep 1 times each.
+(alarm-single) Thread 0 sleeps 10 ticks each time,
+(alarm-single) thread 1 sleeps 20 ticks each time, and so on.
+(alarm-single) If successful, product of iteration count and
+(alarm-single) sleep duration will appear in nondescending order.
+(alarm-single) thread 0: duration=10, iteration=1, product=10
+(alarm-single) thread 1: duration=20, iteration=1, product=20
+(alarm-single) thread 2: duration=30, iteration=1, product=30
+(alarm-single) thread 3: duration=40, iteration=1, product=40
+(alarm-single) thread 4: duration=50, iteration=1, product=50
+(alarm-single) end
+Execution of 'alarm-single' complete.
+Timer: 325 ticks
+Thread: 280 idle ticks, 45 kernel ticks, 0 user ticks
+hd0:0: 0 reads, 0 writes
+hd0:1: 158 reads, 317 writes
+hd1:1: 0 reads, 0 writes
+Console: 1432 characters output
+Keyboard: 0 keys pressed
+Exception: 0 page faults
+Powering off...

@@ -4,13 +4,64 @@ Kernel command line: -q -threads-tests -f run alarm-multiple
 Pintos booting with: 
 	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
 	ext_mem: 0x100000 ~ 0x13e0000 (Usable: 19,328 kB)
-Calibrating timer...  195,584,000 loops/s.
+Calibrating timer...  209,510,400 loops/s.
 hd0:0: detected 329 sector (164 kB) disk, model "QEMU HARDDISK", serial "QM00001"
 hd0:1: detected 20,160 sector (9 MB) disk, model "QEMU HARDDISK", serial "QM00002"
 hd1:1: detected 8,064 sector (3 MB) disk, model "QEMU HARDDISK", serial "QM00004"
-Formatting file system...Kernel PANIC at ../../filesys/fat.c:125 in fat_create(): FAT creation failed
-Call stack: 0x8004214430 0x800421aa5a 0x800421a3c1 0x800421a19a 0x8004206151.
-The `backtrace' program can make call stacks useful.
-Read "Backtraces" in the "Debugging Tools" chapter
-of the Pintos documentation for more information.
-Kernel PANIC recursion at ../../devices/timer.c:184 in real_time_sleep().
+Formatting file system...
+len : 20160	cluster size : 4
+done.
+Boot complete.
+Executing 'alarm-multiple':
+(alarm-multiple) begin
+(alarm-multiple) Creating 5 threads to sleep 7 times each.
+(alarm-multiple) Thread 0 sleeps 10 ticks each time,
+(alarm-multiple) thread 1 sleeps 20 ticks each time, and so on.
+(alarm-multiple) If successful, product of iteration count and
+(alarm-multiple) sleep duration will appear in nondescending order.
+(alarm-multiple) thread 0: duration=10, iteration=1, product=10
+(alarm-multiple) thread 1: duration=20, iteration=1, product=20
+(alarm-multiple) thread 0: duration=10, iteration=2, product=20
+(alarm-multiple) thread 2: duration=30, iteration=1, product=30
+(alarm-multiple) thread 0: duration=10, iteration=3, product=30
+(alarm-multiple) thread 3: duration=40, iteration=1, product=40
+(alarm-multiple) thread 1: duration=20, iteration=2, product=40
+(alarm-multiple) thread 0: duration=10, iteration=4, product=40
+(alarm-multiple) thread 4: duration=50, iteration=1, product=50
+(alarm-multiple) thread 0: duration=10, iteration=5, product=50
+(alarm-multiple) thread 2: duration=30, iteration=2, product=60
+(alarm-multiple) thread 1: duration=20, iteration=3, product=60
+(alarm-multiple) thread 0: duration=10, iteration=6, product=60
+(alarm-multiple) thread 0: duration=10, iteration=7, product=70
+(alarm-multiple) thread 3: duration=40, iteration=2, product=80
+(alarm-multiple) thread 1: duration=20, iteration=4, product=80
+(alarm-multiple) thread 2: duration=30, iteration=3, product=90
+(alarm-multiple) thread 4: duration=50, iteration=2, product=100
+(alarm-multiple) thread 1: duration=20, iteration=5, product=100
+(alarm-multiple) thread 3: duration=40, iteration=3, product=120
+(alarm-multiple) thread 2: duration=30, iteration=4, product=120
+(alarm-multiple) thread 1: duration=20, iteration=6, product=120
+(alarm-multiple) thread 1: duration=20, iteration=7, product=140
+(alarm-multiple) thread 4: duration=50, iteration=3, product=150
+(alarm-multiple) thread 2: duration=30, iteration=5, product=150
+(alarm-multiple) thread 3: duration=40, iteration=4, product=160
+(alarm-multiple) thread 2: duration=30, iteration=6, product=180
+(alarm-multiple) thread 4: duration=50, iteration=4, product=200
+(alarm-multiple) thread 3: duration=40, iteration=5, product=200
+(alarm-multiple) thread 2: duration=30, iteration=7, product=210
+(alarm-multiple) thread 3: duration=40, iteration=6, product=240
+(alarm-multiple) thread 4: duration=50, iteration=5, product=250
+(alarm-multiple) thread 3: duration=40, iteration=7, product=280
+(alarm-multiple) thread 4: duration=50, iteration=6, product=300
+(alarm-multiple) thread 4: duration=50, iteration=7, product=350
+(alarm-multiple) end
+Execution of 'alarm-multiple' complete.
+Timer: 628 ticks
+Thread: 580 idle ticks, 48 kernel ticks, 0 user ticks
+hd0:0: 0 reads, 0 writes
+hd0:1: 158 reads, 317 writes
+hd1:1: 0 reads, 0 writes
+Console: 3400 characters output
+Keyboard: 0 keys pressed
+Exception: 0 page faults
+Powering off...

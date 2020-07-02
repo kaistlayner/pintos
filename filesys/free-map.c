@@ -11,6 +11,7 @@ static struct bitmap *free_map;      /* Free map, one bit per disk sector. */
 /* Initializes the free map. */
 void
 free_map_init (void) {
+	PANIC("AWD");
 	free_map = bitmap_create (disk_size (filesys_disk));
 	if (free_map == NULL)
 		PANIC ("bitmap creation failed--disk is too large");
