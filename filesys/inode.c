@@ -236,25 +236,28 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
 	const uint8_t *buffer = buffer_;
 	off_t bytes_written = 0;
 	uint8_t *bounce = NULL;
-
+	
 	if (inode->deny_write_cnt)
 		return 0;
 
 	while (size > 0) {
+		
 		/* Sector to write, starting byte offset within sector. */
 		disk_sector_t sector_idx = byte_to_sector (inode, offset);
 		int sector_ofs = offset % DISK_SECTOR_SIZE;
 
 		/* Bytes left in inode, bytes left in sector, lesser of the two. */
 		off_t inode_left = inode_length (inode) - offset;
+		printf("inode_length(inode), offset, inode->data.start : %u\t%u\t%u\n", inode_length(inode), offset, inode->data.start);
 		int sector_left = DISK_SECTOR_SIZE - sector_ofs;
 		int min_left = inode_left < sector_left ? inode_left : sector_left;
-
+		
 		/* Number of bytes to actually write into this sector. */
 		int chunk_size = size < min_left ? size : min_left;
+		printf("inode_left : %u\tsector_left : %u\tmin_left : %u\tchunk_size : %u\n",inode_left, sector_left, min_left, chunk_size);
 		if (chunk_size <= 0)
 			break;
-
+		printf("bytes_written : %u\tsector_idx : %u\tsector_idx : %u\n", bytes_written, sector_idx, sector_idx);
 		if (sector_ofs == 0 && chunk_size == DISK_SECTOR_SIZE) {
 			/* Write full sector directly to disk. */
 			disk_write (filesys_disk, sector_idx, buffer + bytes_written); 

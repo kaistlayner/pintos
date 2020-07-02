@@ -1,6 +1,7 @@
 #include "filesys/fat.h"
 #include "devices/disk.h"
 #include "filesys/filesys.h"
+
 #include "threads/malloc.h"
 #include "threads/synch.h"
 #include <stdio.h>
@@ -123,7 +124,7 @@ fat_create (void) {
 	fat_fs_init ();
 
 	// Create FAT table
-	printf("\nlen : %u\tcluster size : %u\n", fat_fs->fat_length, sizeof (cluster_t));
+	//printf("\nlen : %u\tcluster size : %u\n", fat_fs->fat_length, sizeof (cluster_t));
 	fat_fs->fat = calloc (fat_fs->fat_length, sizeof (cluster_t));
 	if (fat_fs->fat == NULL)
 		PANIC ("FAT creation failed");
@@ -159,6 +160,7 @@ fat_fs_init (void) {
 	/* TODO: Your code goes here. */
 	fat_fs->data_start = data_start(fat_fs->bs);
 	fat_fs->fat_length = fat_fs->bs.total_sectors;
+	fat_fs->last_clst = 1;
 	//fat_fs->fat_length = 1;
 }
 
@@ -172,7 +174,19 @@ fat_fs_init (void) {
 cluster_t
 fat_create_chain (cluster_t clst) {
 	/* TODO: Your code goes here. */
-	PANIC("COME?");
+	if(clst==0) PANIC("TO DO");
+	unsigned int *fat = fat_fs->fat;
+	cluster_t before = fat_fs->last_clst;
+	printf("before : %u\tclst : %u\n", before, clst);
+	//fat = realloc (fat, (fat_fs->fat_length)*sizeof(cluster_t));
+	int i;
+	for (i=0; i<clst; i++){
+		fat[before + i] = before + i + 2;
+	}
+	fat[before + clst - 1] = EOChain;
+	fat_fs->last_clst = before + clst;
+	printf("start : %u\tnow, last : %u\n", before+1, fat_fs->last_clst);
+	return before + 1;
 }
 
 /* Remove the chain of clusters starting from CLST.
@@ -180,12 +194,22 @@ fat_create_chain (cluster_t clst) {
 void
 fat_remove_chain (cluster_t clst, cluster_t pclst) {
 	/* TODO: Your code goes here. */
+	PANIC("NOT YET");
+	if (clst == 1) PANIC("WTF");
 	unsigned int *fat = fat_fs->fat;
-	while(fat[clst] != EOChain){
-		cluster_t next = fat[clst];
-		fat[clst] = 0;
-		clst = next;
+	unsigned int before_l = fat_fs->fat_length;
+	cluster_t cur = clst;
+	while(fat[cur - 1] != EOChain){
+		cluster_t next = fat[cur];
+		fat[cur] = 0;
+		cur = next;
 	}
+	fat[cur - 1] = 0;
+	while(fat[fat_fs->fat_length - 1] == 0){
+		fat_fs->fat_length--;
+	}
+	//if(before_l != fat_fs->fat_length) realloc(fat, (fat_fs->fat_length) * sizeof(cluster_t) );
+	if(pclst <= 1) return;
 	fat[pclst] = EOChain;
 }
 
@@ -193,15 +217,8 @@ fat_remove_chain (cluster_t clst, cluster_t pclst) {
 void
 fat_put (cluster_t clst, cluster_t val) {
 	/* TODO: Your code goes here. */
-	/*if (val != EOChain){
-		
-	}*/
-	if(fat_fs->fat_length < clst){
-		printf("clst : %u\tval : %x\n", clst, val);
-		PANIC("To do");
-	}
 	unsigned int *fat = fat_fs->fat;
-	fat[clst] = val;
+	fat[clst - 1] = val;
 }
 
 /* Fetch a value in the FAT table. */
@@ -210,7 +227,7 @@ fat_get (cluster_t clst) {
 	/* TODO: Your code goes here. */
 	if(fat_fs->fat_length < clst) PANIC("To do");
 	unsigned int *fat = fat_fs->fat;
-	return fat[clst];
+	return fat[clst - 1];
 }
 
 /* Covert a cluster # to a sector number. */
