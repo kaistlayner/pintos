@@ -34,6 +34,7 @@ static void close (int fd);
 static void *mmap (void *addr, size_t length, int writable, int fd, off_t offset);
 static void munmap (void *addr);
 static bool mkdir (const char *);
+static bool chdir (char *);
 struct lock file_lock;
 struct semaphore fork_sema;
 
@@ -170,6 +171,10 @@ syscall_handler (struct intr_frame *f) {
 		  rax = mkdir ((const char *) one);
 			f->R.rax = rax;
 			break;
+		case SYS_CHDIR:
+			rax = chdir ((const char *) one);
+			f->R.rax = rax;
+      break;
 		default:
 			exit(-1);
 	}
@@ -336,4 +341,19 @@ static bool
 mkdir (const char *dir)
 {
   return filesys_create_dir (dir);
+}
+static bool
+chdir (char *path_o)
+{
+  char path[PATH_MAX_LEN + 1];
+  strlcpy (path, path_o, PATH_MAX_LEN);
+  strlcat (path, "/0", PATH_MAX_LEN);
+
+  char name[PATH_MAX_LEN + 1];
+  struct dir *dir = parse_path (path, name);
+  if (!dir)
+    return false;
+  //dir_close (thread_current ()->working_dir);
+  thread_current ()->working_dir = dir;
+  return true;
 }

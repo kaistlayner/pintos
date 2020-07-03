@@ -369,7 +369,7 @@ thread_create (const char *name, int priority,
     }
     t->next_fd = 2;
     t->fds -= 2;
-    
+
 	/* Call the kernel_thread if it scheduled.
 	 * Note) rdi is 1st argument, and rsi is 2nd argument. */
 	t->tf.rip = (uintptr_t) kernel_thread;
@@ -381,6 +381,10 @@ thread_create (const char *name, int priority,
 	t->tf.cs = SEL_KCSEG;
 	t->tf.eflags = FLAG_IF;
 
+	// if (thread_current ()->working_dir)
+  // {
+  //   t->working_dir = dir_reopen(thread_current ()->working_dir);
+  // }
 	/* Add to run queue. */
 	list_push_back (&thread_current ()->child_list, &t->child_elem);
 	thread_unblock (t);
@@ -463,7 +467,7 @@ thread_exit (void) {
 #ifdef USERPROG
 	process_exit ();
 #endif
-	
+
 	struct list_elem *e;
 	struct thread *cur = thread_current();
 	/*
@@ -474,7 +478,7 @@ thread_exit (void) {
       e = list_remove (e);
       sema_up (&t->child_wait);
     }*/
-	
+
 	//printf("parent go on\n");
 	sema_up(&cur->parent_wait);
 	//printf("wait for parent...\n");
@@ -625,8 +629,9 @@ init_thread (struct thread *t, const char *name, int priority) {
 	t->ori_pri = priority;
 	t->nice = 0;
  	t->recent_cpu = 0;
+	t->working_dir = NULL;
 	t->magic = THREAD_MAGIC;
-	
+
 	t->exit_status = -1;
 	list_init (&t->don_list);
 	list_init (&t->child_list);
@@ -635,7 +640,7 @@ init_thread (struct thread *t, const char *name, int priority) {
 	sema_init (&t->child_wait, 0);
 	sema_init (&t->exec_wait, 0);
 	t->fork_done == false;
-	
+
  	list_push_back(&all_list, &t->all_elem);
 	t->waiting_for = NULL;
 }
@@ -679,7 +684,7 @@ do_iret (struct intr_frame *tf) {
 			"addq $32, %%rsp\n"
 			"iretq"
 			: : "g" ((uint64_t) tf) : "memory");
-	
+
 }
 
 /* Switching the thread by activating the new thread's page

@@ -128,6 +128,7 @@ struct thread {
 	/* Owned by thread.c. */
 	struct intr_frame tf;               /* Information for switching */
 	struct intr_frame tochild_if;
+	struct dir *working_dir;
 	unsigned magic;                     /* Detects stack overflow. */
 };
 

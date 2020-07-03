@@ -8,6 +8,7 @@
 #include "filesys/inode.h"
 #include "filesys/directory.h"
 #include "devices/disk.h"
+#include "threads/thread.h"
 
 /* The disk that contains the file system. */
 struct disk *filesys_disk;
@@ -31,6 +32,7 @@ filesys_init (bool format) {
 		do_format ();
 
 	fat_open ();
+	thread_current ()->working_dir = dir_open_root ();
 #else
 	/* Original FS */
 	free_map_init ();
@@ -59,9 +61,11 @@ filesys_done (void) {
  * Fails if a file named NAME already exists,
  * or if internal memory allocation fails. */
 bool
-filesys_create (const char *name, off_t initial_size) {
+filesys_create (const char *path, off_t initial_size) {
 	disk_sector_t inode_sector = 0;
-	struct dir *dir = dir_open_root ();
+	// struct dir *dir = dir_open_root ();
+	char name[PATH_MAX_LEN + 1];
+	struct dir *dir = parse_path (path, name);
 	//printf("dir : %x\n", dir);
 	bool a, b, c, d;
 	a = dir != NULL;
@@ -87,10 +91,11 @@ filesys_create (const char *name, off_t initial_size) {
  * Fails if no file named NAME exists,
  * or if an internal memory allocation fails. */
 struct file *
-filesys_open (const char *name) {
-	//PANIC("NOT YET IMPLEMENTED");
-	//printf("filesys_open...\n\tname : %s\n", name);
-	struct dir *dir = dir_open_root ();
+filesys_open (const char *path) {
+
+	char name[PATH_MAX_LEN + 1];
+	// struct dir *dir = dir_open_root ();
+	struct dir *dir = parse_path(path, name);
 	struct inode *inode = NULL;
 
 	if (dir == NULL) return NULL;
@@ -109,8 +114,10 @@ filesys_open (const char *name) {
  * Fails if no file named NAME exists,
  * or if an internal memory allocation fails. */
 bool
-filesys_remove (const char *name) {
-	struct dir *dir = dir_open_root ();
+filesys_remove (const char *path) {
+	char name[PATH_MAX_LEN + 1];
+	// struct dir *dir = dir_open_root ();
+	struct dir *dir = parse_path (path, name);
 	bool success = dir != NULL && dir_remove (dir, name);
 	dir_close (dir);
 
@@ -152,10 +159,15 @@ parse_path (const char *path_o, char *file_name)
   char path[PATH_MAX_LEN + 1];
   strlcpy (path, path_o, PATH_MAX_LEN);
 
-  //if (path[0] == '/')
-  dir = dir_open_root ();
-  //else
-  //  dir = dir_reopen (thread_current ()->working_dir);
+  // if (path[0] == '/') {
+	// 	printf("if\n");
+	// 	dir = dir_open_root ();
+	// }
+  // else {
+	// 	printf("else\n");
+	// 	dir = dir_reopen (thread_current ()->working_dir);
+	// }
+	dir = dir_open_root ();
 
   // // 아이노드가 어떤 이유로 제거되었거나 디렉터리가 아닌 경우
   // if (!inode_is_dir (dir_get_inode (dir)))
