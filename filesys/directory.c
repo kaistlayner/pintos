@@ -4,6 +4,7 @@
 #include <list.h>
 #include "filesys/filesys.h"
 #include "filesys/inode.h"
+#include "filesys/fat.h"
 #include "threads/malloc.h"
 
 /* A directory. */
@@ -84,10 +85,10 @@ lookup (const struct dir *dir, const char *name,
 
 	ASSERT (dir != NULL);
 	ASSERT (name != NULL);
-	//printf("before for-loop\n");
+	printf("lookup...\n\tsizeof e : %u\n", sizeof e);
 	for (ofs = 0; inode_read_at (dir->inode, &e, sizeof e, ofs) == sizeof e;
 			ofs += sizeof e)
-		//printf("before if\n");
+		printf("\tcomparing name : %s\n", e.name);
 		if (e.in_use && !strcmp (name, e.name)) {
 			if (ep != NULL)
 				*ep = e;
@@ -129,6 +130,7 @@ dir_lookup (const struct dir *dir, const char *name,
  * error occurs. */
 bool
 dir_add (struct dir *dir, const char *name, disk_sector_t inode_sector) {
+	printf("dir_add...\n");
 	struct dir_entry e;
 	off_t ofs;
 	bool success = false;
@@ -143,7 +145,7 @@ dir_add (struct dir *dir, const char *name, disk_sector_t inode_sector) {
 	/* Check that NAME is not in use. */
 	if (lookup (dir, name, NULL, NULL))
 		goto done;
-	printf("dir_add...\n\tdir : %x\tname : %s\tsector : %u\n", dir, name, inode_sector);
+	printf("\tdir : %x\tname : %s\tsector : %u\n", dir, name, inode_sector);
 	/* Set OFS to offset of free slot.
 	 * If there are no free slots, then it will be set to the
 	 * current end-of-file.
@@ -163,7 +165,9 @@ dir_add (struct dir *dir, const char *name, disk_sector_t inode_sector) {
 	e.in_use = true;
 	strlcpy (e.name, name, sizeof e.name);
 	e.inode_sector = inode_sector;
-	success = inode_write_at (dir->inode, &e, sizeof e, ofs) == sizeof e;
+	int writed = inode_write_at (dir->inode, &e, sizeof e, ofs);
+	printf("\twrited : %d\n", writed);
+	success = writed == sizeof e;
 
 done:
 	return success;

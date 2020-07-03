@@ -101,7 +101,8 @@ fat_close (void) {
 	off_t bytes_left = sizeof (fat_fs->fat);
 	const off_t fat_size_in_bytes = fat_fs->fat_length * sizeof (cluster_t);
 	for (unsigned i = 0; i < fat_fs->bs.fat_sectors; i++) {
-		if (i != cluster_to_sector(ROOT_DIR_CLUSTER)) continue;
+		//printf("fat_fs->bs.fat_sectors : %u\ti : %u\n", fat_fs->bs.fat_sectors, i);
+		if (i == 0) continue;
 		bytes_left = fat_size_in_bytes - bytes_wrote;
 		if (bytes_left >= DISK_SECTOR_SIZE) {
 			disk_write (filesys_disk, fat_fs->bs.fat_start + i,

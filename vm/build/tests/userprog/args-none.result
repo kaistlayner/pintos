@@ -1,1 +1,8 @@
-PASS
+FAIL
+Kernel panic in run: PANIC at ../../filesys/fsutil.c:112 in fsutil_put(): args-none: open failed
+Call stack: 0x800421872a 0x80042211b5 0x80042068cc 0x8004206186
+Translation of call stack:
+0x000000800421872a: debug_panic (lib/kernel/debug.c:32)
+0x00000080042211b5: fsutil_put (filesys/fsutil.c:116)
+0x00000080042068cc: run_actions (threads/init.c:297)
+0x0000008004206186: main (threads/init.c:125)

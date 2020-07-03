@@ -28,7 +28,7 @@ free_map_init (void) {
 bool
 free_map_allocate (size_t cnt, disk_sector_t *sectorp) {
 	*sectorp = cluster_to_sector(fat_create_chain(cnt));
-	return;
+	return 1;
 	
 	disk_sector_t sector = bitmap_scan_and_flip (free_map, 0, cnt, false);
 	if (sector != BITMAP_ERROR
