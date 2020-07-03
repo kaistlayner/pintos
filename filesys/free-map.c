@@ -27,7 +27,7 @@ free_map_init (void) {
  * available. */
 bool
 free_map_allocate (size_t cnt, disk_sector_t *sectorp) {
-	sectorp = fat_create_chain(cnt) - 1;
+	*sectorp = cluster_to_sector(fat_create_chain(cnt));
 	return;
 	
 	disk_sector_t sector = bitmap_scan_and_flip (free_map, 0, cnt, false);
@@ -78,9 +78,10 @@ void
 free_map_create (void) {
 	fat_create();
 	return;
+	
 	/* Create inode. */
-	if (!inode_create (FREE_MAP_SECTOR, bitmap_file_size (free_map)))
-		PANIC ("free map creation failed");
+	//if (!inode_create (FREE_MAP_SECTOR, bitmap_file_size (free_map)))
+	//	PANIC ("free map creation failed");
 
 	/* Write bitmap to file. */
 	free_map_file = file_open (inode_open (FREE_MAP_SECTOR));

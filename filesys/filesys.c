@@ -2,6 +2,7 @@
 #include <debug.h>
 #include <stdio.h>
 #include <string.h>
+#include "filesys/fat.h"
 #include "filesys/file.h"
 #include "filesys/free-map.h"
 #include "filesys/inode.h"
@@ -63,11 +64,11 @@ filesys_create (const char *name, off_t initial_size) {
 	struct dir *dir = dir_open_root ();
 	bool a, b, c, d;
 	a = dir != NULL;
-	b = free_map_allocate (1, &inode_sector);
-	c = inode_create (inode_sector, initial_size);
+	//b = free_map_allocate (1, &inode_sector);
+	inode_sector = inode_create (inode_sector, initial_size);
 	d = dir_add (dir, name, inode_sector);
 	bool success = a && b && c && d;
-	printf("ans : %d %d %d %d %d\n", a, b, c, d, success);
+	printf("filesys_create...\n\tans : %d %d %d %d\n", a, inode_sector, d, success);
 	/*bool success = (dir != NULL
 			&& free_map_allocate (1, &inode_sector)
 			&& inode_create (inode_sector, initial_size)

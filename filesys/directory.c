@@ -128,7 +128,7 @@ dir_add (struct dir *dir, const char *name, disk_sector_t inode_sector) {
 	struct dir_entry e;
 	off_t ofs;
 	bool success = false;
-
+	printf("error maybe here\n");
 	ASSERT (dir != NULL);
 	ASSERT (name != NULL);
 
@@ -139,7 +139,7 @@ dir_add (struct dir *dir, const char *name, disk_sector_t inode_sector) {
 	/* Check that NAME is not in use. */
 	if (lookup (dir, name, NULL, NULL))
 		goto done;
-
+	printf("dir_add...\n\tdir : %x\tname : %s\tsector : %u\n", dir, name, inode_sector);
 	/* Set OFS to offset of free slot.
 	 * If there are no free slots, then it will be set to the
 	 * current end-of-file.
