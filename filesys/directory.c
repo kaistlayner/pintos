@@ -4,6 +4,7 @@
 #include <list.h>
 #include "filesys/filesys.h"
 #include "filesys/inode.h"
+#include "filesys/fat.h"
 #include "threads/malloc.h"
 
 /* A directory. */
@@ -84,9 +85,10 @@ lookup (const struct dir *dir, const char *name,
 
 	ASSERT (dir != NULL);
 	ASSERT (name != NULL);
-
+	//printf("lookup...\n\tsizeof e : %u\n", sizeof e);
 	for (ofs = 0; inode_read_at (dir->inode, &e, sizeof e, ofs) == sizeof e;
-			ofs += sizeof e)
+			ofs += sizeof e){
+		//printf("\tcomparing name : %s\n", e.name);
 		if (e.in_use && !strcmp (name, e.name)) {
 			if (ep != NULL)
 				*ep = e;
@@ -94,6 +96,7 @@ lookup (const struct dir *dir, const char *name,
 				*ofsp = ofs;
 			return true;
 		}
+	}
 	return false;
 }
 
@@ -108,12 +111,12 @@ dir_lookup (const struct dir *dir, const char *name,
 
 	ASSERT (dir != NULL);
 	ASSERT (name != NULL);
-
+	
 	if (lookup (dir, name, &e, NULL))
 		*inode = inode_open (e.inode_sector);
 	else
 		*inode = NULL;
-
+	
 	return *inode != NULL;
 }
 
@@ -125,21 +128,22 @@ dir_lookup (const struct dir *dir, const char *name,
  * error occurs. */
 bool
 dir_add (struct dir *dir, const char *name, disk_sector_t inode_sector) {
+	//printf("dir_add...\n");
 	struct dir_entry e;
 	off_t ofs;
 	bool success = false;
-
+	
 	ASSERT (dir != NULL);
 	ASSERT (name != NULL);
 
 	/* Check NAME for validity. */
 	if (*name == '\0' || strlen (name) > NAME_MAX)
 		return false;
-
+	//printf("before lookup\n");
 	/* Check that NAME is not in use. */
 	if (lookup (dir, name, NULL, NULL))
 		goto done;
-
+	//printf("\tdir : %x\tname : %s\tsector : %u\n", dir, name, inode_sector);
 	/* Set OFS to offset of free slot.
 	 * If there are no free slots, then it will be set to the
 	 * current end-of-file.
@@ -147,6 +151,9 @@ dir_add (struct dir *dir, const char *name, disk_sector_t inode_sector) {
 	 * inode_read_at() will only return a short read at end of file.
 	 * Otherwise, we'd need to verify that we didn't get a short
 	 * read due to something intermittent such as low memory. */
+	
+	//dir->inode = inode_open(inode_sector);
+	 
 	for (ofs = 0; inode_read_at (dir->inode, &e, sizeof e, ofs) == sizeof e;
 			ofs += sizeof e)
 		if (!e.in_use)
@@ -156,7 +163,9 @@ dir_add (struct dir *dir, const char *name, disk_sector_t inode_sector) {
 	e.in_use = true;
 	strlcpy (e.name, name, sizeof e.name);
 	e.inode_sector = inode_sector;
-	success = inode_write_at (dir->inode, &e, sizeof e, ofs) == sizeof e;
+	int writed = inode_write_at (dir->inode, &e, sizeof e, ofs);
+	//printf("\twrited : %d\n", writed);
+	success = writed == sizeof e;
 
 done:
 	return success;

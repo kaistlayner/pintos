@@ -1,0 +1,27 @@
+Kernel command line: -q -f put mmap-remove put sample.txt run mmap-remove
+0 ~ 9fc00 1
+100000 ~ 13e0000 1
+Pintos booting with: 
+	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
+	ext_mem: 0x100000 ~ 0x13e0000 (Usable: 19,328 kB)
+Calibrating timer...  199,680,000 loops/s.
+hd0:0: detected 329 sector (164 kB) disk, model "QEMU HARDDISK", serial "QM00001"
+hd0:1: detected 20,160 sector (9 MB) disk, model "QEMU HARDDISK", serial "QM00002"
+hd1:0: detected 110 sector (55 kB) disk, model "QEMU HARDDISK", serial "QM00003"
+hd1:1: detected 8,064 sector (3 MB) disk, model "QEMU HARDDISK", serial "QM00004"
+Formatting file system...done.
+Boot complete.
+Putting 'mmap-remove' into the file system...
+Putting 'sample.txt' into the file system...
+Executing 'mmap-remove':
+(mmap-remove) begin
+(mmap-remove) open "sample.txt"
+(mmap-remove) mmap "sample.txt"
+(mmap-remove) remove "sample.txt"
+clst : 1229868868
+Kernel PANIC at ../../filesys/fat.c:236 in fat_get(): To do
+Call stack: 0x8004214430 0x800421af13 0x800421ade9 0x800421afc8 0x800421c072 0x800421bbb0 0x800421a372 0x8004219ad0 0x8004219680 0x8004219442 0x4001f8 0x400e51 0x400e9a.
+The `backtrace' program can make call stacks useful.
+Read "Backtraces" in the "Debugging Tools" chapter
+of the Pintos documentation for more information.
+Kernel PANIC recursion at ../../devices/timer.c:184 in real_time_sleep().

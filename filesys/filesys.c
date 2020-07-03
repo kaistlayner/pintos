@@ -2,6 +2,7 @@
 #include <debug.h>
 #include <stdio.h>
 #include <string.h>
+#include "filesys/fat.h"
 #include "filesys/file.h"
 #include "filesys/free-map.h"
 #include "filesys/inode.h"
@@ -61,10 +62,18 @@ bool
 filesys_create (const char *name, off_t initial_size) {
 	disk_sector_t inode_sector = 0;
 	struct dir *dir = dir_open_root ();
-	bool success = (dir != NULL
+	//printf("dir : %x\n", dir);
+	bool a, b, c, d;
+	a = dir != NULL;
+	b = free_map_allocate (1, &inode_sector);
+	c = inode_create (inode_sector, initial_size);	
+	d = dir_add (dir, name, inode_sector);
+	bool success = a && b && c && d && inode_sector;
+	//printf("filesys_create...\n\tans : %d %d %d %d %d\n", a, b, c, d, inode_sector);
+	/*bool success = (dir != NULL
 			&& free_map_allocate (1, &inode_sector)
 			&& inode_create (inode_sector, initial_size)
-			&& dir_add (dir, name, inode_sector));
+			&& dir_add (dir, name, inode_sector));*/
 	if (!success && inode_sector != 0)
 		free_map_release (inode_sector, 1);
 	dir_close (dir);
@@ -79,6 +88,8 @@ filesys_create (const char *name, off_t initial_size) {
  * or if an internal memory allocation fails. */
 struct file *
 filesys_open (const char *name) {
+	//PANIC("NOT YET IMPLEMENTED");
+	//printf("filesys_open...\n\tname : %s\n", name);
 	struct dir *dir = dir_open_root ();
 	struct inode *inode = NULL;
 	
@@ -114,6 +125,8 @@ do_format (void) {
 #ifdef EFILESYS
 	/* Create FAT and save it to the disk. */
 	fat_create ();
+	if (!dir_create (ROOT_DIR_SECTOR, 16))
+		PANIC ("root directory creation failed");
 	fat_close ();
 #else
 	free_map_create ();

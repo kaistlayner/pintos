@@ -1,10 +1,14 @@
 #include "filesys/fat.h"
 #include "devices/disk.h"
 #include "filesys/filesys.h"
+
 #include "threads/malloc.h"
 #include "threads/synch.h"
 #include <stdio.h>
 #include <string.h>
+
+#define data_start(FATBS) (1 + ((FATBS).fat_sectors))
+#define data_sectors(FATBS) (((FATBS).total_sectors) - (data_start (FATBS)))
 
 /* Should be less than DISK_SECTOR_SIZE */
 struct fat_boot {
@@ -82,6 +86,7 @@ fat_open (void) {
 
 void
 fat_close (void) {
+	//printf("fat_close...\n");
 	// Write FAT boot sector
 	uint8_t *bounce = calloc (1, DISK_SECTOR_SIZE);
 	if (bounce == NULL)
@@ -96,6 +101,8 @@ fat_close (void) {
 	off_t bytes_left = sizeof (fat_fs->fat);
 	const off_t fat_size_in_bytes = fat_fs->fat_length * sizeof (cluster_t);
 	for (unsigned i = 0; i < fat_fs->bs.fat_sectors; i++) {
+		//printf("fat_fs->bs.fat_sectors : %u\ti : %u\n", fat_fs->bs.fat_sectors, i);
+		if (i == 0) continue;
 		bytes_left = fat_size_in_bytes - bytes_wrote;
 		if (bytes_left >= DISK_SECTOR_SIZE) {
 			disk_write (filesys_disk, fat_fs->bs.fat_start + i,
@@ -120,6 +127,7 @@ fat_create (void) {
 	fat_fs_init ();
 
 	// Create FAT table
+	//printf("\nlen : %u\tcluster size : %u\n", fat_fs->fat_length, sizeof (cluster_t));
 	fat_fs->fat = calloc (fat_fs->fat_length, sizeof (cluster_t));
 	if (fat_fs->fat == NULL)
 		PANIC ("FAT creation failed");
@@ -131,7 +139,9 @@ fat_create (void) {
 	uint8_t *buf = calloc (1, DISK_SECTOR_SIZE);
 	if (buf == NULL)
 		PANIC ("FAT create failed due to OOM");
+	//printf("!!root writing!!\n");
 	disk_write (filesys_disk, cluster_to_sector (ROOT_DIR_CLUSTER), buf);
+	//printf("!!root writing!!\n");
 	free (buf);
 }
 
@@ -153,6 +163,9 @@ fat_boot_create (void) {
 void
 fat_fs_init (void) {
 	/* TODO: Your code goes here. */
+	fat_fs->data_start = data_start(fat_fs->bs);
+	fat_fs->fat_length = fat_fs->bs.total_sectors;
+	fat_fs->last_clst = ROOT_DIR_CLUSTER;
 }
 
 /*----------------------------------------------------------------------------*/
@@ -165,6 +178,24 @@ fat_fs_init (void) {
 cluster_t
 fat_create_chain (cluster_t clst) {
 	/* TODO: Your code goes here. */
+	if(clst==0) clst++;
+	unsigned int *fat = fat_fs->fat;
+	int i = ROOT_DIR_CLUSTER + 1, cnt = 1;
+	cluster_t saved = 0, return_value;
+	while(cnt <= clst){
+		if (fat_get(i)==0){
+			cnt++;
+			if(saved) fat_put(saved, i);
+			else return_value = i;
+			saved = i;
+			if(i > fat_fs->last_clst) fat_fs->last_clst = i;
+		}
+		i++;
+	}
+	fat_put(saved, EOChain);
+	
+	//printf("fat_create_chain...\n\tstart : %u\tlast : %u\tlast_clst : %u\n", return_value, saved, fat_fs->last_clst);
+	return return_value;
 }
 
 /* Remove the chain of clusters starting from CLST.
@@ -172,22 +203,45 @@ fat_create_chain (cluster_t clst) {
 void
 fat_remove_chain (cluster_t clst, cluster_t pclst) {
 	/* TODO: Your code goes here. */
+	if (clst == ROOT_DIR_CLUSTER) PANIC("CANNOT REMOVE ROOT");
+	unsigned int *fat = fat_fs->fat;
+	cluster_t cur = clst;
+	while(fat_get(cur) != EOChain){
+		cluster_t next = fat_get(cur);
+		fat_put(cur, 0);
+		cur = next;
+	}
+	fat_put(cur, 0);
+	while(fat_get(fat_fs->last_clst) == 0){
+		fat_fs->last_clst--;
+	}
+	if(pclst <= 1) return;
+	fat_put(pclst, EOChain);
 }
 
 /* Update a value in the FAT table. */
 void
 fat_put (cluster_t clst, cluster_t val) {
 	/* TODO: Your code goes here. */
+	unsigned int *fat = fat_fs->fat;
+	fat[clst] = val;
 }
 
 /* Fetch a value in the FAT table. */
 cluster_t
 fat_get (cluster_t clst) {
 	/* TODO: Your code goes here. */
+	if(fat_fs->fat_length < clst){
+		printf("clst : %u\n", clst);
+		exit(-1);
+	}
+	unsigned int *fat = fat_fs->fat;
+	return fat[clst];
 }
 
 /* Covert a cluster # to a sector number. */
 disk_sector_t
 cluster_to_sector (cluster_t clst) {
 	/* TODO: Your code goes here. */
+	return clst;
 }
