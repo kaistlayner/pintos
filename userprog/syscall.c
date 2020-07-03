@@ -33,6 +33,7 @@ static unsigned tell (int fd);
 static void close (int fd);
 static void *mmap (void *addr, size_t length, int writable, int fd, off_t offset);
 static void munmap (void *addr);
+static bool mkdir (const char *);
 struct lock file_lock;
 struct semaphore fork_sema;
 
@@ -109,7 +110,7 @@ syscall_handler (struct intr_frame *f) {
 	uint64_t three = f->R.rdx;
 	uint64_t four = f->R.r10;
 	uint64_t five = f->R.r8;
-	
+
 	//uint64_t four = f->R.r10;
 	uint64_t rax;
 
@@ -164,6 +165,10 @@ syscall_handler (struct intr_frame *f) {
 			break;
 		case SYS_MUNMAP:
 			munmap((void *)one);
+			break;
+		case SYS_MKDIR:
+		  rax = mkdir ((const char *) one);
+			f->R.rax = rax;
 			break;
 		default:
 			exit(-1);
@@ -327,8 +332,8 @@ static void *mmap (void *addr, size_t length, int writable, int fd, off_t offset
 static void munmap (void *addr){
 	do_munmap(addr);
 }
-
-
-
-
-
+static bool
+mkdir (const char *dir)
+{
+  return filesys_create_dir (dir);
+}
