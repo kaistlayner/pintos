@@ -62,12 +62,13 @@ bool
 filesys_create (const char *name, off_t initial_size) {
 	disk_sector_t inode_sector = 0;
 	struct dir *dir = dir_open_root ();
-	bool a, b, c, d;
+	printf("dir : %x\n", dir);
+	bool a, d;
 	a = dir != NULL;
 	//b = free_map_allocate (1, &inode_sector);
 	inode_sector = inode_create (inode_sector, initial_size);
 	d = dir_add (dir, name, inode_sector);
-	bool success = a && b && c && d;
+	bool success = a && d && inode_sector;
 	printf("filesys_create...\n\tans : %d %d %d %d\n", a, inode_sector, d, success);
 	/*bool success = (dir != NULL
 			&& free_map_allocate (1, &inode_sector)
@@ -87,6 +88,7 @@ filesys_create (const char *name, off_t initial_size) {
  * or if an internal memory allocation fails. */
 struct file *
 filesys_open (const char *name) {
+	//PANIC("NOT YET IMPLEMENTED");
 	struct dir *dir = dir_open_root ();
 	struct inode *inode = NULL;
 	

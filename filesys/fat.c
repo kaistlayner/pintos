@@ -86,6 +86,7 @@ fat_open (void) {
 
 void
 fat_close (void) {
+	printf("fat_close...\n");
 	// Write FAT boot sector
 	uint8_t *bounce = calloc (1, DISK_SECTOR_SIZE);
 	if (bounce == NULL)
@@ -100,6 +101,7 @@ fat_close (void) {
 	off_t bytes_left = sizeof (fat_fs->fat);
 	const off_t fat_size_in_bytes = fat_fs->fat_length * sizeof (cluster_t);
 	for (unsigned i = 0; i < fat_fs->bs.fat_sectors; i++) {
+		if (i != cluster_to_sector(ROOT_DIR_CLUSTER)) continue;
 		bytes_left = fat_size_in_bytes - bytes_wrote;
 		if (bytes_left >= DISK_SECTOR_SIZE) {
 			disk_write (filesys_disk, fat_fs->bs.fat_start + i,
@@ -136,7 +138,9 @@ fat_create (void) {
 	uint8_t *buf = calloc (1, DISK_SECTOR_SIZE);
 	if (buf == NULL)
 		PANIC ("FAT create failed due to OOM");
+	printf("!!root writing!!\n");
 	disk_write (filesys_disk, cluster_to_sector (ROOT_DIR_CLUSTER), buf);
+	printf("!!root writing!!\n");
 	free (buf);
 }
 
@@ -198,7 +202,7 @@ fat_create_chain (cluster_t clst) {
 void
 fat_remove_chain (cluster_t clst, cluster_t pclst) {
 	/* TODO: Your code goes here. */
-	if (clst == 1) PANIC("CANNOT REMOVE ROOT");
+	if (clst == ROOT_DIR_CLUSTER) PANIC("CANNOT REMOVE ROOT");
 	unsigned int *fat = fat_fs->fat;
 	cluster_t cur = clst;
 	while(fat_get(cur) != EOChain){
@@ -226,7 +230,10 @@ fat_put (cluster_t clst, cluster_t val) {
 cluster_t
 fat_get (cluster_t clst) {
 	/* TODO: Your code goes here. */
-	if(fat_fs->fat_length < clst) PANIC("To do");
+	if(fat_fs->fat_length < clst){
+		printf("clst : %u\n", clst);
+		PANIC("To do");
+	}
 	unsigned int *fat = fat_fs->fat;
 	return fat[clst];
 }

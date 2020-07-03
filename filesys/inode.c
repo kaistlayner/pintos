@@ -64,7 +64,7 @@ inode_init (void) {
  * disk.
  * Returns true if successful.
  * Returns false if memory or disk allocation fails. */
-bool
+disk_sector_t
 inode_create (disk_sector_t sector, off_t length) {
 	struct inode_disk *disk_inode = NULL;
 	sector = 0;
@@ -85,12 +85,11 @@ inode_create (disk_sector_t sector, off_t length) {
 			sector = disk_inode->start;
 			printf("inode_create...\n\tallcated : %u\tlength : %u\tsector : %u\n", sectors, disk_inode->length, sector);
 			disk_write (filesys_disk, sector, disk_inode);
-			
 			if (sectors > 0) {
 				static char zeros[DISK_SECTOR_SIZE];
 				size_t i;
 
-				for (i = 0; i < sectors; i++) 
+				for (i = 1; i < sectors; i++) 
 					disk_write (filesys_disk, disk_inode->start + i, zeros); 
 			}
 			//success = true; 
@@ -262,7 +261,7 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
 		printf("\tinode_left : %u\tsector_left : %u\tmin_left : %u\tchunk_size : %u\n",inode_left, sector_left, min_left, chunk_size);
 		if (chunk_size <= 0)
 			break;
-		printf("\tbytes_written : %u\tsector_idx : %u\tsector_idx : %u\n", bytes_written, sector_idx, sector_idx);
+		printf("\tbytes_written : %u\tsector_idx : %u\tsize : %u\n", bytes_written, sector_idx, size);
 		if (sector_ofs == 0 && chunk_size == DISK_SECTOR_SIZE) {
 			/* Write full sector directly to disk. */
 			disk_write (filesys_disk, sector_idx, buffer + bytes_written); 

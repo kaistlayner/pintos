@@ -84,16 +84,19 @@ lookup (const struct dir *dir, const char *name,
 
 	ASSERT (dir != NULL);
 	ASSERT (name != NULL);
-
+	//printf("before for-loop\n");
 	for (ofs = 0; inode_read_at (dir->inode, &e, sizeof e, ofs) == sizeof e;
 			ofs += sizeof e)
+		//printf("before if\n");
 		if (e.in_use && !strcmp (name, e.name)) {
 			if (ep != NULL)
 				*ep = e;
 			if (ofsp != NULL)
 				*ofsp = ofs;
+			//printf("case 1\n");
 			return true;
 		}
+	//printf("case 2\n");
 	return false;
 }
 
@@ -104,16 +107,17 @@ lookup (const struct dir *dir, const char *name,
 bool
 dir_lookup (const struct dir *dir, const char *name,
 		struct inode **inode) {
+	
 	struct dir_entry e;
 
 	ASSERT (dir != NULL);
 	ASSERT (name != NULL);
-
+	
 	if (lookup (dir, name, &e, NULL))
 		*inode = inode_open (e.inode_sector);
 	else
 		*inode = NULL;
-
+	
 	return *inode != NULL;
 }
 
@@ -128,14 +132,14 @@ dir_add (struct dir *dir, const char *name, disk_sector_t inode_sector) {
 	struct dir_entry e;
 	off_t ofs;
 	bool success = false;
-	printf("error maybe here\n");
+	
 	ASSERT (dir != NULL);
 	ASSERT (name != NULL);
 
 	/* Check NAME for validity. */
 	if (*name == '\0' || strlen (name) > NAME_MAX)
 		return false;
-
+	//printf("before lookup\n");
 	/* Check that NAME is not in use. */
 	if (lookup (dir, name, NULL, NULL))
 		goto done;
@@ -147,6 +151,9 @@ dir_add (struct dir *dir, const char *name, disk_sector_t inode_sector) {
 	 * inode_read_at() will only return a short read at end of file.
 	 * Otherwise, we'd need to verify that we didn't get a short
 	 * read due to something intermittent such as low memory. */
+	
+	dir->inode = inode_open(inode_sector);
+	 
 	for (ofs = 0; inode_read_at (dir->inode, &e, sizeof e, ofs) == sizeof e;
 			ofs += sizeof e)
 		if (!e.in_use)
