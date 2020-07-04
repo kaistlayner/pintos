@@ -300,26 +300,29 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
 
 	if (inode->deny_write_cnt)
 		return 0;
-
+	printf("writing to sector : %d\n", get_sector(inode));
 	while (size > 0) {
 		/* Sector to write, starting byte offset within sector. */
 		disk_sector_t sector_idx = byte_to_sector (inode, offset);
 		int sector_ofs = offset % DISK_SECTOR_SIZE;
-
+		printf("1 size %d\n", size);
 		/* Bytes left in inode, bytes left in sector, lesser of the two. */
 		off_t inode_left = inode_length (inode) - offset;
 		int sector_left = DISK_SECTOR_SIZE - sector_ofs;
+		printf("inode_length : %d\tinode_left : %d\tsector : %d\n", inode_length (inode), inode_left, sector_left);
 		int min_left = inode_left < sector_left ? inode_left : sector_left;
-
+		printf("2 size %d\n", size);
 		/* Number of bytes to actually write into this sector. */
 		int chunk_size = size < min_left ? size : min_left;
 		if (chunk_size <= 0)
 			break;
-
+		printf("3 size %d\n", size);
 		if (sector_ofs == 0 && chunk_size == DISK_SECTOR_SIZE) {
 			/* Write full sector directly to disk. */
 			disk_write (filesys_disk, sector_idx, buffer + bytes_written); 
+			printf("4 size %d\n", size);
 		} else {
+			printf("5 size %d\n", size);
 			/* We need a bounce buffer. */
 			if (bounce == NULL) {
 				bounce = malloc (DISK_SECTOR_SIZE);
@@ -334,14 +337,17 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
 				disk_read (filesys_disk, sector_idx, bounce);
 			else
 				memset (bounce, 0, DISK_SECTOR_SIZE);
+			printf("6 size %d\n", size);
 			memcpy (bounce + sector_ofs, buffer + bytes_written, chunk_size);
 			disk_write (filesys_disk, sector_idx, bounce); 
+			printf("7 size %d\n", size);
 		}
 
 		/* Advance. */
 		size -= chunk_size;
 		offset += chunk_size;
 		bytes_written += chunk_size;
+		printf("8 size %d\n", size);
 	}
 	free (bounce);
 

@@ -134,6 +134,7 @@ dir_lookup (const struct dir *dir, const char *name,
 bool
 dir_add (struct dir *dir, const char *name, disk_sector_t inode_sector) {
 	//printf("dir_add...\n");
+	printf("add %s(%d) to %u(%d)\n", name, inode_sector, dir_get_inode(dir), get_sector(dir->inode));
 	struct dir_entry e;
 	off_t ofs;
 	bool success = false;

@@ -226,6 +226,7 @@ static int wait(tid_t tid)
 
 static int write (int fd, const void * buffer, unsigned size)
 {
+	
   struct file *f;
   lock_acquire (&file_lock);
   if (fd == STDOUT_FILENO)
@@ -239,12 +240,17 @@ static int write (int fd, const void * buffer, unsigned size)
       lock_release (&file_lock);
       return 0;
     }
+    printf("write to fd %d with inode_sector %d\n", fd, get_sector(file_get_inode(f)));
   bool is_dir = is_dir_inode(file_get_inode(f));
   if(is_dir){
   	lock_release (&file_lock);
   	return -1;
   }
+  
+  printf("is not dir\n");
+  printf("write %d with size %d\n", fd, size);
   size = file_write (f, buffer, size);
+  printf("wrote %d\n", size);
   lock_release (&file_lock);
   return size;
 }
@@ -292,6 +298,7 @@ static int open (const char *file){
 	}
 	result = process_add_file (f);
 	lock_release (&file_lock);
+	printf("open %s : %d\n", file, result);
 	return result;
 }
 static int filesize (int fd){
@@ -442,6 +449,13 @@ isemptydir (int fd, char *name)
 }
 
 int symlink (const char *target, const char *linkpath){
-	
+	printf("%s %s\n", target, linkpath);
+	char name[PATH_MAX_LEN + 1];
+	struct dir *dir = parse_path (target, name);
+	struct inode *src_inode;
+  	dir_lookup (dir, name, &src_inode);
+  	if(thread_current()->working_dir == NULL) thread_current()->working_dir = dir_open_root();
+  	bool ans = dir_add(thread_current()->working_dir, linkpath, get_sector(src_inode));
+  	return !ans;
 }
 
