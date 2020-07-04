@@ -27,6 +27,7 @@ struct fat_fs {
 	unsigned int fat_length;
 	disk_sector_t data_start;
 	cluster_t last_clst;
+	cluster_t to_add;
 	struct lock write_lock;
 };
 
@@ -166,11 +167,27 @@ fat_fs_init (void) {
 	fat_fs->data_start = data_start(fat_fs->bs);
 	fat_fs->fat_length = fat_fs->bs.total_sectors;
 	fat_fs->last_clst = ROOT_DIR_CLUSTER;
+	fat_fs->to_add = 0;
 }
 
 /*----------------------------------------------------------------------------*/
 /* FAT handling                                                               */
 /*----------------------------------------------------------------------------*/
+
+static cluster_t find_back(cluster_t clst){
+	int i = 2;
+	//printf("input : %u\n", clst);
+	if(clst == 0 || clst == 1) return 0;
+	unsigned int *fat = fat_fs->fat;
+	while(i<=fat_fs->last_clst){
+		if(fat_get(i) == clst){
+			//printf("return : %u\n", i);
+			return i;
+		}
+		i++;
+	}
+	return 0;
+}
 
 /* Add a cluster to the chain.
  * If CLST is 0, start a new chain.
@@ -178,23 +195,40 @@ fat_fs_init (void) {
 cluster_t
 fat_create_chain (cluster_t clst) {
 	/* TODO: Your code goes here. */
-	if(clst==0) clst++;
+	if(clst < 2) {
+		//printf("\tto_add = 0 reset\n");
+		fat_fs->to_add = 0;
+		clst = 1;
+	}
+	
 	unsigned int *fat = fat_fs->fat;
 	int i = ROOT_DIR_CLUSTER + 1, cnt = 1;
-	cluster_t saved = 0, return_value;
+	bool look_back = false;
+	cluster_t saved = 0, return_value = 0;
+	if(fat_fs->to_add != 0) {
+		saved = fat_fs->to_add;
+		look_back = true;
+	}
 	while(cnt <= clst){
 		if (fat_get(i)==0){
 			cnt++;
 			if(saved) fat_put(saved, i);
-			else return_value = i;
+			if(!return_value) return_value = i;
 			saved = i;
 			if(i > fat_fs->last_clst) fat_fs->last_clst = i;
 		}
 		i++;
 	}
 	fat_put(saved, EOChain);
-	
-	//printf("fat_create_chain...\n\tstart : %u\tlast : %u\tlast_clst : %u\n", return_value, saved, fat_fs->last_clst);
+	//fat_fs->to_add = saved;
+	if(look_back){
+		cluster_t temp = find_back(return_value);
+		while(temp){
+			return_value = temp;
+			temp = find_back(return_value);
+		}
+	}
+	//printf("fat_create_chain...\n\tstart : %u\tlast : %u\n\tinput : %u\tto_add : %u\tlast_clst : %u\n", return_value, saved, clst, fat_fs->to_add, fat_fs->last_clst);
 	return return_value;
 }
 
@@ -203,11 +237,13 @@ fat_create_chain (cluster_t clst) {
 void
 fat_remove_chain (cluster_t clst, cluster_t pclst) {
 	/* TODO: Your code goes here. */
+	//printf("fat_remove_chain...\n\tstart : %u\tbefore : %u\n", clst, pclst);
 	if (clst == ROOT_DIR_CLUSTER) PANIC("CANNOT REMOVE ROOT");
 	unsigned int *fat = fat_fs->fat;
 	cluster_t cur = clst;
 	while(fat_get(cur) != EOChain){
 		cluster_t next = fat_get(cur);
+		if(next == 0)return;
 		fat_put(cur, 0);
 		cur = next;
 	}
@@ -231,9 +267,10 @@ fat_put (cluster_t clst, cluster_t val) {
 cluster_t
 fat_get (cluster_t clst) {
 	/* TODO: Your code goes here. */
+	//printf("get : %u\n", clst);
 	if(fat_fs->fat_length < clst){
-		printf("clst : %u\n", clst);
-		exit(-1);
+		printf("clst : %x\n", clst);
+		PANIC("END");
 	}
 	unsigned int *fat = fat_fs->fat;
 	return fat[clst];

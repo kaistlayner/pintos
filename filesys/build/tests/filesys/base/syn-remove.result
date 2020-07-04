@@ -1,17 +1,1 @@
-FAIL
-Kernel panic in run: PANIC at ../../filesys/fat.c:236 in fat_get(): To do
-Call stack: 0x8004214430 0x800421af13 0x800421ade9 0x800421afc8 0x800421c072 0x800421b167 0x8004217aa0 0x8004219d97 0x800421977f 0x8004219442 0x4003a6 0x40108f 0x4010d8
-Translation of call stack:
-0x0000008004214430: debug_panic (lib/kernel/debug.c:32)
-0x000000800421af13: fat_get (filesys/fat.c:238)
-0x000000800421ade9: fat_remove_chain (filesys/fat.c:209)
-0x000000800421afc8: free_map_release (filesys/free-map.c:49)
-0x000000800421c072: inode_close (filesys/inode.c:167)
-0x000000800421b167: file_close (filesys/file.c:57)
-0x0000008004217aa0: process_close_file (userprog/process.c:61)
-0x0000008004219d97: close (userprog/syscall.c:317)
-0x000000800421977f: syscall_handler (userprog/syscall.c:160)
-0x0000008004219442: no_sti (userprog/syscall-entry.o:?)
-0x00000000004003a6: (unknown)
-0x000000000040108f: (unknown)
-0x00000000004010d8: (unknown)
+PASS

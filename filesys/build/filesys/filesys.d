@@ -7,4 +7,9 @@ filesys/filesys.o: ../../filesys/filesys.c \
  ../../include/filesys/fat.h ../../include/devices/disk.h \
  ../../include/lib/inttypes.h ../../include/filesys/file.h \
  ../../include/filesys/free-map.h ../../include/filesys/inode.h \
- ../../include/filesys/directory.h
+ ../../include/filesys/directory.h ../../include/threads/thread.h \
+ ../../include/lib/kernel/list.h ../../include/threads/interrupt.h \
+ ../../include/vm/vm.h ../../include/threads/palloc.h \
+ ../../include/vm/uninit.h ../../include/vm/anon.h \
+ ../../include/vm/file.h ../../include/filesys/page_cache.h \
+ ../../include/threads/synch.h

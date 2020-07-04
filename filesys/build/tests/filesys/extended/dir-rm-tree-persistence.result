@@ -1,2 +1,7 @@
 FAIL
-Prerequisite test tests/filesys/extended/dir-rm-tree failed.
+Kernel panic in file system extraction run: PANIC at ../../userprog/process.c:152 in initd(): Fail to launch initd
+Call stack: 0x800421443f 0x8004217e62 0x8004207fd9
+Translation of call stack:
+0x000000800421443f: debug_panic (lib/kernel/debug.c:32)
+0x0000008004217e62: initd (userprog/process.c:153)
+0x0000008004207fd9: kernel_thread (threads/thread.c:612)

@@ -5,7 +5,7 @@ Pintos booting with:
 	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
 	ext_mem: 0x100000 ~ 0x13e0000 (Usable: 19,328 kB)
 Calibrating timer...  209,510,400 loops/s.
-hd0:0: detected 329 sector (164 kB) disk, model "QEMU HARDDISK", serial "QM00001"
+hd0:0: detected 337 sector (168 kB) disk, model "QEMU HARDDISK", serial "QM00001"
 hd0:1: detected 4,032 sector (1 MB) disk, model "QEMU HARDDISK", serial "QM00002"
 hd1:0: detected 224 sector (112 kB) disk, model "QEMU HARDDISK", serial "QM00003"
 hd1:1: detected 8,064 sector (3 MB) disk, model "QEMU HARDDISK", serial "QM00004"
@@ -16,15 +16,17 @@ Putting 'tar' into the file system...
 Executing 'dir-over-file':
 (dir-over-file) begin
 (dir-over-file) mkdir "abc"
-dir-over-file: exit(-1)
+(dir-over-file) create "abc" (must return false)
+(dir-over-file) end
+dir-over-file: exit(0)
 Execution of 'dir-over-file' complete.
-Timer: 76 ticks
-Thread: 30 idle ticks, 46 kernel ticks, 1 user ticks
+Timer: 77 ticks
+Thread: 30 idle ticks, 45 kernel ticks, 2 user ticks
 hd0:0: 0 reads, 0 writes
-hd0:1: 128 reads, 515 writes
+hd0:1: 181 reads, 521 writes
 hd1:0: 224 reads, 0 writes
 hd1:1: 0 reads, 0 writes
-Console: 1035 characters output
+Console: 1103 characters output
 Keyboard: 0 keys pressed
 Exception: 0 page faults
 Powering off...

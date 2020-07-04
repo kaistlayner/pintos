@@ -133,8 +133,7 @@ dir_add (struct dir *dir, const char *name, disk_sector_t inode_sector) {
 	off_t ofs;
 	bool success = false;
 	
-	ASSERT (dir != NULL);
-	ASSERT (name != NULL);
+	if(dir == NULL || name == NULL) exit(-1);
 
 	/* Check NAME for validity. */
 	if (*name == '\0' || strlen (name) > NAME_MAX)

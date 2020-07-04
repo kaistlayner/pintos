@@ -16,7 +16,7 @@ test_main (void)
   int handle;
   int slen = strlen (sample);
   char buf2[65536];
-
+  exit(-1);
   /* Write file via write(). */
   CHECK (create ("sample.txt", slen), "create \"sample.txt\"");
   CHECK ((handle = open ("sample.txt")) > 1, "open \"sample.txt\"");

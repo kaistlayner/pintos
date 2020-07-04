@@ -221,24 +221,12 @@ static int write (int fd, const void * buffer, unsigned size)
 }
 
 static tid_t fork2(const char *thread_name, struct intr_frame *if_){
-	//printf("before fork : %d\n", thread_current()->tid);
 	tid_t tid = process_fork(thread_name, if_);
-	//if_->R.rax = tid;
-	//printf("child tid : %d\n", tid);
-	//printf("after fork : %d\n", thread_current()->tid);
 	if (tid != thread_current()->tid) {
-		/*struct thread *ch = child_thread(tid);
-		while(!ch->fork_done){
-			thread_yield();
-		}*/
-		//printf("before sema\n");
-		//sema_down(&fork_sema);
-		//printf("after sema\n");
 		thread_yield();
 		return tid;
 	}
 	else if (tid == thread_current()->tid) {
-		//forksema_up(&fork_sema);
 		return 0;
 	}
 	NOT_REACHED();
@@ -282,7 +270,6 @@ static int filesize (int fd){
 	return file_length (f);
 }
 
-// 메모리 유효 검사 추가 필요
 static int read (int fd, void *buffer, unsigned size){
 	int ret;
 	lock_acquire(&file_lock);
@@ -327,11 +314,9 @@ static void close (int fd){
 }
 static void *mmap (void *addr, size_t length, int writable, int fd, off_t offset){
 	struct file *file = process_get_file(fd);
-	//if (file == NULL || length <= 0 || addr == NULL || addr != pg_round_down(addr) || offset > PGSIZE || !is_user_vaddr(addr) || !is_user_vaddr((uint64_t)addr + (uint64_t)length) - 1) return NULL;
+
 	if (file == NULL || length <= 0 || addr == NULL || addr != pg_round_down(addr) || offset > PGSIZE || !is_user_vaddr(addr) || (size_t)addr >= ((size_t)addr + length)) return NULL;
-	/*if (file == NULL) PANIC("1");
-	if (length == 0) PANIC("2");
-	if (addr == NULL) PANIC("3");*/
+
 	return do_mmap (addr, length, writable, file, offset);
 }
 static void munmap (void *addr){
