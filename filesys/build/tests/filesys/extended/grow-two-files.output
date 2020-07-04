@@ -23,8 +23,8 @@ Executing 'grow-two-files':
 (grow-two-files) write 4 bytes at offset 0 in "a" returned 0: FAILED
 grow-two-files: exit(1)
 Execution of 'grow-two-files' complete.
-Timer: 77 ticks
-Thread: 30 idle ticks, 45 kernel ticks, 2 user ticks
+Timer: 80 ticks
+Thread: 30 idle ticks, 47 kernel ticks, 3 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 176 reads, 527 writes
 hd1:0: 228 reads, 0 writes

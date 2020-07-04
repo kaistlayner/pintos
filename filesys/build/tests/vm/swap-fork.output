@@ -4,7 +4,7 @@ Kernel command line: -q -f put swap-fork put child-swap run swap-fork
 Pintos booting with: 
 	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
 	ext_mem: 0x100000 ~ 0x27e0000 (Usable: 39,808 kB)
-Calibrating timer...  157,081,600 loops/s.
+Calibrating timer...  209,510,400 loops/s.
 hd0:0: detected 337 sector (168 kB) disk, model "QEMU HARDDISK", serial "QM00001"
 hd0:1: detected 20,160 sector (9 MB) disk, model "QEMU HARDDISK", serial "QM00002"
 hd1:0: detected 4,119 sector (2 MB) disk, model "QEMU HARDDISK", serial "QM00003"
@@ -19,10 +19,15 @@ Executing 'swap-fork':
 child-swap: exit(1)
 (swap-fork) More than one child process' stack is corrupted: FAILED
 child-swap: exit(1)
+(child-swap) begin
+child-swap: exit(0)
+(swap-fork) More than one child process' stack is corrupted: FAILED
+child-swap: exit(1)
+child-swap: exit(-1)
 (swap-fork) More than one child process' stack is corrupted: FAILED
 swap-fork: exit(1)
 Kernel PANIC at ../../vm/vm.c:310 in supplemental_page_table_copy(): assertion `pg->va == pg2->va' failed.
-Call stack: 0x800421443f 0x80042221d5 0x800421807f 0x8004207fd9.
+Call stack: 0x800421443f 0x8004222220 0x800421807f 0x8004207fd9.
 The `backtrace' program can make call stacks useful.
 Read "Backtraces" in the "Debugging Tools" chapter
 of the Pintos documentation for more information.
