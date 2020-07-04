@@ -20,8 +20,8 @@ Executing 'swap-file':
 (swap-file) read of mmap'd file reported bad data: FAILED
 swap-file: exit(1)
 Execution of 'swap-file' complete.
-Timer: 232 ticks
-Thread: 30 idle ticks, 152 kernel ticks, 50 user ticks
+Timer: 225 ticks
+Thread: 30 idle ticks, 147 kernel ticks, 48 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 8085 reads, 16179 writes
 hd1:0: 7931 reads, 0 writes

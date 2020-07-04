@@ -21,8 +21,8 @@ Executing 'dir-mk-tree':
 (dir-mk-tree) end
 dir-mk-tree: exit(0)
 Execution of 'dir-mk-tree' complete.
-Timer: 235 ticks
-Thread: 30 idle ticks, 44 kernel ticks, 161 user ticks
+Timer: 233 ticks
+Thread: 30 idle ticks, 45 kernel ticks, 158 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 8397 reads, 1073 writes
 hd1:0: 229 reads, 0 writes

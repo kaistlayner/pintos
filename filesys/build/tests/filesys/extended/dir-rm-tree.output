@@ -19,15 +19,17 @@ Executing 'dir-rm-tree':
 (dir-rm-tree) open "/0/2/0/3"
 (dir-rm-tree) close "/0/2/0/3"
 (dir-rm-tree) removing /0/0/0/0 through /3/2/2/3...
-dir-rm-tree: exit(-1)
+(dir-rm-tree) open "/3/0/2/0" (must return -1)
+(dir-rm-tree) end
+dir-rm-tree: exit(0)
 Execution of 'dir-rm-tree' complete.
-Timer: 236 ticks
-Thread: 30 idle ticks, 44 kernel ticks, 162 user ticks
+Timer: 337 ticks
+Thread: 30 idle ticks, 45 kernel ticks, 262 user ticks
 hd0:0: 0 reads, 0 writes
-hd0:1: 8503 reads, 1085 writes
+hd0:1: 13927 reads, 1277 writes
 hd1:0: 233 reads, 0 writes
 hd1:1: 0 reads, 0 writes
-Console: 1163 characters output
+Console: 1228 characters output
 Keyboard: 0 keys pressed
 Exception: 0 page faults
 Powering off...

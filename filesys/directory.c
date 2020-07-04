@@ -69,10 +69,9 @@ dir_close (struct dir *dir) {
 /* Returns the inode encapsulated by DIR. */
 struct inode *
 dir_get_inode (struct dir *dir) {
-	/*printf("gege\n");
-	printf("access : %u\n", dir->inode);
-	printf("return\n");*/
+	
 	if(dir==NULL) return NULL;
+	//printf("inode : %u\n", dir->inode);
 	return dir->inode;
 }
 
@@ -188,7 +187,7 @@ dir_remove (struct dir *dir, const char *name) {
 
 	ASSERT (dir != NULL);
 	ASSERT (name != NULL);
-
+	
 	/* Find directory entry. */
 	if (!lookup (dir, name, &e, &ofs))
 		goto done;
@@ -197,12 +196,14 @@ dir_remove (struct dir *dir, const char *name) {
 	inode = inode_open (e.inode_sector);
 	if (inode == NULL)
 		goto done;
-
+	//printf("before n : %d\n", file_number(dir_get_inode(dir)));
+	//printf("e.name : %s\n", e.name);
 	/* Erase directory entry. */
 	e.in_use = false;
+	memset(e.name,'\0',sizeof(e.name));
 	if (inode_write_at (dir->inode, &e, sizeof e, ofs) != sizeof e)
 		goto done;
-
+	//printf("after n : %d\n", file_number(dir_get_inode(dir)));
 	/* Remove inode. */
 	inode_remove (inode);
 	success = true;

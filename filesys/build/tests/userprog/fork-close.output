@@ -24,7 +24,7 @@ child: exit(0)
 fork-close: exit(0)
 Execution of 'fork-close' complete.
 Timer: 77 ticks
-Thread: 30 idle ticks, 45 kernel ticks, 2 user ticks
+Thread: 30 idle ticks, 46 kernel ticks, 1 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 262 reads, 537 writes
 hd1:0: 110 reads, 0 writes

@@ -25,8 +25,8 @@ Executing 'syn-rw':
 (syn-rw) write 8 bytes at offset 0 in "logfile": FAILED
 syn-rw: exit(1)
 Execution of 'syn-rw' complete.
-Timer: 138 ticks
-Thread: 30 idle ticks, 47 kernel ticks, 61 user ticks
+Timer: 169 ticks
+Thread: 30 idle ticks, 47 kernel ticks, 92 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 420 reads, 757 writes
 hd1:0: 344 reads, 0 writes

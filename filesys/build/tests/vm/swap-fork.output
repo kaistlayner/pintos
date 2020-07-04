@@ -26,10 +26,25 @@ child-swap: exit(1)
 (swap-fork) More than one child process' stack is corrupted: FAILED
 child-swap: exit(1)
 (swap-fork) More than one child process' stack is corrupted: FAILED
+child-swap: exit(1)
+(swap-fork) More than one child process' stack is corrupted: FAILED
+child-swap: exit(1)
+(swap-fork) More than one child process' stack is corrupted: FAILED
+child-swap: exit(1)
+(swap-fork) More than one child process' stack is corrupted: FAILED
+child-swap: exit(1)
+(swap-fork) More than one child process' stack is corrupted: FAILED
+child-swap: exit(1)
+(swap-fork) More than one child process' stack is corrupted: FAILED
 swap-fork: exit(1)
-Kernel PANIC at ../../vm/vm.c:310 in supplemental_page_table_copy(): assertion `pg->va == pg2->va' failed.
-Call stack: 0x800421443f 0x8004222ba7 0x800421807f 0x8004207fd9.
-The `backtrace' program can make call stacks useful.
-Read "Backtraces" in the "Debugging Tools" chapter
-of the Pintos documentation for more information.
-Kernel PANIC recursion at ../../devices/timer.c:184 in real_time_sleep().
+Execution of 'swap-fork' complete.
+Timer: 365 ticks
+Thread: 30 idle ticks, 114 kernel ticks, 221 user ticks
+hd0:0: 0 reads, 0 writes
+hd0:1: 4213 reads, 8555 writes
+hd1:0: 4119 reads, 0 writes
+hd1:1: 0 reads, 0 writes
+Console: 1903 characters output
+Keyboard: 0 keys pressed
+Exception: 0 page faults
+Powering off...

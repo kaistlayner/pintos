@@ -100,7 +100,7 @@ pass tests/filesys/extended/dir-over-file
 pass tests/filesys/extended/dir-rm-cwd
 pass tests/filesys/extended/dir-rm-parent
 pass tests/filesys/extended/dir-rm-root
-FAIL tests/filesys/extended/dir-rm-tree
+pass tests/filesys/extended/dir-rm-tree
 pass tests/filesys/extended/dir-rmdir
 pass tests/filesys/extended/dir-under-file
 FAIL tests/filesys/extended/dir-vine

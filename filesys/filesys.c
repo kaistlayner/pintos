@@ -120,11 +120,16 @@ bool
 filesys_remove (const char *path) {
 	char name[PATH_MAX_LEN + 1];
 	
-	//printf("path : %s\n", path);
+	//printf("remove path : %s\t", path);
 	struct dir *dir = parse_path (path, name);
-	//printf("name : %s\n", name);
+	
 	struct inode *inode;
   	dir_lookup (dir, name, &inode);
+  	//printf("inode : %u\tname : %s\n", dir_get_inode(dir), name);
+  	if(inode==NULL){
+  		//printf("inode == NULL\n");
+  		return 0;
+  	}
   	//printf("name again : %s\n", name);
   	//printf("1\n");
   	bool success = false;
@@ -139,14 +144,24 @@ filesys_remove (const char *path) {
   		//printf("entered!\n");
 	  	if(!is_dir_inode(inode)){
 	  		//printf("inode is not dir\n");
+	  		//printf("remove dir : %u\tname : %s\n", dir_get_inode(dir), name);
 	  		success = dir != NULL && dir_remove (dir, name);
+	  		
 		}
-		else if(dir_get_inode(thread_current()->working_dir) != inode){
+		else{
+			//printf("inode is dir\n");
 			//printf("dir / file : %u %u\n", dir_get_inode(thread_current()->working_dir), inode);
-			if(!is_opened(inode)){
-				int n = file_number(inode);
-				//printf("n : %d\n", n);
-				if(n<=2) success = dir != NULL && dir_remove (dir, name);
+			if(dir_get_inode(thread_current()->working_dir) != inode){
+				//printf("a b : %u %u\n", dir_get_inode(thread_current()->working_dir), inode);
+				//printf("\tis opened? : %d\n", is_opened(inode));
+				if(!is_opened(inode)){
+					int n = file_number(inode);
+					//printf("n : %d\n", n);
+					if(n<=2){
+						//printf("remove dir : %u\tname : %s\n", dir_get_inode(dir), name);
+						success = dir != NULL && dir_remove (dir, name);
+					}
+				}
 			}
 		}
 	}
@@ -270,6 +285,7 @@ parse_path (const char *path_o, char *file_name)
 bool
 filesys_create_dir (const char *path)
 {
+	//printf("create dir : %s\n", path);
   disk_sector_t inode_sector = 0;
   char name[PATH_MAX_LEN + 1];
   struct dir *dir = parse_path (path, name);

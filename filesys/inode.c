@@ -78,12 +78,21 @@ int file_number(const struct inode * inode){
 }
 
 bool is_opened(const struct inode *inode) {
+	//printf("is_opened with inode : %u...\n", inode);
 	struct thread *t = thread_current();
 	int fd;
 	for(fd=2;fd<t->next_fd;fd++){
+		//printf("\tcheck fd : %d\n", fd);
 		struct inode* inode_temp = file_get_inode(t->fds[fd]);
-		if(inode == inode_temp) return true;
+		if(inode_temp!=NULL){
+			//printf("\tinode_temp : %u\n", inode_temp);
+			if(inode == inode_temp){
+				//printf("\ttrue\n");
+				return true;
+			}
+		}
 	}
+	//printf("\tfalse\n");
 	return false;
 }
 
