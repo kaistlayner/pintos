@@ -3,5 +3,5 @@
 
 void syscall_init (void);
 void exit(int n);
-
+int isemptydir (int fd, char *name);
 #endif /* userprog/syscall.h */

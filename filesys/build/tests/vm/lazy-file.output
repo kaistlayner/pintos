@@ -25,8 +25,8 @@ Executing 'lazy-file':
 (lazy-file) check if page is not loaded: FAILED
 lazy-file: exit(1)
 Execution of 'lazy-file' complete.
-Timer: 78 ticks
-Thread: 30 idle ticks, 46 kernel ticks, 2 user ticks
+Timer: 77 ticks
+Thread: 30 idle ticks, 45 kernel ticks, 2 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 320 reads, 619 writes
 hd1:0: 151 reads, 0 writes

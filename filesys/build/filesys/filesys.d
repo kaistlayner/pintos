@@ -12,4 +12,4 @@ filesys/filesys.o: ../../filesys/filesys.c \
  ../../include/vm/vm.h ../../include/threads/palloc.h \
  ../../include/vm/uninit.h ../../include/vm/anon.h \
  ../../include/vm/file.h ../../include/filesys/page_cache.h \
- ../../include/threads/synch.h
+ ../../include/threads/synch.h ../../include/userprog/syscall.h

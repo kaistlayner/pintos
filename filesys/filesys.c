@@ -9,6 +9,7 @@
 #include "filesys/directory.h"
 #include "devices/disk.h"
 #include "threads/thread.h"
+#include "userprog/syscall.h"
 
 /* The disk that contains the file system. */
 struct disk *filesys_disk;
@@ -70,7 +71,7 @@ filesys_create (const char *path, off_t initial_size) {
 	bool a, b, c, d;
 	a = dir != NULL;
 	b = free_map_allocate (1, &inode_sector);
-	c = inode_create (inode_sector, initial_size);
+	c = inode_create (inode_sector, initial_size, 0);
 	d = dir_add (dir, name, inode_sector);
 	bool success = a && b && c && d && inode_sector;
 	//printf("filesys_create...\n\tans : %d %d %d %d %d\n", a, b, c, d, inode_sector);
@@ -102,8 +103,10 @@ filesys_open (const char *path) {
 	//printf("name : %s\n",name);
 	//bool why = dir_lookup (dir, name, &inode);
 	//printf("bool : %d\n",why);
+	if(!strcmp(name, ".")){
+		return file_open (dir_get_inode(dir));
+	}
 	if (!dir_lookup (dir, name, &inode)) return NULL;
-
 	dir_close (dir);
 
 	return file_open (inode);
@@ -116,11 +119,39 @@ filesys_open (const char *path) {
 bool
 filesys_remove (const char *path) {
 	char name[PATH_MAX_LEN + 1];
-	// struct dir *dir = dir_open_root ();
+	
+	//printf("path : %s\n", path);
 	struct dir *dir = parse_path (path, name);
-	bool success = dir != NULL && dir_remove (dir, name);
+	//printf("name : %s\n", name);
+	struct inode *inode;
+  	dir_lookup (dir, name, &inode);
+  	//printf("name again : %s\n", name);
+  	//printf("1\n");
+  	bool success = false;
+  	/*if(is_empty_dir(dir)) {
+  		dir_close(dir);
+  		return 0;
+  	}*/
+  	struct dir *root = dir_open_root ();
+  	//printf("root / dir : %d / %d\nsame? : %d\n", (int)dir_get_inode(root), (int)dir_get_inode(dir), (int)dir_get_inode(root) == (int)dir_get_inode(dir));
+  	//printf("name == \".\"? : %d\n",!strcmp(name, ".")); 
+  	if((int)dir_get_inode(root) != (int)dir_get_inode(dir) || strcmp(name, ".")){
+  		//printf("entered!\n");
+	  	if(!is_dir_inode(inode)){
+	  		//printf("inode is not dir\n");
+	  		success = dir != NULL && dir_remove (dir, name);
+		}
+		else if(dir_get_inode(thread_current()->working_dir) != inode){
+			//printf("dir / file : %u %u\n", dir_get_inode(thread_current()->working_dir), inode);
+			if(!is_opened(inode)){
+				int n = file_number(inode);
+				//printf("n : %d\n", n);
+				if(n<=2) success = dir != NULL && dir_remove (dir, name);
+			}
+		}
+	}
 	dir_close (dir);
-
+	//printf("success : %d\n", success);
 	return success;
 }
 
@@ -175,16 +206,34 @@ parse_path (const char *path_o, char *file_name)
 
   char *token, *next_token, *save_ptr;
   token = strtok_r (path, "/", &save_ptr);
+  while(token!=NULL){
+      	
+      	if(token!=NULL){
+      		if(strcmp(token, ".")){
+      			break;
+      		}
+      	}
+      	token = strtok_r (NULL, "/", &save_ptr);
+      }
   next_token = strtok_r (NULL, "/", &save_ptr);
-
+	while(next_token!=NULL){
+      	
+      	if(next_token!=NULL){
+      		if(strcmp(next_token, ".")){
+      			break;
+      		}
+      	}
+      	next_token = strtok_r (NULL, "/", &save_ptr);
+      }
   if (token == NULL)
     {
       strlcpy (file_name, ".", PATH_MAX_LEN);
       return dir;
     }
-
+  //printf("\ttoken : %s \ next : %s\n", token, next_token);
   while (token && next_token)
     {
+      
       struct inode *inode = NULL;
       if (!dir_lookup (dir, token, &inode))
         {
@@ -201,6 +250,18 @@ parse_path (const char *path_o, char *file_name)
 
       token = next_token;
       next_token = strtok_r (NULL, "/", &save_ptr);
+      
+      while(next_token!=NULL){
+      	
+      	if(next_token!=NULL){
+      		if(strcmp(next_token, ".")){
+      			break;
+      		}
+      	}
+      	next_token = strtok_r (NULL, "/", &save_ptr);
+      }
+      
+      //printf("\ttoken : %s \ next : %s\n", token, next_token);
     }
   strlcpy (file_name, token, PATH_MAX_LEN);
   return dir;
@@ -230,4 +291,28 @@ filesys_create_dir (const char *path)
     }
   dir_close (dir);
   return success;
+}
+
+static bool
+readdir (int fd, char *name)
+{
+  // 파일 디스크립터를 이용하여 파일을 찾습니다.
+  struct file *f = process_get_file (fd);
+  if (f == NULL)
+    exit (-1);
+  // 내부 아이노드 가져오기 및 디렉터리 열기
+  struct inode *inode = file_get_inode (f);
+  if (!inode || !is_dir_inode (inode))
+    return false;
+  struct dir *dir = dir_open (inode);
+  if (!dir)
+    return false;
+  int i;
+  bool result = true;
+  off_t *pos = (off_t *)f + 1;
+  for (i = 0; i <= *pos && result; i++)
+    result = dir_readdir (dir, name);
+  if (i <= *pos == false)
+    (*pos)++;
+  return result;
 }

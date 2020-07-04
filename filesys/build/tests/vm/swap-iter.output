@@ -15,7 +15,7 @@ Putting 'swap-iter' into the file system...
 Putting 'large.txt' into the file system...
 Executing 'swap-iter':
 Kernel PANIC at ../../lib/string.c:261 in memset(): assertion `dst != NULL || size == 0' failed.
-Call stack: 0x800421443f 0x8004213c93 0x8004218bbc 0x80042224fd 0x8004221fb0 0x8004221a3d 0x8004218d89 0x800421891e 0x800421820a 0x8004217e29 0x8004207fd9.
+Call stack: 0x800421443f 0x8004213c93 0x8004218bbc 0x8004222e84 0x8004222937 0x80042223c4 0x8004218d89 0x800421891e 0x800421820a 0x8004217e29 0x8004207fd9.
 The `backtrace' program can make call stacks useful.
 Read "Backtraces" in the "Debugging Tools" chapter
 of the Pintos documentation for more information.

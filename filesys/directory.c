@@ -24,7 +24,7 @@ struct dir_entry {
  * given SECTOR.  Returns true if successful, false on failure. */
 bool
 dir_create (disk_sector_t sector, size_t entry_cnt) {
-	return inode_create (sector, entry_cnt * sizeof (struct dir_entry));
+	return inode_create (sector, entry_cnt * sizeof (struct dir_entry), 1);
 }
 
 /* Opens and returns the directory for the given INODE, of which
@@ -69,6 +69,10 @@ dir_close (struct dir *dir) {
 /* Returns the inode encapsulated by DIR. */
 struct inode *
 dir_get_inode (struct dir *dir) {
+	/*printf("gege\n");
+	printf("access : %u\n", dir->inode);
+	printf("return\n");*/
+	if(dir==NULL) return NULL;
 	return dir->inode;
 }
 
@@ -99,6 +103,8 @@ lookup (const struct dir *dir, const char *name,
 	}
 	return false;
 }
+
+
 
 /* Searches DIR for a file with the given NAME
  * and returns true if one exists, false otherwise.
@@ -221,4 +227,7 @@ dir_readdir (struct dir *dir, char name[NAME_MAX + 1]) {
 		}
 	}
 	return false;
+}
+bool is_empty_dir(struct dir * dir){
+	return is_empty_inode(dir->inode);
 }

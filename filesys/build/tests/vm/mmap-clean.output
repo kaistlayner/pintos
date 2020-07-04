@@ -21,8 +21,8 @@ Executing 'mmap-clean':
 (mmap-clean) write "sample.txt": FAILED
 mmap-clean: exit(1)
 Execution of 'mmap-clean' complete.
-Timer: 78 ticks
-Thread: 30 idle ticks, 46 kernel ticks, 2 user ticks
+Timer: 76 ticks
+Thread: 30 idle ticks, 45 kernel ticks, 1 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 258 reads, 541 writes
 hd1:0: 112 reads, 0 writes

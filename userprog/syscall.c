@@ -13,6 +13,8 @@
 #include "threads/init.h"
 #include "threads/vaddr.h"
 #include "filesys/filesys.h"
+#include "filesys/directory.h"
+#include "filesys/inode.h"
 
 void syscall_entry (void);
 void syscall_handler (struct intr_frame *);
@@ -35,6 +37,12 @@ static void *mmap (void *addr, size_t length, int writable, int fd, off_t offset
 static void munmap (void *addr);
 static bool mkdir (const char *);
 static bool chdir (char *);
+static bool isdir (int fd);
+static int inumber (int fd);
+static bool readdir (int fd, char *name);
+int isemptydir (int fd, char *name);
+int symlink (const char *target, const char *linkpath);
+
 struct lock file_lock;
 struct semaphore fork_sema;
 
@@ -137,7 +145,7 @@ syscall_handler (struct intr_frame *f) {
 			f->R.rax = create ((const char *)one, (unsigned) two);
 			break;
 		case SYS_REMOVE:                 /* Delete a file. */
-			remove ((const char *)one);
+			f->R.rax = remove ((const char *)one);
 			break;
 		case SYS_OPEN:                   /* Open a file. */
 			f->R.rax = open ((const char *)one);
@@ -174,7 +182,23 @@ syscall_handler (struct intr_frame *f) {
 		case SYS_CHDIR:
 			rax = chdir ((const char *) one);
 			f->R.rax = rax;
-      break;
+      		break;
+		case SYS_ISDIR:
+			rax = isdir ((int) one);
+			f->R.rax = rax;
+			break;
+		case SYS_INUMBER:
+			rax = inumber ((int) one);
+			f->R.rax = rax;
+			break;
+		case SYS_READDIR:
+			rax = readdir ((int) one, (char *) two);
+			f->R.rax = rax;
+			break;
+		case SYS_SYMLINK:
+			rax = symlink ((const char *)one, (const char *)two);
+			f->R.rax = rax;
+			break;
 		default:
 			exit(-1);
 	}
@@ -215,6 +239,11 @@ static int write (int fd, const void * buffer, unsigned size)
       lock_release (&file_lock);
       return 0;
     }
+  bool is_dir = is_dir_inode(file_get_inode(f));
+  if(is_dir){
+  	lock_release (&file_lock);
+  	return -1;
+  }
   size = file_write (f, buffer, size);
   lock_release (&file_lock);
   return size;
@@ -256,6 +285,7 @@ static int open (const char *file){
 	int result = -1;
 	lock_acquire (&file_lock);
 	if (file == NULL || file == "") exit(-1);
+	
 	struct file *f = filesys_open (file);
 	if (!strcmp(thread_current()->name, file)) {
 		file_deny_write(f);
@@ -342,3 +372,76 @@ chdir (char *path_o)
   thread_current ()->working_dir = dir;
   return true;
 }
+static bool
+isdir (int fd)
+{
+  // 파일 디스크립터를 이용하여 파일을 찾습니다.
+  struct file *f = process_get_file (fd);
+  if (f == NULL)
+    exit (-1);
+  // 디렉터리인지 계산하여 반환합니다.
+  return is_dir_inode (file_get_inode (f));
+}
+static int
+inumber (int fd)
+{
+  // 파일 디스크립터를 이용하여 파일을 찾습니다.
+  struct file *f = process_get_file (fd);
+  if (f == NULL)
+    exit (-1);
+  return (int)get_sector(file_get_inode (f));
+}
+
+static bool
+readdir (int fd, char *name)
+{
+  // 파일 디스크립터를 이용하여 파일을 찾습니다.
+  struct file *f = process_get_file (fd);
+  if (f == NULL)
+    exit (-1);
+  // 내부 아이노드 가져오기 및 디렉터리 열기
+  struct inode *inode = file_get_inode (f);
+  if (!inode || !is_dir_inode (inode))
+    return false;
+  struct dir *dir = dir_open (inode);
+  if (!dir)
+    return false;
+  int i;
+  bool result = true;
+  off_t *pos = (off_t *)f + 1;
+  for (i = 0; i <= *pos && result; i++)
+    result = dir_readdir (dir, name);
+  if (i <= *pos == false)
+    (*pos)++;
+  return result;
+}
+
+int
+isemptydir (int fd, char *name)
+{
+  // 파일 디스크립터를 이용하여 파일을 찾습니다.
+  struct file *f = process_get_file (fd);
+  if (f == NULL)
+    exit (-1);
+  // 내부 아이노드 가져오기 및 디렉터리 열기
+  struct inode *inode = file_get_inode (f);
+  if (!inode || !is_dir_inode (inode))
+    return false;
+  struct dir *dir = dir_open (inode);
+  if (!dir)
+    return false;
+  int i;
+  bool result = true;
+  off_t *pos = (off_t *)f + 1;
+  for (i = 0; i <= *pos && result; i++)
+    result = dir_readdir (dir, name);
+  if (i <= *pos == false)
+    (*pos)++;
+   printf("result : %d\n", result);
+  return result-2;
+}
+
+int symlink (const char *target, const char *linkpath){
+	
+}
+

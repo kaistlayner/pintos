@@ -37,8 +37,8 @@ child-mm-wrt: exit(0)
 (mmap-exit) 512 bytes read starting at offset 0 in "sample.txt" differ from expected: FAILED
 mmap-exit: exit(1)
 Execution of 'mmap-exit' complete.
-Timer: 83 ticks
-Thread: 30 idle ticks, 47 kernel ticks, 6 user ticks
+Timer: 82 ticks
+Thread: 30 idle ticks, 46 kernel ticks, 6 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 343 reads, 745 writes
 hd1:0: 212 reads, 0 writes

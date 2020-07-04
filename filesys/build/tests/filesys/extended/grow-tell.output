@@ -4,7 +4,7 @@ Kernel command line: -q -f put grow-tell put tar run grow-tell
 Pintos booting with: 
 	base_mem: 0x0 ~ 0x9fc00 (Usable: 639 kB)
 	ext_mem: 0x100000 ~ 0x13e0000 (Usable: 19,328 kB)
-Calibrating timer...  209,100,800 loops/s.
+Calibrating timer...  209,510,400 loops/s.
 hd0:0: detected 337 sector (168 kB) disk, model "QEMU HARDDISK", serial "QM00001"
 hd0:1: detected 4,032 sector (1 MB) disk, model "QEMU HARDDISK", serial "QM00002"
 hd1:0: detected 225 sector (112 kB) disk, model "QEMU HARDDISK", serial "QM00003"
@@ -21,8 +21,8 @@ Executing 'grow-tell':
 (grow-tell) write 37 bytes at offset 0 in "foobar" failed: FAILED
 grow-tell: exit(1)
 Execution of 'grow-tell' complete.
-Timer: 80 ticks
-Thread: 30 idle ticks, 48 kernel ticks, 2 user ticks
+Timer: 78 ticks
+Thread: 30 idle ticks, 45 kernel ticks, 3 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 148 reads, 519 writes
 hd1:0: 225 reads, 0 writes

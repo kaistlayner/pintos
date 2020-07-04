@@ -1,2 +1,1 @@
-FAIL
-run: write "xyzzy" (must return -1, actually 6): FAILED
+PASS

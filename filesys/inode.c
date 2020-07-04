@@ -4,20 +4,26 @@
 #include <round.h>
 #include <string.h>
 #include "filesys/filesys.h"
+#include "filesys/file.h"
+#include "filesys/inode.h"
 #include "filesys/free-map.h"
 #include "threads/malloc.h"
+#include "userprog/process.h"
 
 /* Identifies an inode. */
 #define INODE_MAGIC 0x494e4f44
-
+#define NAME_MAX 14
 /* On-disk inode.
  * Must be exactly DISK_SECTOR_SIZE bytes long. */
 struct inode_disk {
 	disk_sector_t start;                /* First data sector. */
+	bool is_dir;
 	off_t length;                       /* File size in bytes. */
 	unsigned magic;                     /* Magic number. */
-	uint32_t unused[125];               /* Not used. */
+	uint32_t unused[124];               /* Not used. */
 };
+
+
 
 /* Returns the number of sectors to allocate for an inode SIZE
  * bytes long. */
@@ -35,6 +41,51 @@ struct inode {
 	int deny_write_cnt;                 /* 0: writes ok, >0: deny writes. */
 	struct inode_disk data;             /* Inode content. */
 };
+
+bool is_dir_inode(struct inode *inode){
+	/*printf("come here\n");
+	printf("access : %d\n", inode->data.is_dir);
+	printf("return\n");*/
+	return inode->data.is_dir;
+}
+
+bool is_empty_inode(struct inode *inode){
+	/*printf("come here\n");
+	printf("access : %d\n", inode->data.is_dir);
+	printf("return\n");*/
+	printf("length : %d\n", inode->data.length);
+	return inode->data.length == 0;
+}
+
+disk_sector_t get_sector(struct inode *inode){
+	return inode->sector;
+}
+int file_number(const struct inode * inode){
+	struct dir_entry {
+		disk_sector_t inode_sector;         /* Sector number of header. */
+		char name[NAME_MAX + 1];            /* Null terminated file name. */
+		bool in_use;                        /* In use or free? */
+	};
+	struct dir_entry e;
+	size_t ofs;
+	int cnt = 0;
+	for (ofs = 0; inode_read_at (inode, &e, sizeof e, ofs) == sizeof e;
+			ofs += sizeof e){
+		//printf("e->name : %s\n", e.name);
+		if(strcmp(e.name, "")) cnt++;
+	}
+	return cnt;
+}
+
+bool is_opened(const struct inode *inode) {
+	struct thread *t = thread_current();
+	int fd;
+	for(fd=2;fd<t->next_fd;fd++){
+		struct inode* inode_temp = file_get_inode(t->fds[fd]);
+		if(inode == inode_temp) return true;
+	}
+	return false;
+}
 
 /* Returns the disk sector that contains byte offset POS within
  * INODE.
@@ -65,7 +116,7 @@ inode_init (void) {
  * Returns true if successful.
  * Returns false if memory or disk allocation fails. */
 bool
-inode_create (disk_sector_t sector, off_t length) {
+inode_create (disk_sector_t sector, off_t length, bool is_dir) {
 	struct inode_disk *disk_inode = NULL;
 	bool success = false;
 
@@ -80,6 +131,7 @@ inode_create (disk_sector_t sector, off_t length) {
 		size_t sectors = bytes_to_sectors (length);
 		disk_inode->length = length;
 		disk_inode->magic = INODE_MAGIC;
+		disk_inode->is_dir = is_dir;
 		if (free_map_allocate (sectors, &disk_inode->start)) {
 			disk_write (filesys_disk, sector, disk_inode);
 			if (sectors > 0) {

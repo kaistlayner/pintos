@@ -16,16 +16,17 @@ Putting 'tar' into the file system...
 Executing 'dir-rm-root':
 (dir-rm-root) begin
 (dir-rm-root) remove "/" (must fail)
-(dir-rm-root) remove "/" (must fail): FAILED
-dir-rm-root: exit(1)
+(dir-rm-root) create "/a"
+(dir-rm-root) end
+dir-rm-root: exit(0)
 Execution of 'dir-rm-root' complete.
-Timer: 77 ticks
-Thread: 30 idle ticks, 45 kernel ticks, 2 user ticks
+Timer: 76 ticks
+Thread: 30 idle ticks, 44 kernel ticks, 2 user ticks
 hd0:0: 0 reads, 0 writes
-hd0:1: 140 reads, 515 writes
+hd0:1: 160 reads, 518 writes
 hd1:0: 224 reads, 0 writes
 hd1:1: 0 reads, 0 writes
-Console: 1074 characters output
+Console: 1073 characters output
 Keyboard: 0 keys pressed
 Exception: 0 page faults
 Powering off...

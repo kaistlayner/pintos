@@ -18,8 +18,8 @@ Executing 'mmap-bad-fd3':
 (mmap-bad-fd3) end
 mmap-bad-fd3: exit(0)
 Execution of 'mmap-bad-fd3' complete.
-Timer: 77 ticks
-Thread: 30 idle ticks, 46 kernel ticks, 1 user ticks
+Timer: 75 ticks
+Thread: 30 idle ticks, 44 kernel ticks, 1 user ticks
 hd0:0: 0 reads, 0 writes
 hd0:1: 225 reads, 523 writes
 hd1:0: 103 reads, 0 writes
